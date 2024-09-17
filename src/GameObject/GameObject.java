@@ -34,6 +34,8 @@ public class GameObject extends AnimatedSprite {
     // the map instance this game object "belongs" to.
     protected Map map;
 
+    protected float height;
+    protected float width;
 
     public GameObject(SpriteSheet spriteSheet, float x, float y, String startingAnimation) {
         super(spriteSheet, x, y, startingAnimation);

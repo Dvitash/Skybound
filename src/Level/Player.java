@@ -229,6 +229,14 @@ public abstract class Player extends GameObject {
         }
     }
 
+    public void bounce() {
+        airGroundState = AirGroundState.GROUND;
+        previousAirGroundState = airGroundState;
+
+        playerState = PlayerState.JUMPING;
+        playerJumping();
+    }
+
     // while player is in air, this is called, and will increase momentumY by a set amount until player reaches terminal velocity
     protected void increaseMomentum() {
         momentumY += momentumYIncrease;

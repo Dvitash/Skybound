@@ -53,7 +53,7 @@ public class Sprite extends Rectangle {
         this.imageEffect = imageEffect;
     }
 
-       public Rectangle getBounds() {
+    public Rectangle getBounds() {
         return new Rectangle(getX() + (bounds.getX1() * scale), getY() + (bounds.getY1() * scale), bounds.getWidth(), bounds.getHeight(), scale);
     }
 
