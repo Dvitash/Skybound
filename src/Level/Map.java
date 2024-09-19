@@ -392,11 +392,17 @@ public abstract class Map {
                     // If there are no neighbors, set the map tile
                     if (!hasNeighbor) {
                         double chance = this.random.nextDouble(); // Move chance inside the loop
-                        if (chance < 0.75) { 
-                            setMapTile(x, y, tileset.getTile(1).build(xLocation, yLocation));
+                        if (chance < 0.75) {
+                            MapTile airTile = tileset.getTile(1).build(xLocation, yLocation);
+                            airTile.setMap(this);
+                            
+                            setMapTile(x, y, airTile);
                             platforms[x][y] = -2; // mark as skipped and build air
                         } else {
-                            setMapTile(x, y, tileset.getTile(5).build(xLocation, yLocation));
+                            MapTile platform = tileset.getTile(5).build(xLocation, yLocation);
+                            platform.setMap(this);
+
+                            setMapTile(x, y, platform);
                             platforms[x][y] = 1;
                         }
                     }

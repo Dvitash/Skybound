@@ -10,8 +10,8 @@ import java.awt.*;
  */
 public class Config {
     public static final int TARGET_FPS = 60;
-    public static final String RESOURCES_PATH = "C:\\Users\\zakar\\OneDrive\\Desktop\\SER 225\\Skybound\\Resources/";
-    public static final String MAP_FILES_PATH = "C:\\Users\\zakar\\OneDrive\\Desktop\\SER 225\\Skybound\\MapFiles/";
+    public static final String RESOURCES_PATH = "Resources/";
+    public static final String MAP_FILES_PATH = "MapFiles/";
     public static final int GAME_WINDOW_WIDTH = 800;
     public static final int GAME_WINDOW_HEIGHT = 605;
     public static final Color TRANSPARENT_COLOR = Colors.MAGENTA;
