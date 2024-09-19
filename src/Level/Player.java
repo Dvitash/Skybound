@@ -19,6 +19,7 @@ public abstract class Player extends GameObject {
     protected float jumpDegrade = 0;
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
+    protected boolean pressedBeforeLand = false;
 
     // values used to handle player movement
     protected float jumpForce = 0;
@@ -63,8 +64,9 @@ public abstract class Player extends GameObject {
 
         // if player is currently playing through level (has not won or lost)
         if (levelState == LevelState.RUNNING) {
-            applyGravity();
+            applyGravity(false);
 
+            playerJumping(0);
             // update player's state and current actions, which includes things like determining how much it should move each frame and if its walking or jumping
             do {
                 previousPlayerState = playerState;
@@ -84,6 +86,7 @@ public abstract class Player extends GameObject {
             // update player's animation
             super.update();
         }
+        
 
         // if player has beaten level
         else if (levelState == LevelState.LEVEL_COMPLETED) {
@@ -97,8 +100,13 @@ public abstract class Player extends GameObject {
     }
 
     // add gravity to player, which is a downward force
-    protected void applyGravity() {
-        moveAmountY += gravity + momentumY;
+    protected void applyGravity(boolean crouch) {
+        if (crouch == true){
+            moveAmountY += (gravity + momentumY * 0.5);
+        } else {
+            moveAmountY += gravity + momentumY;
+        }
+
     }
 
     // based on player's current state, call appropriate player state handling method
@@ -114,7 +122,7 @@ public abstract class Player extends GameObject {
                 playerCrouching();
                 break;
             case JUMPING:
-                playerJumping();
+                playerJumping(0);
                 break;
         }
     }
@@ -156,7 +164,6 @@ public abstract class Player extends GameObject {
 
         // if jump key is pressed, player enters JUMPING state
         if (Keyboard.isKeyDown(JUMP_KEY) && !keyLocker.isKeyLocked(JUMP_KEY)) {
-            keyLocker.lockKey(JUMP_KEY);
             playerState = PlayerState.JUMPING;
         }
 
@@ -181,27 +188,43 @@ public abstract class Player extends GameObject {
     }
 
     // player JUMPING state logic
-    protected void playerJumping() {
+    protected void playerJumping(int jumpAmplifier) {
         // if last frame player was on ground and this frame player is still on ground, the jump needs to be setup
         if (previousAirGroundState == AirGroundState.GROUND && airGroundState == AirGroundState.GROUND) {
 
+            keyLocker.lockKey(JUMP_KEY);
             // sets animation to a JUMP animation based on which way player is facing
             currentAnimationName = facingDirection == Direction.RIGHT ? "JUMP_RIGHT" : "JUMP_LEFT";
 
             // player is set to be in air and then player is sent into the air
             airGroundState = AirGroundState.AIR;
             jumpForce = jumpHeight;
+            if (pressedBeforeLand == true){
+                if (jumpForce > 0) {
+                    moveAmountY -= jumpForce;
+                    jumpForce -= jumpDegrade - 2;
+                    if (jumpForce < 0) {
+                        jumpForce = 0;
+                    }
+                }
+                pressedBeforeLand = false;
+            } else {
             if (jumpForce > 0) {
                 moveAmountY -= jumpForce;
-                jumpForce -= jumpDegrade;
+                jumpForce -= jumpDegrade + 2;
                 if (jumpForce < 0) {
                     jumpForce = 0;
                 }
             }
         }
+    }
 
         // if player is in air (currently in a jump) and has more jumpForce, continue sending player upwards
         else if (airGroundState == AirGroundState.AIR) {
+            keyLocker.lockKey(JUMP_KEY);
+            if (Keyboard.isKeyDown(CROUCH_KEY)){
+                applyGravity(true);
+            }
             if (jumpForce > 0) {
                 moveAmountY -= jumpForce;
                 jumpForce -= jumpDegrade;
@@ -225,7 +248,11 @@ public abstract class Player extends GameObject {
 
         // if player last frame was in air and this frame is now on ground, player enters STANDING state
         else if (previousAirGroundState == AirGroundState.AIR && airGroundState == AirGroundState.GROUND) {
+            if (Keyboard.isKeyDown(JUMP_KEY)){
+                pressedBeforeLand = true;
+            }
             playerState = PlayerState.STANDING;
+            
         }
     }
 
@@ -234,7 +261,7 @@ public abstract class Player extends GameObject {
         previousAirGroundState = airGroundState;
 
         playerState = PlayerState.JUMPING;
-        playerJumping();
+        playerJumping(0);
     }
 
     // while player is in air, this is called, and will increase momentumY by a set amount until player reaches terminal velocity
@@ -329,7 +356,7 @@ public abstract class Player extends GameObject {
         // if player is not on ground, player should fall until it touches the ground
         if (airGroundState != AirGroundState.GROUND && map.getCamera().containsDraw(this)) {
             currentAnimationName = "FALL_RIGHT";
-            applyGravity();
+            applyGravity(false);
             increaseMomentum();
             super.update();
             moveYHandleCollision(moveAmountY);

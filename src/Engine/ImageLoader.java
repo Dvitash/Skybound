@@ -18,6 +18,8 @@ public class ImageLoader {
 
     // loads an image and allows the transparent color to be specified
     public static BufferedImage load(String imageFileName, Color transparentColor) {
+        String fullPath = Config.RESOURCES_PATH + imageFileName;
+        System.out.println("Attempting to load file: " + fullPath);  // Debug statement
         try {
             BufferedImage initialImage = ImageIO.read(new File(Config.RESOURCES_PATH + imageFileName));
             return ImageUtils.transformColorToTransparency(initialImage, transparentColor);
