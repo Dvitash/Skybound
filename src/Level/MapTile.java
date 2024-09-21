@@ -57,6 +57,10 @@ public class MapTile extends MapEntity {
 
     public void setLayout(TileLayout tileLayout) { this.tileLayout = tileLayout; }
 
+    public boolean equals(MapTile otherTile) {
+        return (this.tileIndex == otherTile.tileIndex);
+    }
+
     public void update() {
         super.update();
     }

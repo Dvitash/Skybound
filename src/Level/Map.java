@@ -61,8 +61,8 @@ public abstract class Map {
     protected boolean adjustCamera = true;
 
     protected float platformLevel = 0;
-    protected int[][] platforms;
     protected Random random;
+    protected int minY;
 
     // map tiles in map that are animated
     protected ArrayList<MapTile> animatedMapTiles;
@@ -80,13 +80,7 @@ public abstract class Map {
         this.playerStartPosition = new Point(0, 0);
         this.random = new Random();
 
-        // initialize platforms as -1
-        platforms = new int[width][height];
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                platforms[i][j] = -1;
-            }
-        }
+        this.minY = height * tileset.getScaledSpriteHeight();
     }
 
     // sets up map by reading in the map file to create the tile map
@@ -340,76 +334,62 @@ public abstract class Map {
     public void setAdjustCamera(boolean adjustCamera) {
         this.adjustCamera = adjustCamera;
     }
-    
+
+    private int lowestYGenerated = Integer.MAX_VALUE;
     public void GeneratePlatforms(int startPosY) {
-        int platformHeight = (int) Math.round(platforms[0].length / 2.5);
-    
-        for (int x = 0; x < platforms.length; x++) {
-            for (int y = platforms[0].length - 1; y > 0; y--) {
+        if (startPosY > minY) { return; }
+        minY = startPosY;
+
+        int scaledStartPos = (int) startPosY / tileset.getScaledSpriteHeight();
+
+        for (int y = scaledStartPos; y > scaledStartPos - 16; y--) {
+            if (y > lowestYGenerated) { continue; }
+            lowestYGenerated = y;
+            
+            int yLocation = y * tileset.getScaledSpriteHeight();
+            if (yLocation > startPosY) { continue; }
+
+            for (int x = 0; x < width; x++) {
                 int xLocation = x * tileset.getScaledSpriteWidth();
-                int yLocation = y * tileset.getScaledSpriteHeight();
 
-                // ensure the platforms are being placed above the start point
-                if (yLocation > startPosY) {
-                    continue;
-                }
+                MapTile tileAtPosition = getTileByPosition(x, y);
+                if (tileAtPosition == null) { continue; }
 
-                // if the platform is already set, skip
-                if (platforms[x][y] != -1) {
-                    continue;
-                }
+                MapTile airTile = tileset.getTile(1).build(xLocation, yLocation);
+                airTile.setMap(this);
 
-                // if the platform is below the camera, remove the tile
-                if (yLocation > camera.getY() + ScreenManager.getScreenHeight()) {
-                    setMapTile(x, y, tileset.getTile(1).build(xLocation, yLocation));
-                    platforms[x][y] = -2; // mark as skipped and build air
-                    continue;
-                }
+                setMapTile(x, y, airTile);
 
-                if (platforms[x][y] == -1) {
-                    boolean hasNeighbor = false;
-    
-                    // check up
-                    if (y > 0 && platforms[x][y - 1] != -1 && platforms[x][y - 1] != -2) {
-                        hasNeighbor = true;
-                    }
-    
-                    // check down
-                    if (y < platformHeight - 1 && platforms[x][y + 1] != -1 && platforms[x][y + 1] != -2) {
-                        hasNeighbor = true;
-                    }
-    
-                    // check left
-                    if (x > 0 && platforms[x - 1][y] != -1 && platforms[x - 1][y] != -2) {
-                        hasNeighbor = true;
-                    }
-    
-                    // check right
-                    if (x < width - 1 && platforms[x + 1][y] != -1 && platforms[x + 1][y] != -2) {
-                        hasNeighbor = true;
-                    }
-    
-                    // If there are no neighbors, set the map tile
-                    if (!hasNeighbor) {
-                        double chance = this.random.nextDouble(); // Move chance inside the loop
-                        if (chance < 0.75) {
-                            MapTile airTile = tileset.getTile(1).build(xLocation, yLocation);
-                            airTile.setMap(this);
-                            
-                            setMapTile(x, y, airTile);
-                            platforms[x][y] = -2; // mark as skipped and build air
-                        } else {
-                            MapTile platform = tileset.getTile(5).build(xLocation, yLocation);
-                            platform.setMap(this);
+                boolean hasNeighbor = false;
 
-                            setMapTile(x, y, platform);
-                            platforms[x][y] = 1;
-                        }
-                    }
+                // check up
+                MapTile upTile = getTileByPosition(xLocation, yLocation - tileset.getScaledSpriteHeight());
+                if (upTile != null && upTile.getTileIndex() == 5) { hasNeighbor = true; }
+
+                // check down
+                MapTile downTile = getTileByPosition(xLocation, yLocation + tileset.getScaledSpriteHeight());
+                if (downTile != null && downTile.getTileIndex() == 5) { hasNeighbor = true; }
+
+                // check left
+                MapTile leftTile = getTileByPosition(xLocation - tileset.getScaledSpriteWidth(), yLocation);
+                if (leftTile != null && leftTile.getTileIndex() == 5) { hasNeighbor = true; }
+
+                // check right
+                MapTile rightTile = getTileByPosition(xLocation + tileset.getScaledSpriteWidth(), yLocation);
+                if (rightTile != null && rightTile.getTileIndex() == 5) { hasNeighbor = true; }
+
+                // If no neighbors, randomly place platforms
+                double chance = this.random.nextDouble();
+                if (chance < 0.25 && !hasNeighbor) {
+                    MapTile platform = tileset.getTile(5).build(xLocation, yLocation);
+                    platform.setMap(this);
+
+                    setMapTile(x, y, platform);
                 }
             }
         }
     }
+    
     
     public void update(Player player) {
         if (adjustCamera) {
@@ -468,7 +448,6 @@ public abstract class Map {
     // based on the player's current Y position (which in a level can potentially be updated each frame),
     // adjust the player's and camera's positions accordingly in order to properly create the map "scrolling" effect
     private boolean cameraReachedMaxHeight = false;
-    
     private void adjustMovementY(Player player) {
         float playerY = (player.getCalibratedYLocation() + (player.getHeight() / 2));
 
@@ -477,7 +456,7 @@ public abstract class Map {
         // if player goes past center screen (below) and there is more map to show below, push player back to center and move camera upward
         if (playerY > yMidPoint && camera.getEndBoundY() < endBoundY && !cameraReachedMaxHeight) {
             float yMidPointDifference = yMidPoint - playerY;
-            camera.moveY(-yMidPointDifference);
+            camera.moveY(-yMidPointDifference);  
     
             // if camera moved past the bottom of the map as a result from the move above, move camera upwards and push player downwards
             if (camera.getEndBoundY() > endBoundY) {
@@ -494,6 +473,7 @@ public abstract class Map {
             // generate platforms when the camera moves upwards
             if (camera.getY() < startBoundY) {
                 startBoundY = (int) camera.getY();
+
                 GeneratePlatforms(yMidPoint);  
             }
     
