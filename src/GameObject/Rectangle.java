@@ -80,11 +80,11 @@ public class Rectangle implements IntersectableRectangle {
 	}
 
     public float getY() {
-        return y;
+        return this.y;
     }
 
     public float getY1() {
-        return y;
+        return this.y;
     }
 
 	public float getY2() {

@@ -298,7 +298,18 @@ public class GameObject extends AnimatedSprite {
         }
     }
 
-    // gets bounds taking into account map camera position
+    public float getStartPositionX() {
+        return startPositionX;
+    }
+
+    public float getStartPositionY() {
+        return startPositionY;
+    }
+
+    public float getEndEdgeY() {
+        return startPositionY + getHeight();
+    }
+
     public Rectangle getCalibratedBounds() {
         if (map != null) {
             Rectangle bounds = getBounds();

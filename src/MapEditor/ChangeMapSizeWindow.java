@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class ChangeMapSizeWindow {
     private JDialog changeMapSizeWindow;
@@ -184,81 +185,83 @@ public class ChangeMapSizeWindow {
 
     public void resizeMapWidth(int newWidth, MapWidthDirection mapWidthDirection) {
         int oldWidth = map.getWidth();
-        MapTile[] mapTilesSizeChange = new MapTile[map.getHeight() * newWidth];
-
+        ArrayList<MapTile> mapTilesSizeChange = new ArrayList<>(newWidth * map.getHeight());
+    
         if (mapWidthDirection == MapWidthDirection.RIGHT) {
             for (int i = 0; i < map.getHeight(); i++) {
                 for (int j = 0; j < oldWidth; j++) {
                     if (j < newWidth) {
-                        mapTilesSizeChange[j + newWidth * i] = map.getMapTiles()[j + oldWidth * i];
+                        mapTilesSizeChange.add(j + newWidth * i, map.getMapTiles().get(j + oldWidth * i));
                     }
                 }
             }
-        } else /* if (mapHeightDirection == MapHeightDirection.BOTTOM) */ {
+        } else { // if (mapWidthDirection == MapWidthDirection.LEFT)
             int difference = newWidth - oldWidth;
             for (int i = 0; i < map.getHeight(); i++) {
                 for (int j = oldWidth - 1; j >= 0; j--) {
                     if (j + difference >= 0) {
-                        MapTile tile = map.getMapTiles()[j + oldWidth * i];
-                        mapTilesSizeChange[j + difference + newWidth * i] = tile;
+                        MapTile tile = map.getMapTiles().get(j + oldWidth * i);
+                        mapTilesSizeChange.add(j + difference + newWidth * i, tile);
                         tile.moveX(map.getTileset().getScaledSpriteWidth() * difference);
                     }
                 }
             }
         }
-
+    
         for (int i = 0; i < map.getHeight(); i++) {
             for (int j = 0; j < newWidth; j++) {
-                if (mapTilesSizeChange[j + newWidth * i] == null) {
+                if (mapTilesSizeChange.get(j + newWidth * i) == null) {
                     MapTile defaultTile = map.getTileset().getDefaultTile()
                             .build(j * map.getTileset().getScaledSpriteWidth(), i * map.getTileset().getScaledSpriteHeight());
                     defaultTile.setMap(map);
-                    mapTilesSizeChange[j + newWidth * i] = defaultTile;
+                    mapTilesSizeChange.set(j + newWidth * i, defaultTile);
                 }
             }
         }
-
-        map.setMapTiles(mapTilesSizeChange);
+    
+        // map.setMapTiles(mapTilesSizeChange);
         map.setWidth(newWidth);
     }
+    
 
     public void resizeMapHeight(int newHeight, MapHeightDirection mapHeightDirection) {
         int oldHeight = map.getHeight();
-        MapTile[] mapTilesSizeChange = new MapTile[newHeight * map.getWidth()];
-
+        ArrayList<MapTile> mapTilesSizeChange = new ArrayList<>(newHeight * map.getWidth());
+    
         if (mapHeightDirection == MapHeightDirection.BOTTOM) {
             for (int i = 0; i < oldHeight; i++) {
                 if (i < newHeight) {
                     for (int j = 0; j < map.getWidth(); j++) {
-                        mapTilesSizeChange[j + map.getWidth() * i] = map.getMapTiles()[j + map.getWidth() * i];
+                        mapTilesSizeChange.add(j + map.getWidth() * i, map.getMapTiles().get(j + map.getWidth() * i));
                     }
                 }
             }
-        } else /* if (mapHeightDirection == MapHeightDirection.TOP) */ {
+        } else { // if (mapHeightDirection == MapHeightDirection.TOP)
             int difference = newHeight - oldHeight;
             for (int i = oldHeight - 1; i >= 0; i--) {
                 if (i + difference >= 0) {
                     for (int j = 0; j < map.getWidth(); j++) {
-                        MapTile tile = map.getMapTiles()[j + map.getWidth() * i];
-                        mapTilesSizeChange[j + map.getWidth() * (i + difference)] = tile;
+                        MapTile tile = map.getMapTiles().get(j + map.getWidth() * i);
+                        mapTilesSizeChange.add(j + map.getWidth() * (i + difference), tile);
                         tile.moveY(map.getTileset().getScaledSpriteHeight() * difference);
                     }
                 }
             }
         }
-
+    
         for (int i = 0; i < newHeight; i++) {
             for (int j = 0; j < map.getWidth(); j++) {
-                if (mapTilesSizeChange[j + map.getWidth() * i] == null) {
+                if (mapTilesSizeChange.get(j + map.getWidth() * i) == null) {
                     MapTile defaultTile = map.getTileset().getDefaultTile()
                             .build(j * map.getTileset().getScaledSpriteWidth(), i * map.getTileset().getScaledSpriteHeight());
                     defaultTile.setMap(map);
-                    mapTilesSizeChange[j + map.getWidth() * i] = defaultTile;
+                    mapTilesSizeChange.set(j + map.getWidth() * i, defaultTile);
                 }
             }
         }
-
-        map.setMapTiles(mapTilesSizeChange);
+    
+        // map.setMapTiles(mapTilesSizeChange);
         map.setHeight(newHeight);
     }
+    
 }
