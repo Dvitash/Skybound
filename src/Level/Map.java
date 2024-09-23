@@ -10,6 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -25,9 +27,11 @@ import java.util.Scanner;
 
 public abstract class Map {
     // the tile map (map tiles that make up the entire map image)
-    protected MapTile[] mapTiles;
+    // protected MapTile[] mapTiles;
 
-    // width and height of the map in terms of the number of tiles width-wise and height-wise
+    protected HashMap<Point, MapTile> mapTiles;
+
+    // width and height of the map in terms of the number of tiles width-wise and   height-wise
     protected int width;
     protected int height;
 
@@ -61,8 +65,8 @@ public abstract class Map {
     protected boolean adjustCamera = true;
 
     protected float platformLevel = 0;
-    protected int[][] platforms;
     protected Random random;
+    protected int minY;
 
     // map tiles in map that are animated
     protected ArrayList<MapTile> animatedMapTiles;
@@ -80,13 +84,7 @@ public abstract class Map {
         this.playerStartPosition = new Point(0, 0);
         this.random = new Random();
 
-        // initialize platforms as -1
-        platforms = new int[width][height];
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                platforms[i][j] = -1;
-            }
-        }
+        this.minY = height * tileset.getScaledSpriteHeight();
     }
 
     // sets up map by reading in the map file to create the tile map
@@ -140,7 +138,8 @@ public abstract class Map {
         this.height = fileInput.nextInt();
 
         // define array size for map tiles, which is width * height (this is a standard array, NOT a 2D array)
-        this.mapTiles = new MapTile[this.height * this.width];
+        // this.mapTiles = new MapTile[this.height * this.width];
+        this.mapTiles = new HashMap<>();
         fileInput.nextLine();
 
         // read in each tile index from the map file, use the defined tileset to get the associated MapTile to that tileset, and place it in the array
@@ -150,9 +149,8 @@ public abstract class Map {
                 int xLocation = j * tileset.getScaledSpriteWidth();
                 int yLocation = i * tileset.getScaledSpriteHeight();
                 MapTile tile = tileset.getTile(tileIndex).build(xLocation, yLocation);
-                tile.setMap(this);
                 setMapTile(j, i, tile);
-
+    
                 if (tile.isAnimated()) {
                     animatedMapTiles.add(tile);
                 }
@@ -214,61 +212,47 @@ public abstract class Map {
         return height * tileset.getScaledSpriteHeight();
     }
 
-    public MapTile[] getMapTiles() {
+    public HashMap<Point, MapTile> getMapTiles() {
         return mapTiles;
     }
 
-    public void setMapTiles(MapTile[] mapTiles) {
+    public void setMapTiles(HashMap<Point, MapTile> mapTiles) {
         this.mapTiles = mapTiles;
     }
 
     // get specific map tile from tile map
     public MapTile getMapTile(int x, int y) {
-        if (isInBounds(x, y)) {
-            return mapTiles[getConvertedIndex(x, y)];
-        } else {
-            return null;
-        }
+        Point point = new Point(x, y);
+
+        return mapTiles.get(point);
     }
 
     // set specific map tile from tile map to a new map tile
     public void setMapTile(int x, int y, MapTile tile) {
-        if (isInBounds(x, y)) {
-            MapTile oldMapTile = getMapTile(x, y);
-            animatedMapTiles.remove(oldMapTile);
-            mapTiles[getConvertedIndex(x, y)] = tile;
-            if (tile.isAnimated()) {
-                animatedMapTiles.add(tile);
-            }
+        Point point = new Point(x, y);
+    
+        MapTile oldMapTile = mapTiles.get(point);
+        animatedMapTiles.remove(oldMapTile);
+
+        mapTiles.put(point, tile);
+
+        if (tile.isAnimated()) {
+            animatedMapTiles.add(tile);
         }
+
+        tile.setMap(this);
     }
 
     // returns a tile based on a position in the map
     public MapTile getTileByPosition(float xPosition, float yPosition) {
         Point tileIndex = getTileIndexByPosition(xPosition, yPosition);
-        if (isInBounds(Math.round(tileIndex.x), Math.round(tileIndex.y))) {
-            return getMapTile(Math.round(tileIndex.x), Math.round(tileIndex.y));
-        } else {
-            return null;
-        }
+        return mapTiles.get(new Point(Math.round(tileIndex.x), Math.round(tileIndex.y)));
     }
-
-    // returns the index of a tile (x index and y index) based on a position in the map
+    
     public Point getTileIndexByPosition(float xPosition, float yPosition) {
-        int xIndex = Math.round(xPosition) / tileset.getScaledSpriteWidth();
-        int yIndex = Math.round(yPosition) / tileset.getScaledSpriteHeight();
+        int xIndex = Math.round(xPosition / tileset.getScaledSpriteWidth());
+        int yIndex = Math.round(yPosition / tileset.getScaledSpriteHeight());
         return new Point(xIndex, yIndex);
-    }
-
-    // checks if map tile being requested is in bounds of the tile map array
-    private boolean isInBounds(int x, int y) {
-        return x >= 0 && y >= 0 && x < width && y < height;
-    }
-
-    // since tile map array is a standard (1D) array and not a 2D,
-    // instead of doing [y][x] to get a value, instead the same can be achieved with x + width * y
-    private int getConvertedIndex(int x, int y) {
-        return x + width * y;
     }
 
     // list of enemies defined to be a part of the map, should be overridden in a subclass
@@ -340,71 +324,49 @@ public abstract class Map {
     public void setAdjustCamera(boolean adjustCamera) {
         this.adjustCamera = adjustCamera;
     }
-    
+
+    private int lowestYGenerated = Integer.MAX_VALUE;
     public void GeneratePlatforms(int startPosY) {
-        int platformHeight = (int) Math.round(platforms[0].length / 2.5);
+        int scaledStartPos = startPosY / tileset.getScaledSpriteHeight();
+        
+        for (int y = scaledStartPos; y > scaledStartPos - 16; y--) {
+            if (y >= lowestYGenerated) { continue; }
+            lowestYGenerated = y;
     
-        for (int x = 0; x < platforms.length; x++) {
-            for (int y = platforms[0].length - 1; y > 0; y--) {
+            int yLocation = y * tileset.getScaledSpriteHeight();
+    
+            if (yLocation > startPosY) { continue; }
+    
+            for (int x = 0; x < width; x++) {
                 int xLocation = x * tileset.getScaledSpriteWidth();
-                int yLocation = y * tileset.getScaledSpriteHeight();
-
-                // ensure the platforms are being placed above the start point
-                if (yLocation > startPosY) {
-                    continue;
-                }
-
-                // if the platform is already set, skip
-                if (platforms[x][y] != -1) {
-                    continue;
-                }
-
-                // if the platform is below the camera, remove the tile
-                if (yLocation > camera.getY() + ScreenManager.getScreenHeight()) {
-                    setMapTile(x, y, tileset.getTile(1).build(xLocation, yLocation));
-                    platforms[x][y] = -2; // mark as skipped and build air
-                    continue;
-                }
-
-                if (platforms[x][y] == -1) {
+    
+                MapTile tileAtPosition = getMapTile(x, y);
+                if (tileAtPosition == null || tileAtPosition.getTileIndex() != 5) {
+                    // place air if not placed already
+                    if (getMapTile(x, y) == null) {
+                        MapTile airTile = tileset.getTile(1).build(xLocation, yLocation);
+                        setMapTile(x, y, airTile);
+                    }
+    
                     boolean hasNeighbor = false;
     
-                    // check up
-                    if (y > 0 && platforms[x][y - 1] != -1 && platforms[x][y - 1] != -2) {
+                    // check neighbors (up, down, left, right)
+                    MapTile upTile = getMapTile(x, y - 1);
+                    MapTile downTile = getMapTile(x, y + 1);
+                    MapTile leftTile = getMapTile(x - 1, y);
+                    MapTile rightTile = getMapTile(x + 1, y);
+    
+                    if ((upTile != null && upTile.getTileIndex() == 5) ||
+                        (downTile != null && downTile.getTileIndex() == 5) ||
+                        (leftTile != null && leftTile.getTileIndex() == 5) ||
+                        (rightTile != null && rightTile.getTileIndex() == 5)) {
                         hasNeighbor = true;
                     }
     
-                    // check down
-                    if (y < platformHeight - 1 && platforms[x][y + 1] != -1 && platforms[x][y + 1] != -2) {
-                        hasNeighbor = true;
-                    }
-    
-                    // check left
-                    if (x > 0 && platforms[x - 1][y] != -1 && platforms[x - 1][y] != -2) {
-                        hasNeighbor = true;
-                    }
-    
-                    // check right
-                    if (x < width - 1 && platforms[x + 1][y] != -1 && platforms[x + 1][y] != -2) {
-                        hasNeighbor = true;
-                    }
-    
-                    // If there are no neighbors, set the map tile
-                    if (!hasNeighbor) {
-                        double chance = this.random.nextDouble(); // Move chance inside the loop
-                        if (chance < 0.75) {
-                            MapTile airTile = tileset.getTile(1).build(xLocation, yLocation);
-                            airTile.setMap(this);
-                            
-                            setMapTile(x, y, airTile);
-                            platforms[x][y] = -2; // mark as skipped and build air
-                        } else {
-                            MapTile platform = tileset.getTile(5).build(xLocation, yLocation);
-                            platform.setMap(this);
-
-                            setMapTile(x, y, platform);
-                            platforms[x][y] = 1;
-                        }
+                    double chance = this.random.nextDouble();
+                    if (chance < 0.15 && !hasNeighbor) { // default chance of 15%
+                        MapTile platform = tileset.getTile(5).build(xLocation, yLocation);
+                        setMapTile(x, y, platform);
                     }
                 }
             }
@@ -414,90 +376,71 @@ public abstract class Map {
     public void update(Player player) {
         if (adjustCamera) {
             adjustMovementY(player);
-            adjustMovementX(player);
         }
 
         camera.update(player);
     }
 
-    // based on the player's current X position (which in a level can potentially be updated each frame),
-    // adjust the player's and camera's positions accordingly in order to properly create the map "scrolling" effect
-    private void adjustMovementX(Player player) {
-        // // if player goes past center screen (on the right side) and there is more map to show on the right side, push player back to center and move camera forward
-        // if ((player.getCalibratedXLocation() + (player.getWidth() / 2)) > xMidPoint && camera.getEndBoundX() < endBoundX) {
-        //     float xMidPointDifference = xMidPoint - (player.getCalibratedXLocation() + (player.getWidth() / 2));
-        //     camera.moveX(-xMidPointDifference);
-
-        //     // if camera moved past the right edge of the map as a result from the move above, move camera back and push player forward
-        //     if (camera.getEndBoundX() > endBoundX) {
-        //         float cameraDifference = camera.getEndBoundX() - endBoundX;
-        //         camera.moveX(-cameraDifference);
-        //     }
-        // }
-        // // if player goes past center screen (on the left side) and there is more map to show on the left side, push player back to center and move camera backwards
-        // else if ((player.getCalibratedXLocation() + (player.getWidth() / 2)) < xMidPoint && camera.getX() > startBoundX) {
-        //     float xMidPointDifference = xMidPoint - (player.getCalibratedXLocation() + (player.getWidth() / 2));
-        //     camera.moveX(-xMidPointDifference);
-
-        //     // if camera moved past the left edge of the map as a result from the move above, move camera back and push player backward
-        //     if (camera.getX() < startBoundX) {
-        //         float cameraDifference = startBoundX - camera.getX();
-        //         camera.moveX(cameraDifference);
-        //     }
-        // }
+    public boolean UpdateMapTileBounds() {
+        float cameraY = camera.getEndBoundY();
+        boolean deleted = false;
+    
+        Iterator<MapTile> iterator = mapTiles.values().iterator();
+    
+        while (iterator.hasNext()) {
+            MapTile tile = iterator.next();
+            if (tile.getY() > cameraY) {
+                iterator.remove();
+                deleted = true;
+            }
+        }
+    
+        return deleted;
     }
-
-    // Function to move the entire map's tiles on the y position
-    // private void moveMapTilesY(int deltaY) {
-    //     for (int i = 0; i < mapTiles.length; i++) {
-    //         if (mapTiles[i] != null) {
-    //             mapTiles[i].setY(mapTiles[i].getY() + deltaY);
-    //         }
-    //     }
-
-    //     // Update the positions of animated map tiles as well
-    //     for (MapTile animatedTile : animatedMapTiles) {
-    //         animatedTile.setY(animatedTile.getY() + deltaY);
-    //     }
-
-    //     for(EnhancedMapTile tile : enhancedMapTiles) {
-    //         tile.setY(tile.getY() + deltaY);
-    //     }
-    // }
+    
 
     // based on the player's current Y position (which in a level can potentially be updated each frame),
     // adjust the player's and camera's positions accordingly in order to properly create the map "scrolling" effect
-    private boolean cameraReachedMaxHeight = false;
-    
+    private float previousPlayerY = -1;
     private void adjustMovementY(Player player) {
-        float playerY = (player.getCalibratedYLocation() + (player.getHeight() / 2));
+        float playerY = (player.getY() + (player.getHeight() / 2));
 
-        yMidPoint = (int) (camera.getY() + (ScreenManager.getScreenHeight() / 2));
+        yMidPoint = (int) camera.getY() + (ScreenManager.getScreenHeight() / 2);
+        GeneratePlatforms(yMidPoint); 
 
-        // if player goes past center screen (below) and there is more map to show below, push player back to center and move camera upward
-        if (playerY > yMidPoint && camera.getEndBoundY() < endBoundY && !cameraReachedMaxHeight) {
-            float yMidPointDifference = yMidPoint - playerY;
-            camera.moveY(-yMidPointDifference);
+        // // if player goes past center screen (below) and there is more map to show below, push player back to center and move camera upward
+        // if (playerY > yMidPoint && camera.getEndBoundY() < endBoundY && !cameraReachedMaxHeight) {
+        //     float yMidPointDifference = yMidPoint - playerY;
+        //     // camera.moveY(-yMidPointDifference);  
+        //     // MoveMap(yMidPointDifference);
     
-            // if camera moved past the bottom of the map as a result from the move above, move camera upwards and push player downwards
-            if (camera.getEndBoundY() > endBoundY) {
-                float cameraDifference = camera.getEndBoundY() - endBoundY;
-                camera.moveY(-cameraDifference);
-            }
-        }
+        //     // if camera moved past the bottom of the map as a result from the move above, move camera upwards and push player downwards
+        //     if (camera.getEndBoundY() > endBoundY) {
+        //         float cameraDifference = camera.getEndBoundY() - endBoundY;
+        //         // camera.  moveY(-cameraDifference);
+
+        //         // MoveMap(cameraDifference);
+        //     }
+        // }
         
-        // if player goes past center screen (above) and there is more map to show above, push player back to center and move map tiles downwards
-        else if (playerY < yMidPoint) {
-            float yMidPointDifference = yMidPoint - playerY;
-            camera.moveY(-yMidPointDifference);
-
-            // generate platforms when the camera moves upwards
-            if (camera.getY() < startBoundY) {
-                startBoundY = (int) camera.getY();
-                GeneratePlatforms(yMidPoint);  
+        // if player goes above center of the screen, move map downwards
+        if (playerY < yMidPoint) {
+            float yMidPointDifference;
+            
+            if (previousPlayerY == -1) {
+                previousPlayerY = playerY;
             }
     
-            cameraReachedMaxHeight = true;
+            yMidPointDifference = previousPlayerY - playerY;
+            previousPlayerY = playerY;
+
+            if (yMidPointDifference > 0) {
+                camera.moveUp(yMidPointDifference);
+            }
+
+            if (UpdateMapTileBounds()) {
+                GeneratePlatforms(yMidPoint);
+            }
         }
     }
 

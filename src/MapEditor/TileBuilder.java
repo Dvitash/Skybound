@@ -70,7 +70,7 @@ public class TileBuilder extends JPanel {
     }
 
     public void draw() {
-        for (MapTile tile : map.getMapTiles()) {
+        for (MapTile tile : map.getMapTiles().values()) {
             tile.draw(graphicsHandler);
         }
 
@@ -112,15 +112,17 @@ public class TileBuilder extends JPanel {
     }
 
     public void tileSelected(Point selectedPoint) {
-        int selectedTileIndex = getSelectedTileIndex(selectedPoint);
-        if (selectedTileIndex != -1) {
-            MapTile oldMapTile = map.getMapTiles()[selectedTileIndex];
-            MapTile newMapTile =  map.getTileset().getTile(controlPanelHolder.getSelectedTileIndex()).build(oldMapTile.getX(), oldMapTile.getY());
-            newMapTile.setMap(map);
-            map.getMapTiles()[selectedTileIndex] = newMapTile;
+        // int selectedTileIndex = getSelectedTileIndex(selectedPoint);
+        // if (selectedTileIndex != -1) {
+        //     // MapTile oldMapTile = map.getMapTiles()[selectedTileIndex];
+        //     MapTile oldMapTile = map.getMapTiles().get(selectedTileIndex);
+        //     MapTile newMapTile =  map.getTileset().getTile(controlPanelHolder.getSelectedTileIndex()).build(oldMapTile.getX(), oldMapTile.getY());
+        //     newMapTile.setMap(map);
+        //     // map.getMapTiles()[selectedTileIndex] = newMapTile;
+        //     map.getMapTiles().set(selectedTileIndex, newMapTile);
 
-        }
-        repaint();
+        // }
+        // repaint();
     }
 
     public void tileHovered(Point hoveredPoint) {
@@ -134,24 +136,25 @@ public class TileBuilder extends JPanel {
     }
 
     protected MapTile getHoveredTile(Point mousePoint) {
-        for (MapTile mapTile : map.getMapTiles()) {
+        for (MapTile mapTile : map.getMapTiles().values()) {
             if (isPointInTile(mousePoint, mapTile)) {
                 return mapTile;
             }
         }
+
         return null;
     }
 
-    protected int getSelectedTileIndex(Point mousePoint) {
-        MapTile[] mapTiles = map.getMapTiles();
-        for (int i = 0; i < mapTiles.length; i++) {
-            if (isPointInTile(mousePoint, mapTiles[i])) {
-                return i;
-            }
-        }
-        return -1;
+    protected Point getSelectedTileIndex(Point mousePoint) {
+        // Point tilePoint = map.getTileIndexByPosition((float) mousePoint.getX(), (float) mousePoint.getY());
+        
+        // if (map.getMapTiles().containsKey(tilePoint)) {
+        //     return tilePoint; // Return the tile's Point (x, y)
+        // }
+    
+        return null; // Return null if no tile is found at this position
     }
-
+    
     protected boolean isPointInTile(Point point, MapTile tile) {
         return (point.x >= tile.getX() && point.x <= tile.getX() + tile.getWidth() &&
                 point.y >= tile.getY() && point.y <= tile.getY() + tile.getHeight());
