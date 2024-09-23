@@ -179,6 +179,21 @@ public class Rectangle implements IntersectableRectangle {
 		return new Rectangle(x, y, getWidth(), getHeight());
 	}
 
+	// Check if this rectangle is near another rectangle within a specified distance threshold
+    public boolean isNear(IntersectableRectangle other, float threshold) {
+        Rectangle thisRect = getIntersectRectangle();
+        Rectangle otherRect = other.getIntersectRectangle();
+
+        // Calculate the distances between the edges of the two rectangles
+        float leftDistance = Math.abs(thisRect.getX1() - otherRect.getX2());
+        float rightDistance = Math.abs(thisRect.getX2() - otherRect.getX1());
+        float topDistance = Math.abs(thisRect.getY1() - otherRect.getY2());
+        float bottomDistance = Math.abs(thisRect.getY2() - otherRect.getY1());
+
+        // Check if any of these distances are less than or equal to the threshold
+        return leftDistance <= threshold || rightDistance <= threshold || topDistance <= threshold || bottomDistance <= threshold;
+    }
+
 	// check if this intersects with another rectangle
 	public boolean intersects(IntersectableRectangle other) {
 		Rectangle intersectRectangle = getIntersectRectangle();
@@ -191,6 +206,7 @@ public class Rectangle implements IntersectableRectangle {
 	public boolean touching(IntersectableRectangle other) {
 		Rectangle intersectRectangle = getIntersectRectangle();
 		Rectangle otherIntersectRectangle = other.getIntersectRectangle();
+
 		return Math.round(intersectRectangle.getX1()) <= Math.round(otherIntersectRectangle.getX2() + 1) && Math.round(intersectRectangle.getX2() + 1) >= Math.round(otherIntersectRectangle.getX1()) &&
 				Math.round(intersectRectangle.getY1()) <= Math.round(otherIntersectRectangle.getY2() + 1) && Math.round(intersectRectangle.getY2() + 1) >= Math.round(otherIntersectRectangle.getY1());
 	}

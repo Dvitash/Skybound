@@ -150,8 +150,6 @@ public abstract class Map {
                 int yLocation = i * tileset.getScaledSpriteHeight();
                 MapTile tile = tileset.getTile(tileIndex).build(xLocation, yLocation);
                 setMapTile(j, i, tile);
-
-                System.out.println(j + " " + i);
     
                 if (tile.isAnimated()) {
                     animatedMapTiles.add(tile);
@@ -235,12 +233,14 @@ public abstract class Map {
     
         MapTile oldMapTile = mapTiles.get(point);
         animatedMapTiles.remove(oldMapTile);
+
         mapTiles.put(point, tile);
-        tile.setMap(this);
 
         if (tile.isAnimated()) {
             animatedMapTiles.add(tile);
         }
+
+        tile.setMap(this);
     }
 
     // returns a tile based on a position in the map
@@ -250,8 +250,8 @@ public abstract class Map {
     }
     
     public Point getTileIndexByPosition(float xPosition, float yPosition) {
-        int xIndex = Math.round(xPosition) / tileset.getScaledSpriteWidth();
-        int yIndex = Math.round(yPosition) / tileset.getScaledSpriteHeight();
+        int xIndex = Math.round(xPosition / tileset.getScaledSpriteWidth());
+        int yIndex = Math.round(yPosition / tileset.getScaledSpriteHeight());
         return new Point(xIndex, yIndex);
     }
 
@@ -330,7 +330,7 @@ public abstract class Map {
         int scaledStartPos = startPosY / tileset.getScaledSpriteHeight();
         
         for (int y = scaledStartPos; y > scaledStartPos - 16; y--) {
-            if (y > lowestYGenerated) { continue; }
+            if (y >= lowestYGenerated) { continue; }
             lowestYGenerated = y;
     
             int yLocation = y * tileset.getScaledSpriteHeight();
@@ -342,13 +342,15 @@ public abstract class Map {
     
                 MapTile tileAtPosition = getMapTile(x, y);
                 if (tileAtPosition == null || tileAtPosition.getTileIndex() != 5) {
-                    MapTile airTile = tileset.getTile(1).build(xLocation, yLocation);
-                    airTile.setMap(this);
-                    setMapTile(x, y, airTile);
+                    // place air if not placed already
+                    if (getMapTile(x, y) == null) {
+                        MapTile airTile = tileset.getTile(1).build(xLocation, yLocation);
+                        setMapTile(x, y, airTile);
+                    }
     
                     boolean hasNeighbor = false;
     
-                    // Check neighbors (up, down, left, right)
+                    // check neighbors (up, down, left, right)
                     MapTile upTile = getMapTile(x, y - 1);
                     MapTile downTile = getMapTile(x, y + 1);
                     MapTile leftTile = getMapTile(x - 1, y);
@@ -361,20 +363,15 @@ public abstract class Map {
                         hasNeighbor = true;
                     }
     
-                    // If no neighbors, randomly place platforms
                     double chance = this.random.nextDouble();
-                    if (chance < 0.25 && !hasNeighbor) {
+                    if (chance < 0.15 && !hasNeighbor) { // default chance of 15%
                         MapTile platform = tileset.getTile(5).build(xLocation, yLocation);
-                        platform.setMap(this);
                         setMapTile(x, y, platform);
                     }
                 }
             }
         }
     }
-    
-    
-    
     
     public void update(Player player) {
         if (adjustCamera) {
