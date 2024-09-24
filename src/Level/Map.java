@@ -397,7 +397,6 @@ public abstract class Map {
     
         return deleted;
     }
-    
 
     // based on the player's current Y position (which in a level can potentially be updated each frame),
     // adjust the player's and camera's positions accordingly in order to properly create the map "scrolling" effect
