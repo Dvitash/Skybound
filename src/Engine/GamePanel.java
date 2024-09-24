@@ -10,7 +10,7 @@ import java.awt.*;
 /*
  * This is where the game loop process and render back buffer is setup
  */
-public class GamePanel extends JPanel {
+public class GamePanel extends JPanel{
 	// loads Screens on to the JPanel
 	// each screen has its own update and draw methods defined to handle a "section" of the game.
 	private ScreenManager screenManager;
@@ -55,6 +55,7 @@ public class GamePanel extends JPanel {
 		GameLoop gameLoop = new GameLoop(this);
 		gameLoopProcess = new Thread(gameLoop.getGameLoopProcess());
 	}
+
 
 	// this is called later after instantiation, and will initialize screenManager
 	// this had to be done outside of the constructor because it needed to know the JPanel's width and height, which aren't available in the constructor
@@ -137,4 +138,6 @@ public class GamePanel extends JPanel {
 			draw();
 		}
 	}
+
+	
 }
