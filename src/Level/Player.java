@@ -8,7 +8,11 @@ import GameObject.SpriteSheet;
 import Utils.AirGroundState;
 import Utils.Direction;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public abstract class Player extends GameObject {
     // values that affect player movement
@@ -20,6 +24,8 @@ public abstract class Player extends GameObject {
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
     protected boolean pressedBeforeLand = false;
+
+    protected int score = 0;
 
     // values used to handle player movement
     protected float jumpForce = 0;
@@ -58,6 +64,34 @@ public abstract class Player extends GameObject {
         levelState = LevelState.RUNNING;
     }
 
+    private void SaveScore() {
+        System.out.println("Score: " + score);
+
+        try {
+            File myObj = new File("GameSaves\\scoresaves.txt");
+
+            Scanner scanner = new Scanner(myObj);
+            FileWriter writer = new FileWriter(myObj);
+
+            // write the score only if the current score is greater
+            if (scanner.hasNextInt()) {
+                int oldScore = scanner.nextInt();
+
+                if (oldScore < score) {
+                    writer.write(Integer.toString(score));
+                }
+            } else { // write the score if there is no score
+                writer.write(Integer.toString(score));
+            }
+            
+            writer.close();
+            scanner.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
     public void update() {
         moveAmountX = 0;
         moveAmountY = 0;
@@ -82,6 +116,13 @@ public abstract class Player extends GameObject {
             handlePlayerAnimation();
 
             updateLockedKeys();
+
+            score = Math.round(map.GetTotalMovement() / 25);
+
+            if (getY() > map.getEndBoundY()) {
+                levelState = LevelState.PLAYER_DEAD;
+                SaveScore();
+            }
 
             // update player's animation
             super.update();
