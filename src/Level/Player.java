@@ -117,7 +117,7 @@ public abstract class Player extends GameObject {
 
             updateLockedKeys();
 
-            score = Math.round(map.GetTotalMovement() / 25);
+            score = Math.round(map.GetTotalMovement() / 20);
 
             if (getY() > map.getEndBoundY()) {
                 levelState = LevelState.PLAYER_DEAD;
