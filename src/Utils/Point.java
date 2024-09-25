@@ -1,5 +1,7 @@
 package Utils;
 
+import java.util.Objects;
+
 // Represents a Point on a 2D plane, has some "point math" methods
 public class Point {
     public final float x;
@@ -36,5 +38,18 @@ public class Point {
 
     public String toString() {
         return String.format("(%s, %s)", x, y);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Point point = (Point) obj;
+        return x == point.x && y == point.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 }

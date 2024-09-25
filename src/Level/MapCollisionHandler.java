@@ -59,13 +59,20 @@ public class MapCollisionHandler {
         // check map tiles in surrounding radius for potential collision
         int numberOfTilesToCheck = Math.max(gameObject.getBounds().getWidth() / map.getTileset().getScaledSpriteWidth(), 1);
         float edgeBoundY = direction == Direction.UP ? gameObject.getBounds().getY() : gameObject.getBounds().getY2();
+        
         Point tileIndex = map.getTileIndexByPosition(gameObject.getBounds().getX1(), edgeBoundY);
+        
         MapTile entityCollidedWith = null;
         for (int i = -1; i <= numberOfTilesToCheck + 1; i++) {
-            MapTile mapTile = map.getMapTile(Math.round(tileIndex.x) + i, Math.round(tileIndex.y));
+            int tileX = Math.round(tileIndex.x) + i;
+            int tileY = Math.round(tileIndex.y);
+            
+            MapTile mapTile = map.getMapTile(tileX, tileY);
+
             if (mapTile != null && hasCollidedWithMapEntity(gameObject, mapTile, direction)) {
-                entityCollidedWith = mapTile;
                 float adjustedPositionY = gameObject.getY();
+                entityCollidedWith = mapTile;
+
                 if (direction == Direction.DOWN) {
                     float boundsDifference = gameObject.getY2() - gameObject.getBounds().getY2();
                     adjustedPositionY = mapTile.getBounds().getY1() - gameObject.getHeight() + boundsDifference;
@@ -73,6 +80,7 @@ public class MapCollisionHandler {
                     float boundsDifference = gameObject.getBounds().getY1() - gameObject.getY();
                     adjustedPositionY = (mapTile.getBounds().getY2() + 1) - boundsDifference;
                 }
+
                 return new MapCollisionCheckResult(new Point(gameObject.getX(), adjustedPositionY), entityCollidedWith);
             }
         }
@@ -102,7 +110,7 @@ public class MapCollisionHandler {
         // if entity that is being checked for collision against is a map tile
         // collision is determined based on tile type
         if (mapEntity instanceof MapTile) {
-            MapTile mapTile = (MapTile)mapEntity;
+            MapTile mapTile = (MapTile) mapEntity;
             switch (mapTile.getTileType()) {
                 case PASSABLE:
                     return false;

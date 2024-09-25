@@ -18,9 +18,9 @@ public class TestMap extends Map {
 
     public TestMap() {
         super("test_map.txt", new CommonTileset());
-        this.playerStartPosition = getMapTile(2, 11).getLocation();
+        this.playerStartPosition = getMapTile(6, 8).getLocation();
     }
-
+/* 
     @Override
     public ArrayList<Enemy> loadEnemies() {
         ArrayList<Enemy> enemies = new ArrayList<>();
@@ -64,4 +64,5 @@ public class TestMap extends Map {
 
         return npcs;
     }
+*/
 }

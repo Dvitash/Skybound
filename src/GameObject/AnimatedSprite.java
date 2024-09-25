@@ -243,6 +243,10 @@ public class AnimatedSprite implements IntersectableRectangle {
         return currentFrame.intersects(other);
     }
 
+	public boolean isNear(IntersectableRectangle other, float threshold) {
+        return currentFrame.isNear(other, threshold);
+    }
+
 	public boolean touching(IntersectableRectangle other) { return currentFrame.touching(other); }
 
 	@Override
