@@ -344,7 +344,7 @@ public abstract class Map {
                 if (tileAtPosition == null || tileAtPosition.getTileIndex() != 5) {
                     // place air if not placed already
                     if (getMapTile(x, y) == null) {
-                        MapTile airTile = tileset.getTile(1).build(xLocation, yLocation);
+                        MapTile airTile = tileset.getTile(0).build(xLocation, yLocation);
                         setMapTile(x, y, airTile);
                     }
     
@@ -356,16 +356,16 @@ public abstract class Map {
                     MapTile leftTile = getMapTile(x - 1, y);
                     MapTile rightTile = getMapTile(x + 1, y);
     
-                    if ((upTile != null && upTile.getTileIndex() == 5) ||
-                        (downTile != null && downTile.getTileIndex() == 5) ||
-                        (leftTile != null && leftTile.getTileIndex() == 5) ||
-                        (rightTile != null && rightTile.getTileIndex() == 5)) {
+                    if ((upTile != null && upTile.getTileIndex() == 12) ||
+                        (downTile != null && downTile.getTileIndex() == 12) ||
+                        (leftTile != null && leftTile.getTileIndex() == 12) ||
+                        (rightTile != null && rightTile.getTileIndex() == 12)) {
                         hasNeighbor = true;
                     }
     
                     double chance = this.random.nextDouble();
                     if (chance < 0.15 && !hasNeighbor) { // default chance of 15%
-                        MapTile platform = tileset.getTile(5).build(xLocation, yLocation);
+                        MapTile platform = tileset.getTile(12).build(xLocation, yLocation);
                         setMapTile(x, y, platform);
                     }
                 }
