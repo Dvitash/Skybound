@@ -50,7 +50,9 @@ public class Enemy extends MapEntity {
                 mapEntityStatus = MapEntityStatus.REMOVED;
             } else {
                 touchedPlayer(player);
-            }
+             
+            } 
+            
         }
     }
 
@@ -58,7 +60,5 @@ public class Enemy extends MapEntity {
     public void touchedPlayer(Player player) {
         player.hurtPlayer(this);
     }
-    public void touchedEnemy(Enemy enemy){
-        mapEntityStatus = MapEntityStatus.REMOVED;
-    }
+    
 }

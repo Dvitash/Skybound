@@ -44,6 +44,10 @@ public class MapEntity extends GameObject {
         updateCurrentFrame();
     }
 
+    public void update(Player player){
+        super.update();
+    }
+
     public MapEntityStatus getMapEntityStatus() {
         return mapEntityStatus;
     }
@@ -58,5 +62,9 @@ public class MapEntity extends GameObject {
 
     public void setIsUpdateOffScreen(boolean isUpdateOffScreen) {
         this.isUpdateOffScreen = isUpdateOffScreen;
+    }
+
+    public void touchedEnemy(Enemy enemy){
+        mapEntityStatus = MapEntityStatus.REMOVED;
     }
 }

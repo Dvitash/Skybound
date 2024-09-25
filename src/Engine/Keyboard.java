@@ -4,6 +4,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 
 /*
  * This class is used throughout the engine for detecting keyboard state
@@ -75,6 +77,10 @@ public class Keyboard {
     	}
     	return true;
     }
+
+	//public final static MouseListener mouseListener = new MouseListener() {
+		
+	//};
 
     // maps a Key enum type to its keycode
 	// Java keycodes were found here: https://stackoverflow.com/a/31637206
