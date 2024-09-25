@@ -11,8 +11,7 @@ import Utils.Direction;
 import Utils.Point;
 
 import java.util.ArrayList;
-
-import Enemies.Fireball;
+ 
 
 public abstract class Player extends GameObject {
     // values that affect player movement
@@ -174,7 +173,7 @@ public abstract class Player extends GameObject {
             Bullet bullet = new Bullet(new Point(bulletX, bulletY), movementSpeed, 60);
 
             // add fireball enemy to the map for it to spawn in the level
-            map.addGameObject(bullet);
+            map.addEnemy(bullet);
         }
     }
 

@@ -4,8 +4,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseEvent;
 
 /*
  * This class is used throughout the engine for detecting keyboard state

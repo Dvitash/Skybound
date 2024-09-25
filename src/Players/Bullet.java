@@ -13,7 +13,7 @@ import Utils.Point;
 
 import java.util.HashMap;
 
-public class Bullet extends MapEntity {
+public class Bullet extends Enemy {
 
     private float movementSpeed;
     private int existenceFrames;
@@ -28,7 +28,7 @@ public class Bullet extends MapEntity {
         initialize();
     }
 
-    public void update(Player player, Enemy enemy) {
+    public void update(Player player) {
         // if timer is up, set map entity status to REMOVED
         // the camera class will see this next frame and remove it permanently from the map
         if (existenceFrames == 0) {
@@ -38,7 +38,6 @@ public class Bullet extends MapEntity {
             moveXHandleCollision(movementSpeed);
             super.update(player);
         }
-        touchedEnemy(enemy);
         existenceFrames--;
     }
 
