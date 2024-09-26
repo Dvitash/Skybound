@@ -119,15 +119,6 @@ public class MapCollisionHandler {
                 case JUMP_THROUGH_PLATFORM:
                     return direction == Direction.DOWN && gameObject.intersects(mapTile) &&
                             Math.round(gameObject.getBounds().getY2()) == Math.round(mapTile.getBounds().getY1());
-                case BREAKAWAY:
-                    boolean collided = direction == Direction.DOWN && gameObject.intersects(mapTile) &&
-                    Math.round(gameObject.getBounds().getY2()) == Math.round(mapTile.getBounds().getY1());
-
-                    if (collided) {
-                        mapEntity.setMapEntityStatus(MapEntityStatus.REMOVED);
-                    }
-
-                    return collided;
                 case WATER:
                     return false;
                 case SLOPE:
