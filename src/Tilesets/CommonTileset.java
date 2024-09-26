@@ -122,7 +122,7 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder breakingWoodTile = new MapTileBuilder(breakingWoodFrame)
-                .withTileType(TileType.JUMP_THROUGH_PLATFORM);
+                .withTileType(TileType.BREAKAWAY);
 
         PlatformIndexes.platforms.add(breakingWoodTile);
         mapTiles.add(breakingWoodTile);

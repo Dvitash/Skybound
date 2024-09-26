@@ -98,6 +98,10 @@ public class GameObject extends AnimatedSprite {
         }
     }
 
+    public Map getMap() {
+        return this.map;
+    }
+
     // move game object along the y axis
     // will stop object from moving based on map collision logic (such as if it hits a solid tile)
     public float moveYHandleCollision(float dy) {

@@ -81,6 +81,22 @@ public class MapCollisionHandler {
                     adjustedPositionY = (mapTile.getBounds().getY2() + 1) - boundsDifference;
                 }
 
+                if (mapTile.getTileType() == TileType.BREAKAWAY) {
+                    int x = Math.round(mapTile.getX() / mapTile.getMap().tileset.getScaledSpriteWidth());
+                    int y = Math.round(mapTile.getY() / mapTile.getMap().tileset.getScaledSpriteHeight());
+
+                    MapTile tile = mapTile.getMap().tileset.getTile(0).build(x, y);
+
+                    mapTile.getMap().setMapTile(x, y, tile);
+
+                    if (gameObject instanceof Player) {
+                        Player player = (Player) gameObject;
+
+                        // player.bounce();
+                        // player.playerJumping(1);
+                    }
+                }
+
                 return new MapCollisionCheckResult(new Point(gameObject.getX(), adjustedPositionY), entityCollidedWith);
             }
         }
@@ -117,6 +133,9 @@ public class MapCollisionHandler {
                 case NOT_PASSABLE:
                     return gameObject.intersects(mapTile);
                 case JUMP_THROUGH_PLATFORM:
+                    return direction == Direction.DOWN && gameObject.intersects(mapTile) &&
+                            Math.round(gameObject.getBounds().getY2()) == Math.round(mapTile.getBounds().getY1());
+                case BREAKAWAY:
                     return direction == Direction.DOWN && gameObject.intersects(mapTile) &&
                             Math.round(gameObject.getBounds().getY2()) == Math.round(mapTile.getBounds().getY1());
                 case WATER:
