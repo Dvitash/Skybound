@@ -52,7 +52,7 @@ public class Bullet extends Enemy {
     @Override
     public void touchedEnemy(Enemy enemy) {
         // if bullet touches enemy, it disappears and kills enemy
-        if (this.getBounds().intersects(enemy.getBounds())) { 
+        if (this.getBounds().intersects(enemy.getBounds())) {
             super.touchedEnemy(enemy);
             this.mapEntityStatus = MapEntityStatus.REMOVED;
         }
