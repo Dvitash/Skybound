@@ -64,28 +64,28 @@ public abstract class Player extends GameObject {
         levelState = LevelState.RUNNING;
     }
 
-    private void SaveScore() {
+        private void SaveScore() {
         System.out.println("Score: " + score);
-
+    
         try {
-            File myObj = new File("GameSaves\\scoresaves.txt");
-
-            Scanner scanner = new Scanner(myObj);
-            FileWriter writer = new FileWriter(myObj);
-
-            // write the score only if the current score is greater
-            if (scanner.hasNextInt()) {
-                int oldScore = scanner.nextInt();
-
-                if (oldScore < score) {
-                    writer.write(Integer.toString(score));
+            File scoreFile = new File("GameSaves\\scoresaves.txt");
+            scoreFile.getParentFile().mkdirs();
+    
+            int oldScore = 0;
+            if (scoreFile.exists()) {
+                Scanner scanner = new Scanner(scoreFile);
+                if (scanner.hasNextInt()) {
+                    oldScore = scanner.nextInt();
                 }
-            } else { // write the score if there is no score
-                writer.write(Integer.toString(score));
+                scanner.close();
             }
-            
-            writer.close();
-            scanner.close();
+    
+            // only write new score if it is greater than the old score
+            if (score > oldScore) {
+                FileWriter writer = new FileWriter(scoreFile);
+                writer.write(Integer.toString(score));
+                writer.close();
+            }
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
@@ -138,6 +138,10 @@ public abstract class Player extends GameObject {
         else if (levelState == LevelState.PLAYER_DEAD) {
             updatePlayerDead();
         }
+    }
+
+    public int getScore() {
+        return this.score;
     }
 
     // add gravity to player, which is a downward force
