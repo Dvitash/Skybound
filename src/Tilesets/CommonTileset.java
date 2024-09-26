@@ -124,7 +124,7 @@ public class CommonTileset extends Tileset {
         MapTileBuilder breakingWoodTile = new MapTileBuilder(breakingWoodFrame)
                 .withTileType(TileType.BREAKAWAY);
 
-        PlatformIndexes.platforms.add(breakingWoodTile);
+        PlatformIndexes.addPlatform(breakingWoodTile, 25);
         mapTiles.add(breakingWoodTile);
 
         // cloud
@@ -134,7 +134,7 @@ public class CommonTileset extends Tileset {
 
         MapTileBuilder cloudTile = new MapTileBuilder(cloudFrame);
 
-        PlatformIndexes.platforms.add(cloudTile);
+        PlatformIndexes.addPlatform(cloudTile, 15);
         mapTiles.add(cloudTile);
 
         // middle wood platform
@@ -146,7 +146,7 @@ public class CommonTileset extends Tileset {
         MapTileBuilder midWoodTile = new MapTileBuilder(midWoodFrame)
                 .withTileType(TileType.JUMP_THROUGH_PLATFORM);
 
-        PlatformIndexes.platforms.add(midWoodTile);
+        PlatformIndexes.addPlatform(midWoodTile, 60);
         mapTiles.add(midWoodTile);
 
         // middle metal platform
@@ -158,7 +158,7 @@ public class CommonTileset extends Tileset {
         MapTileBuilder middleMetalPlatformTile = new MapTileBuilder(middleMetalPlatformFrame)
                 .withTileType(TileType.NOT_PASSABLE);
 
-        PlatformIndexes.platforms.add(middleMetalPlatformTile);
+        PlatformIndexes.addPlatform(middleMetalPlatformTile, 20);
         mapTiles.add(middleMetalPlatformTile);
 /* 
         // sun
