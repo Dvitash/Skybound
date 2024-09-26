@@ -301,6 +301,25 @@ public abstract class Player extends GameObject {
         }
     }
 
+    public void bounce() {
+        // // Player is in the air now
+        // airGroundState = AirGroundState.AIR;
+    
+        // // Set the jump force to the regular jump height
+        // jumpForce = jumpHeight;
+
+        // // Set the player state to JUMPING
+        // playerState = PlayerState.JUMPING;
+
+        // // Set the correct animation for jumping based on the player's facing direction
+        // currentAnimationName = facingDirection == Direction.RIGHT ? "JUMP_RIGHT" : "JUMP_LEFT";
+
+        airGroundState = AirGroundState.GROUND;
+        previousAirGroundState = airGroundState;
+
+        playerJumping(0);
+    }
+
     // while player is in air, this is called, and will increase momentumY by a set amount until player reaches terminal velocity
     protected void increaseMomentum() {
         momentumY += momentumYIncrease;
@@ -359,6 +378,16 @@ public abstract class Player extends GameObject {
             if (hasCollided) {
                 momentumY = 0;
                 airGroundState = AirGroundState.GROUND;
+
+                // // check if collided with a breakaway tile
+                // if (entityCollidedWith instanceof MapTile) {
+                //     MapTile tile = (MapTile) entityCollidedWith;
+
+                //     if (tile.getTileType() == TileType.BREAKAWAY) {
+                //         bounce();
+                //     }
+                // }
+
             } else {
                 playerState = PlayerState.JUMPING;
                 airGroundState = AirGroundState.AIR;
