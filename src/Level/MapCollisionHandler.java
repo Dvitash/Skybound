@@ -81,20 +81,14 @@ public class MapCollisionHandler {
                     adjustedPositionY = (mapTile.getBounds().getY2() + 1) - boundsDifference;
                 }
 
+                // create air in the place of the breakaway tile
                 if (mapTile.getTileType() == TileType.BREAKAWAY) {
-                    int x = Math.round(mapTile.getX() / mapTile.getMap().tileset.getScaledSpriteWidth());
-                    int y = Math.round(mapTile.getY() / mapTile.getMap().tileset.getScaledSpriteHeight());
+                    int x = Math.round(mapTile.getX() / map.tileset.getScaledSpriteWidth());
+                    int y = Math.round(mapTile.getY() / map.tileset.getScaledSpriteHeight());
 
-                    MapTile tile = mapTile.getMap().tileset.getTile(0).build(x, y);
+                    MapTile tile = map.tileset.getTile(0).build(mapTile.getX(), mapTile.getY());
 
-                    mapTile.getMap().setMapTile(x, y, tile);
-
-                    if (gameObject instanceof Player) {
-                        Player player = (Player) gameObject;
-
-                        // player.bounce();
-                        // player.playerJumping(1);
-                    }
+                    map.setMapTile(x, y, tile);
                 }
 
                 return new MapCollisionCheckResult(new Point(gameObject.getX(), adjustedPositionY), entityCollidedWith);
