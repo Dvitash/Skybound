@@ -405,7 +405,7 @@ public abstract class Map {
         float playerY = (player.getY() + (player.getHeight() / 2));
 
         yMidPoint = (int) camera.getY() + (ScreenManager.getScreenHeight() / 2);
-        GeneratePlatforms(yMidPoint); 
+        GeneratePlatforms(yMidPoint + (ScreenManager.getScreenHeight() / 5)); 
 
         // // if player goes past center screen (below) and there is more map to show below, push player back to center and move camera upward
         // if (playerY > yMidPoint && camera.getEndBoundY() < endBoundY && !cameraReachedMaxHeight) {
