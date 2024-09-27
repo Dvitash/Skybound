@@ -3,6 +3,7 @@ package Level;
 import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
+import EnhancedMapTiles.Spring;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
 import Utils.AirGroundState;
@@ -100,7 +101,7 @@ public abstract class Player extends GameObject {
         if (levelState == LevelState.RUNNING) {
             applyGravity(false);
 
-            playerJumping(0);
+            playerJumping(1);
             // update player's state and current actions, which includes things like determining how much it should move each frame and if its walking or jumping
             do {
                 previousPlayerState = playerState;
@@ -167,7 +168,7 @@ public abstract class Player extends GameObject {
                 playerCrouching();
                 break;
             case JUMPING:
-                playerJumping(0);
+                playerJumping(1);
                 break;
         }
     }
@@ -233,7 +234,7 @@ public abstract class Player extends GameObject {
     }
 
     // player JUMPING state logic
-    protected void playerJumping(int jumpAmplifier) {
+    protected void playerJumping(float jumpAmplifier) {
         // if last frame player was on ground and this frame player is still on ground, the jump needs to be setup
         if (previousAirGroundState == AirGroundState.GROUND && airGroundState == AirGroundState.GROUND && Keyboard.isKeyDown(CROUCH_KEY) == false) {
 
@@ -243,7 +244,7 @@ public abstract class Player extends GameObject {
 
             // player is set to be in air and then player is sent into the air
             airGroundState = AirGroundState.AIR;
-            jumpForce = jumpHeight;
+            jumpForce = jumpHeight * jumpAmplifier;
             if (pressedBeforeLand == true){
                 if (jumpForce > 0) {
                     moveAmountY -= jumpForce;
@@ -317,7 +318,7 @@ public abstract class Player extends GameObject {
         airGroundState = AirGroundState.GROUND;
         previousAirGroundState = airGroundState;
 
-        playerJumping(0);
+        playerJumping(1);
     }
 
     // while player is in air, this is called, and will increase momentumY by a set amount until player reaches terminal velocity
@@ -387,6 +388,10 @@ public abstract class Player extends GameObject {
                 //         bounce();
                 //     }
                 // }
+
+                if (entityCollidedWith instanceof Spring) {
+                    playerJumping(1.75f);
+                }
 
             } else {
                 playerState = PlayerState.JUMPING;

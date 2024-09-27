@@ -152,7 +152,7 @@ public class CommonTileset extends Tileset {
         // middle metal platform
         Frame middleMetalPlatformFrame = new FrameBuilder(getSubImage(2, 0))
                 .withScale(tileScale)
-                .withBounds(0, 12, 16, 4)
+                .withBounds(0, 6, 16, 4)
                 .build();
 
         MapTileBuilder middleMetalPlatformTile = new MapTileBuilder(middleMetalPlatformFrame)
@@ -160,17 +160,6 @@ public class CommonTileset extends Tileset {
 
         PlatformIndexes.addPlatform(middleMetalPlatformTile, 20);
         mapTiles.add(middleMetalPlatformTile);
-
-        // spring
-        Frame spring = new FrameBuilder(getSubImage(2, 2))
-                .withScale(tileScale)
-                .withBounds(0, 6, 16, 4)
-                .build();
-
-        MapTileBuilder springTile = new MapTileBuilder(spring)
-                .withTileType(TileType.PASSABLE);
-
-        mapTiles.add(springTile);
 /* 
         // sun
         Frame[] sunFrames = new Frame[]{

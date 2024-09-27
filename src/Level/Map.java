@@ -374,13 +374,13 @@ public abstract class Map {
                         // additional random chance to spawn a spring platform
                         double springChance = this.random.nextDouble();
 
-                        if (springChance < 0.25) {
+                        if (springChance < 0.1) {
                             Spring spring = new Spring(
                                 tileset.getSubImage(2, 2),
                                 new Point(xLocation, yLocation),
-                                TileType.PASSABLE,
+                                TileType.JUMP_THROUGH_PLATFORM,
                                 tileset.getTileScale(),
-                                new Rectangle(0, 12, 16, 4)
+                                new Rectangle(0, 5, 16, 4)
                             );
     
                             addEnhancedMapTile(spring);
