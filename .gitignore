@@ -10,3 +10,5 @@ TestResources/
 _site
 .DS_Store
 todo.txt
+.vscode
+scoresaves

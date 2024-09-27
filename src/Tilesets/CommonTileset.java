@@ -4,10 +4,9 @@ import Builders.FrameBuilder;
 import Builders.MapTileBuilder;
 import Engine.ImageLoader;
 import GameObject.Frame;
-import GameObject.ImageEffect;
 import Level.TileType;
 import Level.Tileset;
-import Utils.SlopeTileLayoutUtils;
+import Level.PlatformIndexes;
 
 import java.util.ArrayList;
 
@@ -123,8 +122,9 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder breakingWoodTile = new MapTileBuilder(breakingWoodFrame)
-                .withTileType(TileType.JUMP_THROUGH_PLATFORM);
+                .withTileType(TileType.BREAKAWAY);
 
+        PlatformIndexes.addPlatform(breakingWoodTile, 25);
         mapTiles.add(breakingWoodTile);
 
         // cloud
@@ -134,6 +134,7 @@ public class CommonTileset extends Tileset {
 
         MapTileBuilder cloudTile = new MapTileBuilder(cloudFrame);
 
+        PlatformIndexes.addPlatform(cloudTile, 15);
         mapTiles.add(cloudTile);
 
         // middle wood platform
@@ -145,6 +146,7 @@ public class CommonTileset extends Tileset {
         MapTileBuilder midWoodTile = new MapTileBuilder(midWoodFrame)
                 .withTileType(TileType.JUMP_THROUGH_PLATFORM);
 
+        PlatformIndexes.addPlatform(midWoodTile, 60);
         mapTiles.add(midWoodTile);
 
         // middle metal platform
@@ -156,6 +158,7 @@ public class CommonTileset extends Tileset {
         MapTileBuilder middleMetalPlatformTile = new MapTileBuilder(middleMetalPlatformFrame)
                 .withTileType(TileType.NOT_PASSABLE);
 
+        PlatformIndexes.addPlatform(middleMetalPlatformTile, 20);
         mapTiles.add(middleMetalPlatformTile);
 /* 
         // sun

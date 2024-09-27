@@ -1,0 +1,15 @@
+{
+    "terminal.integrated.defaultProfile.windows": "Cmder",
+    "terminal.integrated.profiles.windows": {
+        "Cmder": {
+            "name": "Cmder",
+            "path": [
+                "${env:windir}\\Sysnative\\cmd.exe",
+                "${env:windir}\\System32\\cmd.exe"
+            ],
+            "args": ["/k", "C:\\Users\\dvita\\Documents\\cmder\\vendor\\bin\\vscode_init.cmd"],
+            "icon": "terminal-cmd",
+            "color": "terminal.ansiGreen"
+        }
+    }
+}

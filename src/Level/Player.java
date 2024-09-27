@@ -3,6 +3,7 @@ package Level;
 import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
+import EnhancedMapTiles.Spring;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
 import Players.Bullet;
@@ -10,8 +11,11 @@ import Utils.AirGroundState;
 import Utils.Direction;
 import Utils.Point;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
- 
+import java.util.Scanner;
 
 public abstract class Player extends GameObject {
     // values that affect player movement
@@ -23,6 +27,8 @@ public abstract class Player extends GameObject {
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
     protected boolean pressedBeforeLand = false;
+
+    protected int score = 0;
 
     // values used to handle player movement
     protected float jumpForce = 0;
@@ -62,6 +68,34 @@ public abstract class Player extends GameObject {
         levelState = LevelState.RUNNING;
     }
 
+        private void SaveScore() {
+        System.out.println("Score: " + score);
+    
+        try {
+            File scoreFile = new File("GameSaves\\scoresaves.txt");
+            scoreFile.getParentFile().mkdirs();
+    
+            int oldScore = 0;
+            if (scoreFile.exists()) {
+                Scanner scanner = new Scanner(scoreFile);
+                if (scanner.hasNextInt()) {
+                    oldScore = scanner.nextInt();
+                }
+                scanner.close();
+            }
+    
+            // only write new score if it is greater than the old score
+            if (score > oldScore) {
+                FileWriter writer = new FileWriter(scoreFile);
+                writer.write(Integer.toString(score));
+                writer.close();
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
     public void update() {
         moveAmountX = 0;
         moveAmountY = 0;
@@ -72,7 +106,7 @@ public abstract class Player extends GameObject {
 
             playerShoot();
 
-            playerJumping(0);
+            playerJumping(1);
             // update player's state and current actions, which includes things like determining how much it should move each frame and if its walking or jumping
             do {
                 previousPlayerState = playerState;
@@ -89,6 +123,13 @@ public abstract class Player extends GameObject {
 
             updateLockedKeys();
 
+            score = Math.round(map.GetTotalMovement() / 20);
+
+            if (getY() > map.getEndBoundY()) {
+                levelState = LevelState.PLAYER_DEAD;
+                SaveScore();
+            }
+
             // update player's animation
             super.update();
         }
@@ -103,6 +144,10 @@ public abstract class Player extends GameObject {
         else if (levelState == LevelState.PLAYER_DEAD) {
             updatePlayerDead();
         }
+    }
+
+    public int getScore() {
+        return this.score;
     }
 
     // add gravity to player, which is a downward force
@@ -128,7 +173,7 @@ public abstract class Player extends GameObject {
                 playerCrouching();
                 break;
             case JUMPING:
-                playerJumping(0);
+                playerJumping(1);
                 break;
         }
     }
@@ -219,7 +264,7 @@ public abstract class Player extends GameObject {
     }
 
     // player JUMPING state logic
-    protected void playerJumping(int jumpAmplifier) {
+    protected void playerJumping(float jumpAmplifier) {
         // if last frame player was on ground and this frame player is still on ground, the jump needs to be setup
         if (previousAirGroundState == AirGroundState.GROUND && airGroundState == AirGroundState.GROUND && Keyboard.isKeyDown(CROUCH_KEY) == false) {
 
@@ -229,7 +274,7 @@ public abstract class Player extends GameObject {
 
             // player is set to be in air and then player is sent into the air
             airGroundState = AirGroundState.AIR;
-            jumpForce = jumpHeight;
+            jumpForce = jumpHeight * jumpAmplifier;
             if (pressedBeforeLand == true){
                 if (jumpForce > 0) {
                     moveAmountY -= jumpForce;
@@ -288,11 +333,22 @@ public abstract class Player extends GameObject {
     }
 
     public void bounce() {
+        // // Player is in the air now
+        // airGroundState = AirGroundState.AIR;
+    
+        // // Set the jump force to the regular jump height
+        // jumpForce = jumpHeight;
+
+        // // Set the player state to JUMPING
+        // playerState = PlayerState.JUMPING;
+
+        // // Set the correct animation for jumping based on the player's facing direction
+        // currentAnimationName = facingDirection == Direction.RIGHT ? "JUMP_RIGHT" : "JUMP_LEFT";
+
         airGroundState = AirGroundState.GROUND;
         previousAirGroundState = airGroundState;
 
-        playerState = PlayerState.JUMPING;
-        playerJumping(0);
+        playerJumping(1);
     }
 
     // while player is in air, this is called, and will increase momentumY by a set amount until player reaches terminal velocity
@@ -353,6 +409,20 @@ public abstract class Player extends GameObject {
             if (hasCollided) {
                 momentumY = 0;
                 airGroundState = AirGroundState.GROUND;
+
+                // // check if collided with a breakaway tile
+                // if (entityCollidedWith instanceof MapTile) {
+                //     MapTile tile = (MapTile) entityCollidedWith;
+
+                //     if (tile.getTileType() == TileType.BREAKAWAY) {
+                //         bounce();
+                //     }
+                // }
+
+                if (entityCollidedWith instanceof Spring) {
+                    playerJumping(1.75f);
+                }
+
             } else {
                 playerState = PlayerState.JUMPING;
                 airGroundState = AirGroundState.AIR;

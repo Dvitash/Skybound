@@ -3,6 +3,8 @@ package Level;
 import Engine.Config;
 import Engine.GraphicsHandler;
 import Engine.ScreenManager;
+import EnhancedMapTiles.Spring;
+import GameObject.Rectangle;
 import Utils.Point;
 
 import java.io.File;
@@ -341,9 +343,9 @@ public abstract class Map {
                 int xLocation = x * tileset.getScaledSpriteWidth();
     
                 MapTile tileAtPosition = getMapTile(x, y);
-                if (tileAtPosition == null || tileAtPosition.getTileIndex() != 5) {
+                if (tileAtPosition == null || tileAtPosition.getTileIndex() == 0) {
                     // place air if not placed already
-                    if (getMapTile(x, y) == null) {
+                    if (tileAtPosition == null) {
                         MapTile airTile = tileset.getTile(0).build(xLocation, yLocation);
                         setMapTile(x, y, airTile);
                     }
@@ -356,17 +358,33 @@ public abstract class Map {
                     MapTile leftTile = getMapTile(x - 1, y);
                     MapTile rightTile = getMapTile(x + 1, y);
     
-                    if ((upTile != null && upTile.getTileIndex() == 12) ||
-                        (downTile != null && downTile.getTileIndex() == 12) ||
-                        (leftTile != null && leftTile.getTileIndex() == 12) ||
-                        (rightTile != null && rightTile.getTileIndex() == 12)) {
+                    if ((upTile != null && upTile.getTileIndex() != 0) ||
+                        (downTile != null && downTile.getTileIndex() != 0) ||
+                        (leftTile != null && leftTile.getTileIndex() != 0) ||
+                        (rightTile != null && rightTile.getTileIndex() != 0)) {
+
                         hasNeighbor = true;
                     }
     
                     double chance = this.random.nextDouble();
                     if (chance < 0.15 && !hasNeighbor) { // default chance of 15%
-                        MapTile platform = tileset.getTile(12).build(xLocation, yLocation);
+                        MapTile platform = PlatformIndexes.GetRandomPlatform().build(xLocation, yLocation);
                         setMapTile(x, y, platform);
+
+                        // additional random chance to spawn a spring platform
+                        double springChance = this.random.nextDouble();
+
+                        if (springChance < 0.1) {
+                            Spring spring = new Spring(
+                                tileset.getSubImage(2, 2),
+                                new Point(xLocation, yLocation),
+                                TileType.JUMP_THROUGH_PLATFORM,
+                                tileset.getTileScale(),
+                                new Rectangle(0, 5, 16, 4)
+                            );
+    
+                            addEnhancedMapTile(spring);
+                        }
                     }
                 }
             }
@@ -394,12 +412,15 @@ public abstract class Map {
                 deleted = true;
             }
         }
+
+        endBoundY = Math.round(cameraY);
     
         return deleted;
     }
 
     // based on the player's current Y position (which in a level can potentially be updated each frame),
     // adjust the player's and camera's positions accordingly in order to properly create the map "scrolling" effect
+    private float totalMovementY = -Integer.MAX_VALUE;
     private float previousPlayerY = -1;
     private void adjustMovementY(Player player) {
         float playerY = (player.getY() + (player.getHeight() / 2));
@@ -435,6 +456,12 @@ public abstract class Map {
 
             if (yMidPointDifference > 0) {
                 camera.moveUp(yMidPointDifference);
+
+                if (totalMovementY == -Integer.MAX_VALUE) {
+                    totalMovementY = yMidPointDifference;
+                } else {
+                    totalMovementY += yMidPointDifference;
+                }
             }
 
             if (UpdateMapTileBounds()) {
@@ -449,6 +476,14 @@ public abstract class Map {
 
     public void draw(GraphicsHandler graphicsHandler) {
         camera.draw(graphicsHandler);
+    }
+
+    public float GetTotalMovement() {
+        if (totalMovementY == -Integer.MAX_VALUE) {
+            return 0;
+        }
+
+        return totalMovementY;
     }
 
     public int getEndBoundX() { return endBoundX; }

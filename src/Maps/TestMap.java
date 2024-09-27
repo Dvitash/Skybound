@@ -1,24 +1,62 @@
 package Maps;
 
-import Enemies.BugEnemy;
-import Enemies.DinosaurEnemy;
-import Engine.ImageLoader;
-import EnhancedMapTiles.EndLevelBox;
-import EnhancedMapTiles.HorizontalMovingPlatform;
-import GameObject.Rectangle;
-import Level.*;
-import NPCs.Walrus;
+import SpriteFont.SpriteFont;
 import Tilesets.CommonTileset;
-import Utils.Direction;
+import java.io.File;
+import java.util.Scanner;
+import Level.*;
+import java.awt.*;
 
-import java.util.ArrayList;
+import Engine.GraphicsHandler;
 
 // Represents a test map to be used in a level
 public class TestMap extends Map {
 
+    SpriteFont scoreText;
+    SpriteFont highScoreText;
+
     public TestMap() {
         super("test_map.txt", new CommonTileset());
         this.playerStartPosition = getMapTile(6, 8).getLocation();
+
+        scoreText = new SpriteFont("SCORE: 0", 10, 10, "Montserrat", 30, new Color(255, 255, 255));
+        scoreText.setOutlineColor(Color.black);
+        scoreText.setOutlineThickness(5);
+
+        highScoreText = new SpriteFont("HIGH SCORE: 0", 10, 45, "Montserrat", 20, new Color(200, 200, 200));
+        highScoreText.setOutlineColor(Color.black);
+        highScoreText.setOutlineThickness(4);
+
+        // read the score file
+        try {
+            // check if the file exists first
+            File file = new File("GameSaves\\scoresaves.txt");
+            if (file.exists()) {
+                Scanner scan = new Scanner(file);
+                int highScore = scan.nextInt();
+                highScoreText.setText("HIGH SCORE: " + highScore);
+                scan.close();
+            } else {
+                highScoreText.setText("HIGH SCORE: 0");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void update(Player player) {
+        super.update(player);
+
+        this.scoreText.setText("SCORE: " + Integer.toString(player.getScore()));
+    }
+
+    @Override
+    public void draw(GraphicsHandler graphicsHandler) {
+        super.draw(graphicsHandler);
+
+        highScoreText.draw(graphicsHandler);
+        scoreText.draw(graphicsHandler);
     }
 /* 
     @Override

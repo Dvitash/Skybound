@@ -4,6 +4,10 @@ import GameObject.GameObject;
 import Utils.Direction;
 import Utils.Point;
 
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 // This class has methods to check if a game object has collided with a map entity (map tile, enhanced map tile, npc, or trigger if applicable)
 // it is used by the game object class to determine if and where a collision occurred
 public class MapCollisionHandler {
@@ -81,6 +85,26 @@ public class MapCollisionHandler {
                     adjustedPositionY = (mapTile.getBounds().getY2() + 1) - boundsDifference;
                 }
 
+                // create air in the place of the breakaway tile in separate thread to let the player jump
+                if (mapTile.getTileType() == TileType.BREAKAWAY) {
+                    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+                    
+                    Runnable task = new Runnable() {
+                        @Override
+                        public void run() {
+                            int x = Math.round(mapTile.getX() / map.tileset.getScaledSpriteWidth());
+                            int y = Math.round(mapTile.getY() / map.tileset.getScaledSpriteHeight());
+
+                            MapTile tile = map.tileset.getTile(0).build(mapTile.getX(), mapTile.getY());
+
+                            map.setMapTile(x, y, tile);
+                        }
+                    };
+
+                    scheduler.schedule(task, 50, TimeUnit.MILLISECONDS);
+                    scheduler.shutdown();
+                }
+
                 return new MapCollisionCheckResult(new Point(gameObject.getX(), adjustedPositionY), entityCollidedWith);
             }
         }
@@ -117,6 +141,9 @@ public class MapCollisionHandler {
                 case NOT_PASSABLE:
                     return gameObject.intersects(mapTile);
                 case JUMP_THROUGH_PLATFORM:
+                    return direction == Direction.DOWN && gameObject.intersects(mapTile) &&
+                            Math.round(gameObject.getBounds().getY2()) == Math.round(mapTile.getBounds().getY1());
+                case BREAKAWAY:
                     return direction == Direction.DOWN && gameObject.intersects(mapTile) &&
                             Math.round(gameObject.getBounds().getY2()) == Math.round(mapTile.getBounds().getY1());
                 case WATER:
