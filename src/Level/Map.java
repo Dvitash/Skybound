@@ -3,6 +3,8 @@ package Level;
 import Engine.Config;
 import Engine.GraphicsHandler;
 import Engine.ScreenManager;
+import EnhancedMapTiles.Spring;
+import GameObject.Rectangle;
 import Utils.Point;
 
 import java.io.File;
@@ -368,6 +370,21 @@ public abstract class Map {
                     if (chance < 0.15 && !hasNeighbor) { // default chance of 15%
                         MapTile platform = PlatformIndexes.GetRandomPlatform().build(xLocation, yLocation);
                         setMapTile(x, y, platform);
+
+                        // additional random chance to spawn a spring platform
+                        double springChance = this.random.nextDouble();
+
+                        if (springChance < 0.25) {
+                            Spring spring = new Spring(
+                                tileset.getSubImage(2, 2),
+                                new Point(xLocation, yLocation),
+                                TileType.PASSABLE,
+                                tileset.getTileScale(),
+                                new Rectangle(0, 12, 16, 4)
+                            );
+    
+                            addEnhancedMapTile(spring);
+                        }
                     }
                 }
             }
