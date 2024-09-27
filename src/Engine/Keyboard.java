@@ -76,6 +76,10 @@ public class Keyboard {
     	return true;
     }
 
+	//public final static MouseListener mouseListener = new MouseListener() {
+		
+	//};
+
     // maps a Key enum type to its keycode
 	// Java keycodes were found here: https://stackoverflow.com/a/31637206
     private static EnumMap<Key, Integer> buildKeyMap() {
