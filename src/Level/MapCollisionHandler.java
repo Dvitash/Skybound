@@ -8,6 +8,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import EnhancedMapTiles.Spring;
+
 // This class has methods to check if a game object has collided with a map entity (map tile, enhanced map tile, npc, or trigger if applicable)
 // it is used by the game object class to determine if and where a collision occurred
 public class MapCollisionHandler {
@@ -98,6 +100,18 @@ public class MapCollisionHandler {
                             MapTile tile = map.tileset.getTile(0).build(mapTile.getX(), mapTile.getY());
 
                             map.setMapTile(x, y, tile);
+
+                            // check for spring platform in the same place
+                            for (EnhancedMapTile enhancedTile : map.getActiveEnhancedMapTiles()) {
+                                if (enhancedTile.getX() != mapTile.getX() || enhancedTile.getY() != mapTile.getY()) {
+                                    continue;
+                                }
+
+                                if (enhancedTile instanceof Spring) {
+                                    enhancedTile.setMapEntityStatus(MapEntityStatus.REMOVED);
+                                    break;
+                                }
+                            }
                         }
                     };
 
