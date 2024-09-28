@@ -106,7 +106,7 @@ public class MapCollisionHandler {
                                 if (enhancedTile.getX() != mapTile.getX() || enhancedTile.getY() != mapTile.getY()) {
                                     continue;
                                 }
-
+                                
                                 if (enhancedTile instanceof Spring) {
                                     enhancedTile.setMapEntityStatus(MapEntityStatus.REMOVED);
                                     break;

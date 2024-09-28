@@ -380,8 +380,23 @@ public abstract class Player extends GameObject {
                 momentumY = 0;
                 airGroundState = AirGroundState.GROUND;
 
-                if (entityCollidedWith instanceof Spring) {
-                    playerJumping(1.75f);
+                // MapTile tile = (MapTile) entityCollidedWith;
+                // if (tile != null && tile.getTileType() == TileType.SPRING) {
+                //     playerJumping(1.75f);
+                // }
+
+                // check for spring platform in the same place
+                MapTile mapTile = (MapTile) entityCollidedWith;
+                for (EnhancedMapTile enhancedTile : map.getActiveEnhancedMapTiles()) {
+                    if (enhancedTile.getX() != mapTile.getX() || enhancedTile.getY() != mapTile.getY()) {
+                        continue;
+                    }
+
+                    
+                    if (enhancedTile instanceof Spring) {
+                        playerJumping(1.75f);
+                        break;
+                    }
                 }
 
             } else {
