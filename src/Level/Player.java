@@ -1,6 +1,8 @@
 package Level;
 
 import Engine.Key;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
 import Engine.KeyLocker;
 import Engine.Keyboard;
 import EnhancedMapTiles.Spring;
@@ -17,6 +19,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public abstract class Player extends GameObject {
     // values that affect player movement
     // these should be set in a subclass
@@ -26,13 +31,16 @@ public abstract class Player extends GameObject {
     protected float jumpDegrade = 0;
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
+    protected float dashDegrade = 0;
     protected boolean pressedBeforeLand = false;
+    protected float dashCooldown = 1f;
 
     protected int score = 0;
 
     // values used to handle player movement
     protected float jumpForce = 0;
     protected float momentumY = 0;
+    protected float momentumX = 0;
     protected float moveAmountX, moveAmountY;
     protected float lastAmountMovedX, lastAmountMovedY;
 
@@ -66,6 +74,7 @@ public abstract class Player extends GameObject {
         playerState = PlayerState.STANDING;
         previousPlayerState = playerState;
         levelState = LevelState.RUNNING;
+
     }
 
         private void SaveScore() {
@@ -105,6 +114,7 @@ public abstract class Player extends GameObject {
             applyGravity(false);
 
             playerShoot();
+            Dash();
 
             playerJumping(1);
             // update player's state and current actions, which includes things like determining how much it should move each frame and if its walking or jumping
@@ -145,6 +155,28 @@ public abstract class Player extends GameObject {
             updatePlayerDead();
         }
     }
+
+    private static boolean dashing = false;
+    private static final KeyListener keyListener = new KeyListener() {
+        @Override
+        public void keyTyped(KeyEvent e) {}
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+        	// when key is pressed, set its keyDown state to true and its keyUp state to false
+            int keyCode = e.getKeyCode();
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+			// when key is released, set its keyDown state to false and its keyUp state to true
+			int keyCode = e.getKeyCode();
+
+            if (keyCode == 32) { // check for space key released
+                dashing = false;
+            }
+        }
+    };
 
     public int getScore() {
         return this.score;
@@ -197,29 +229,82 @@ public abstract class Player extends GameObject {
         }
     }
 
-    protected void playerShoot(){
-        if(Keyboard.isKeyDown(SPACE)){
-                 // define where fireball will spawn on map (x location) relative to dinosaur enemy's location
-            // and define its movement speed
-            int bulletX;
-            float movementSpeed;
-            if (facingDirection == Direction.RIGHT) {
-                bulletX = Math.round(getX()) + getWidth();
-                movementSpeed = 1.5f;
-            } else {
-                bulletX = Math.round(getX() - 21);
-                movementSpeed = -1.5f;
+    private boolean debounceStarted = false;
+    private boolean dashDebounce = false;
+    protected void Dash(){
+        if (Keyboard.isKeyDown(SPACE) && !dashing && !dashDebounce){
+            dashDebounce = true;
+            dashing = true;
+
+            if (Keyboard.isKeyDown(MOVE_LEFT_KEY) && Keyboard.isKeyUp(MOVE_RIGHT_KEY)){
+                momentumX = -15f;
+                playerJumping(1.25f);
+            } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY) && Keyboard.isKeyUp(MOVE_LEFT_KEY)){
+                momentumX = 15f;
+                playerJumping(1.25f);
+            }
+        }
+
+        if (Keyboard.isKeyUp(SPACE)) {
+            if (dashing && dashDebounce && !debounceStarted) {
+                debounceStarted = true;
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        debounceStarted = false;
+                        dashDebounce = false;
+                    }
+                }, (long) (dashCooldown * 1000));
             }
 
-            // define where fireball will spawn on the map (y location) relative to dinosaur enemy's location
-            int bulletY = Math.round(getY());
-
-            // create Fireball enemy
-            Bullet bullet = new Bullet(new Point(bulletX, bulletY), movementSpeed, 60);
-
-            // add fireball enemy to the map for it to spawn in the level
-            map.addEnemy(bullet);
+            dashing = false;
         }
+
+        // apply dash momentum
+        if (momentumX != 0) {
+            if (momentumX < 0) { // moving left
+                momentumX += dashDegrade;
+
+                if (momentumX > 0) {
+                    momentumX = 0;
+                }
+
+            } else { // moving right
+                momentumX -= dashDegrade;
+
+                if (momentumX < 0) {
+                    momentumX = 0;
+                }
+            }
+
+            moveAmountX += momentumX;
+        }
+    }
+
+    protected void playerShoot(){
+        // if(Keyboard.isKeyDown(SPACE)){
+        //          // define where fireball will spawn on map (x location) relative to dinosaur enemy's location
+        //     // and define its movement speed
+        //     int bulletX;
+        //     float movementSpeed;
+        //     if (facingDirection == Direction.RIGHT) {
+        //         bulletX = Math.round(getX()) + getWidth();
+        //         movementSpeed = 1.5f;
+        //     } else {
+        //         bulletX = Math.round(getX() - 21);
+        //         movementSpeed = -1.5f;
+        //     }
+
+        //     // define where fireball will spawn on the map (y location) relative to dinosaur enemy's location
+        //     int bulletY = Math.round(getY());
+
+        //     // create Fireball enemy
+        //     Bullet bullet = new Bullet(new Point(bulletX, bulletY), movementSpeed, 60);
+
+        //     // add fireball enemy to the map for it to spawn in the level
+        //     map.addEnemy(bullet);
+        // }
     }
 
     // player WALKING state logic
