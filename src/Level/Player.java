@@ -410,15 +410,6 @@ public abstract class Player extends GameObject {
                 momentumY = 0;
                 airGroundState = AirGroundState.GROUND;
 
-                // // check if collided with a breakaway tile
-                // if (entityCollidedWith instanceof MapTile) {
-                //     MapTile tile = (MapTile) entityCollidedWith;
-
-                //     if (tile.getTileType() == TileType.BREAKAWAY) {
-                //         bounce();
-                //     }
-                // }
-
                 if (entityCollidedWith instanceof Spring) {
                     playerJumping(1.75f);
                 }

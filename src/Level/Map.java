@@ -380,7 +380,7 @@ public abstract class Map {
                                 new Point(xLocation, yLocation),
                                 TileType.JUMP_THROUGH_PLATFORM,
                                 tileset.getTileScale(),
-                                new Rectangle(0, 5, 16, 4)
+                                new Rectangle(0, 6, 16, 4)
                             );
     
                             addEnhancedMapTile(spring);
