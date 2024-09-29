@@ -255,12 +255,6 @@ public abstract class Player extends GameObject {
         if (Keyboard.isKeyUp(CROUCH_KEY)) {
             playerState = PlayerState.STANDING;
         }
-
-        // if jump key is pressed, player enters JUMPING state
-        if (Keyboard.isKeyDown(JUMP_KEY) && !keyLocker.isKeyLocked(JUMP_KEY)) {
-            keyLocker.lockKey(JUMP_KEY);
-            playerState = PlayerState.JUMPING;
-        }
     }
 
     // player JUMPING state logic
