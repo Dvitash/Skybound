@@ -59,8 +59,9 @@ public abstract class Map {
     protected String mapFileName;
 
     // lists to hold map entities that are a part of the map
-    protected ArrayList<Enemy> enemies;
     protected ArrayList<EnhancedMapTile> enhancedMapTiles;
+    protected ArrayList<Projectile> projectiles;
+    protected ArrayList<Enemy> enemies;
     protected ArrayList<NPC> npcs;
 
     // if set to false, camera will not move as player moves
@@ -110,6 +111,11 @@ public abstract class Map {
         this.npcs = loadNPCs();
         for (NPC npc: this.npcs) {
             npc.setMap(this);
+        }
+
+        this.projectiles = new ArrayList<>();
+        for (Projectile projectile : this.projectiles) {
+            projectile.setMap(this);
         }
 
         this.camera = new Camera(0, 0, tileset.getScaledSpriteWidth(), tileset.getScaledSpriteHeight(), this);
@@ -321,6 +327,15 @@ public abstract class Map {
     public void addNPC(NPC npc) {
         npc.setMap(this);
         this.npcs.add(npc);
+    }
+
+    public void addProjectile(Projectile projectile) {
+        projectile.setMap(this);
+        this.projectiles.add(projectile);
+    }
+
+    public void removeProjectile(Projectile projectile) {
+        this.projectiles.remove(projectile);
     }
 
     public void setAdjustCamera(boolean adjustCamera) {

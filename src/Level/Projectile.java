@@ -48,12 +48,16 @@ public class Projectile extends MapEntity {
 
     @Override
     public void onEndCollisionCheckX(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
-        
+        if (entityCollidedWith instanceof Enemy) { // damage enemy here
+
+        }
     }
 
     @Override
     public void onEndCollisionCheckY(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
-
+        if (entityCollidedWith instanceof Enemy) { // damage enemy here
+            
+        }
     }
 
     @Override
