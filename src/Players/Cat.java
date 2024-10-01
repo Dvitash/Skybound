@@ -21,8 +21,8 @@ public class Cat extends Player {
         jumpHeight = 14.5f;
         jumpDegrade = .5f;
         walkSpeed = 2.3f;
-        momentumYIncrease = .5f;
-        dashDegrade = 0.6f;
+        momentumYIncrease = .775f;
+        dashDegrade = 1f;
 
         
     }

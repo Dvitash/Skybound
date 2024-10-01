@@ -285,24 +285,24 @@ public abstract class Player extends GameObject {
 
     protected void playerShoot(){
         if(Keyboard.isKeyDown(SPACE)){
-            // define where fireball will spawn on map (x location) relative to dinosaur enemy's location
-            // and define its movement speed
-            int bulletX;
-            float movementSpeed;
-            if (facingDirection == Direction.RIGHT) {
-                bulletX = Math.round(getX()) + getWidth();
-                movementSpeed = 1.5f;
-            } else {
-                bulletX = Math.round(getX() - 21);
-                movementSpeed = -1.5f;
-            }
+            // // define where fireball will spawn on map (x location) relative to dinosaur enemy's location
+            // // and define its movement speed
+            // int bulletX;
+            // float movementSpeed;
+            // if (facingDirection == Direction.RIGHT) {
+            //     bulletX = Math.round(getX()) + getWidth();
+            //     movementSpeed = 1.5f;
+            // } else {
+            //     bulletX = Math.round(getX() - 21);
+            //     movementSpeed = -1.5f;
+            // }
 
-            // define where fireball will spawn on the map (y location) relative to dinosaur enemy's location
-            int bulletY = Math.round(getY());
+            // // define where fireball will spawn on the map (y location) relative to dinosaur enemy's location
+            // int bulletY = Math.round(getY());
 
-            // create bullet projectile
-            Bullet bullet = new Bullet(new Point(bulletX, bulletY), 1f, 5f, 0.25f, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT");
-            map.addProjectile(bullet);
+            // // create bullet projectile
+            // Bullet bullet = new Bullet(new Point(bulletX, bulletY), 1f, 5f, 0.25f, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT");
+            // map.addProjectile(bullet);
         }
     }
 

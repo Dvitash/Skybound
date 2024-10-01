@@ -411,6 +411,11 @@ public abstract class Map {
             adjustMovementY(player);
         }
 
+        // update all projectiles
+        for (Projectile projectile : this.projectiles) {
+            projectile.update(player);
+        }
+
         camera.update(player);
     }
 
@@ -491,6 +496,10 @@ public abstract class Map {
 
     public void draw(GraphicsHandler graphicsHandler) {
         camera.draw(graphicsHandler);
+
+        for (Projectile projectile : this.projectiles) {
+            projectile.draw(graphicsHandler);
+        }
     }
 
     public float GetTotalMovement() {

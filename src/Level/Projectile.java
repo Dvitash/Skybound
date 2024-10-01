@@ -2,6 +2,7 @@ package Level;
 
 import java.util.HashMap;
 
+import Builders.FrameBuilder;
 import Engine.GraphicsHandler;
 import GameObject.Frame;
 import GameObject.SpriteSheet;
@@ -49,19 +50,31 @@ public class Projectile extends MapEntity {
     @Override
     public void onEndCollisionCheckX(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
         if (entityCollidedWith instanceof Enemy) { // damage enemy here
-
+            map.removeProjectile(this);
         }
     }
 
     @Override
     public void onEndCollisionCheckY(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
         if (entityCollidedWith instanceof Enemy) { // damage enemy here
-            
+            map.removeProjectile(this);
         }
     }
 
     @Override
     public void draw(GraphicsHandler graphicsHandler) {
         super.draw(graphicsHandler);
+    }
+
+    @Override
+    public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
+        return new HashMap<String, Frame[]>() {{
+            put("DEFAULT", new Frame[]{
+                    new FrameBuilder(spriteSheet.getSprite(0, 0))
+                            .withScale(3)
+                            .withBounds(1, 1, 5, 5)
+                            .build()
+            });
+        }};
     }
 }
