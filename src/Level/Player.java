@@ -81,13 +81,13 @@ public abstract class Player extends GameObject {
 
     }
 
-        private void SaveScore() {
+    private void SaveScore() {
         System.out.println("Score: " + score);
-    
+
         try {
             File scoreFile = new File("GameSaves\\scoresaves.txt");
             scoreFile.getParentFile().mkdirs();
-    
+
             int oldScore = 0;
             if (scoreFile.exists()) {
                 Scanner scanner = new Scanner(scoreFile);
@@ -96,7 +96,7 @@ public abstract class Player extends GameObject {
                 }
                 scanner.close();
             }
-    
+
             // only write new score if it is greater than the old score
             if (score > oldScore) {
                 FileWriter writer = new FileWriter(scoreFile);
@@ -147,7 +147,6 @@ public abstract class Player extends GameObject {
             // update player's animation
             super.update();
         }
-        
 
         // if player has beaten level
         else if (levelState == LevelState.LEVEL_COMPLETED) {
@@ -163,18 +162,19 @@ public abstract class Player extends GameObject {
     private static boolean dashing = false;
     private static final KeyListener keyListener = new KeyListener() {
         @Override
-        public void keyTyped(KeyEvent e) {}
+        public void keyTyped(KeyEvent e) {
+        }
 
         @Override
         public void keyPressed(KeyEvent e) {
-        	// when key is pressed, set its keyDown state to true and its keyUp state to false
+            // when key is pressed, set its keyDown state to true and its keyUp state to false
             int keyCode = e.getKeyCode();
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
-			// when key is released, set its keyDown state to false and its keyUp state to true
-			int keyCode = e.getKeyCode();
+            // when key is released, set its keyDown state to false and its keyUp state to true
+            int keyCode = e.getKeyCode();
 
             if (keyCode == 32) { // check for space key released
                 dashing = false;
@@ -188,7 +188,7 @@ public abstract class Player extends GameObject {
 
     // add gravity to player, which is a downward force
     protected void applyGravity(boolean crouch) {
-        if (crouch == true){
+        if (crouch == true) {
             moveAmountY += (gravity + momentumY * 0.5);
         } else {
             moveAmountY += gravity + momentumY;
@@ -235,15 +235,16 @@ public abstract class Player extends GameObject {
 
     private boolean debounceStarted = false;
     private boolean dashDebounce = false;
-    protected void Dash(){
-        if (Keyboard.isKeyDown(SPACE) && !dashing && !dashDebounce){
+
+    protected void Dash() {
+        if (Keyboard.isKeyDown(SPACE) && !dashing && !dashDebounce) {
             dashDebounce = true;
             dashing = true;
 
-            if (Keyboard.isKeyDown(MOVE_LEFT_KEY) && Keyboard.isKeyUp(MOVE_RIGHT_KEY)){
+            if (Keyboard.isKeyDown(MOVE_LEFT_KEY) && Keyboard.isKeyUp(MOVE_RIGHT_KEY)) {
                 momentumX = -15f;
                 playerJumping(1.25f);
-            } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY) && Keyboard.isKeyUp(MOVE_LEFT_KEY)){
+            } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY) && Keyboard.isKeyUp(MOVE_LEFT_KEY)) {
                 momentumX = 15f;
                 playerJumping(1.25f);
             }
@@ -286,10 +287,13 @@ public abstract class Player extends GameObject {
         }
     }
 
-    protected void playerShoot(){
-        if(Mouse.isMouseClicked()==true){
-                 // define where fireball will spawn on map (x location) relative to dinosaur enemy's location
+    private boolean shooting = false;
+    protected void playerShoot() {
+        if (Mouse.isMouseClicked() && !shooting) {
+            shooting = true;
+            // define where fireball will spawn on map (x location) relative to dinosaur enemy's location
             // and define its movement speed
+
             int bulletX;
             float movementSpeed;
             if (facingDirection == Direction.RIGHT) {
@@ -304,10 +308,15 @@ public abstract class Player extends GameObject {
             int bulletY = Math.round(getY());
 
             // create Fireball enemy
-            Bullet bullet = new Bullet(new Point(bulletX, bulletY), 1f, movementSpeed, 60f, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT");
+            Bullet bullet = new Bullet(new Point(bulletX, bulletY), 1f, movementSpeed, 60f,
+                    new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT");
 
             // add fireball enemy to the map for it to spawn in the level
             map.addProjectile(bullet);
+        }
+
+        if (!Mouse.isMouseClicked()) {
+            shooting = false;
         }
     }
 
@@ -349,7 +358,8 @@ public abstract class Player extends GameObject {
     // player JUMPING state logic
     protected void playerJumping(float jumpAmplifier) {
         // if last frame player was on ground and this frame player is still on ground, the jump needs to be setup
-        if (previousAirGroundState == AirGroundState.GROUND && airGroundState == AirGroundState.GROUND && Keyboard.isKeyDown(CROUCH_KEY) == false) {
+        if (previousAirGroundState == AirGroundState.GROUND && airGroundState == AirGroundState.GROUND
+                && Keyboard.isKeyDown(CROUCH_KEY) == false) {
 
             keyLocker.lockKey(JUMP_KEY);
             // sets animation to a JUMP animation based on which way player is facing
@@ -358,7 +368,7 @@ public abstract class Player extends GameObject {
             // player is set to be in air and then player is sent into the air
             airGroundState = AirGroundState.AIR;
             jumpForce = jumpHeight * jumpAmplifier;
-            if (pressedBeforeLand == true){
+            if (pressedBeforeLand == true) {
                 if (jumpForce > 0) {
                     moveAmountY -= jumpForce;
                     jumpForce -= jumpDegrade - 2;
@@ -368,20 +378,20 @@ public abstract class Player extends GameObject {
                 }
                 pressedBeforeLand = false;
             } else {
-            if (jumpForce > 0) {
-                moveAmountY -= jumpForce;
-                jumpForce -= jumpDegrade + 2;
-                if (jumpForce < 0) {
-                    jumpForce = 0;
+                if (jumpForce > 0) {
+                    moveAmountY -= jumpForce;
+                    jumpForce -= jumpDegrade + 2;
+                    if (jumpForce < 0) {
+                        jumpForce = 0;
+                    }
                 }
             }
         }
-    }
 
         // if player is in air (currently in a jump) and has more jumpForce, continue sending player upwards
         else if (airGroundState == AirGroundState.AIR) {
             keyLocker.lockKey(JUMP_KEY);
-            if (Keyboard.isKeyDown(CROUCH_KEY)){
+            if (Keyboard.isKeyDown(CROUCH_KEY)) {
                 applyGravity(true);
             }
             if (jumpForce > 0) {
@@ -407,18 +417,18 @@ public abstract class Player extends GameObject {
 
         // if player last frame was in air and this frame is now on ground, player enters STANDING state
         else if (previousAirGroundState == AirGroundState.AIR && airGroundState == AirGroundState.GROUND) {
-            if (Keyboard.isKeyDown(JUMP_KEY)){
+            if (Keyboard.isKeyDown(JUMP_KEY)) {
                 pressedBeforeLand = true;
             }
             playerState = PlayerState.STANDING;
-            
+
         }
     }
 
     public void bounce() {
         // // Player is in the air now
         // airGroundState = AirGroundState.AIR;
-    
+
         // // Set the jump force to the regular jump height
         // jumpForce = jumpHeight;
 
@@ -462,16 +472,13 @@ public abstract class Player extends GameObject {
             if (currentMapTile != null && currentMapTile.getTileType() == TileType.WATER) {
                 this.currentAnimationName = facingDirection == Direction.RIGHT ? "SWIM_STAND_RIGHT" : "SWIM_STAND_LEFT";
             }
-        }
-        else if (playerState == PlayerState.WALKING) {
+        } else if (playerState == PlayerState.WALKING) {
             // sets animation to a WALK animation based on which way player is facing
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "WALK_RIGHT" : "WALK_LEFT";
-        }
-        else if (playerState == PlayerState.CROUCHING) {
+        } else if (playerState == PlayerState.CROUCHING) {
             // sets animation to a CROUCH animation based on which way player is facing
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "CROUCH_RIGHT" : "CROUCH_LEFT";
-        }
-        else if (playerState == PlayerState.JUMPING) {
+        } else if (playerState == PlayerState.JUMPING) {
             // if player is moving upwards, set player's animation to jump. if player moving downwards, set player's animation to fall
             if (lastAmountMovedY <= 0) {
                 this.currentAnimationName = facingDirection == Direction.RIGHT ? "JUMP_RIGHT" : "JUMP_LEFT";
@@ -482,7 +489,8 @@ public abstract class Player extends GameObject {
     }
 
     @Override
-    public void onEndCollisionCheckX(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) { }
+    public void onEndCollisionCheckX(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
+    }
 
     @Override
     public void onEndCollisionCheckY(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
@@ -505,7 +513,6 @@ public abstract class Player extends GameObject {
                         continue;
                     }
 
-                    
                     if (enhancedTile instanceof Spring) {
                         playerJumping(1.75f);
                         break;
@@ -577,7 +584,7 @@ public abstract class Player extends GameObject {
         }
         // if death animation not on last frame yet, continue to play out death animation
         else if (currentFrameIndex != getCurrentAnimation().length - 1) {
-          super.update();
+            super.update();
         }
         // if death animation on last frame (it is set up not to loop back to start), player should continually fall until it goes off screen
         else if (currentFrameIndex == getCurrentAnimation().length - 1) {
