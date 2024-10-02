@@ -2,8 +2,9 @@ package Engine;
 
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
-import java.awt.Point;
 import java.awt.event.MouseMotionListener;
+
+import Utils.Point;
 
 public class Mouse {
 
@@ -23,8 +24,7 @@ public class Mouse {
 
         @Override // tracks the location of the cursor
         public void mouseMoved(MouseEvent e) {
-            cursorPoint = e.getPoint();
-
+            cursorPoint = new Point(e.getPoint().x, e.getPoint().y);
         }
 
     };
@@ -77,6 +77,10 @@ public class Mouse {
     // gives access to the state of the mouse
     public static boolean isMouseClicked() {
         return mouseState;
+    }
+
+    public static Point getCursorPoint() {
+        return cursorPoint;
     }
 
 }

@@ -7,33 +7,40 @@ import Engine.GraphicsHandler;
 import GameObject.Frame;
 import GameObject.SpriteSheet;
 import Utils.Direction;
+import Utils.Point;
 
 public class Projectile extends MapEntity {
 
     protected float damage;
+    protected Point movementVector;
 
-    public Projectile(float damage, float x, float y, SpriteSheet spriteSheet, String startingAnimation) {
+    public Projectile(float damage, float x, float y, Point movementVector, SpriteSheet spriteSheet, String startingAnimation) {
         super(x, y, spriteSheet, startingAnimation);
+        this.movementVector = movementVector;
         this.damage = damage;
     }
 
-    public Projectile(float damage, float x, float y, HashMap<String, Frame[]> animations, String startingAnimation) {
+    public Projectile(float damage, float x, float y, Point movementVector, HashMap<String, Frame[]> animations, String startingAnimation) {
         super(x, y, animations, startingAnimation);
+        this.movementVector = movementVector;
         this.damage = damage;
     }
 
-    public Projectile(float damage, float x, float y, Frame[] frames) {
+    public Projectile(float damage, float x, float y, Point movementVector, Frame[] frames) {
         super(x, y, frames);
+        this.movementVector = movementVector;
         this.damage = damage;
     }
 
-    public Projectile(float damage, float x, float y, Frame frame) {
+    public Projectile(float damage, float x, float y, Point movementVector, Frame frame) {
         super(x, y, frame);
+        this.movementVector = movementVector;
         this.damage = damage;
     }
 
-    public Projectile(float damage, float x, float y) {
+    public Projectile(float damage, float x, float y, Point movementVector) {
         super(x, y);
+        this.movementVector = movementVector;
         this.damage = damage;
     }
 

@@ -40,6 +40,12 @@ public class Point {
         return String.format("(%s, %s)", x, y);
     }
 
+    public Point toUnit() {
+        double magnitude = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+
+        return new Point((float) (x / magnitude), (float) (y / magnitude));
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
