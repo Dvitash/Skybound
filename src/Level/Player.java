@@ -1,5 +1,6 @@
 package Level;
 
+import Engine.ImageLoader;
 import Engine.Key;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
@@ -11,7 +12,7 @@ import Engine.Keyboard;
 import EnhancedMapTiles.Spring;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
-import Players.Bullet;
+import Projectiles.Bullet;
 import Utils.AirGroundState;
 import Utils.Direction;
 import Utils.Point;
