@@ -304,10 +304,10 @@ public abstract class Player extends GameObject {
             int bulletY = Math.round(getY());
 
             // create Fireball enemy
-            Bullet bullet = new Bullet(new Point(bulletX, bulletY), movementSpeed, 60);
+            Bullet bullet = new Bullet(new Point(bulletX, bulletY), 1f, movementSpeed, 60f, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT");
 
             // add fireball enemy to the map for it to spawn in the level
-            map.addEnemy(bullet);
+            map.addProjectile(bullet);
         }
     }
 
