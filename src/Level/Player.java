@@ -3,6 +3,9 @@ package Level;
 import Engine.Key;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import Engine.Mouse;
 import Engine.KeyLocker;
 import Engine.Keyboard;
 import EnhancedMapTiles.Spring;
@@ -283,28 +286,28 @@ public abstract class Player extends GameObject {
     }
 
     protected void playerShoot(){
-        // if(Keyboard.isKeyDown(SPACE)){
-        //          // define where fireball will spawn on map (x location) relative to dinosaur enemy's location
-        //     // and define its movement speed
-        //     int bulletX;
-        //     float movementSpeed;
-        //     if (facingDirection == Direction.RIGHT) {
-        //         bulletX = Math.round(getX()) + getWidth();
-        //         movementSpeed = 1.5f;
-        //     } else {
-        //         bulletX = Math.round(getX() - 21);
-        //         movementSpeed = -1.5f;
-        //     }
+        if(Mouse.isMouseClicked()==true){
+                 // define where fireball will spawn on map (x location) relative to dinosaur enemy's location
+            // and define its movement speed
+            int bulletX;
+            float movementSpeed;
+            if (facingDirection == Direction.RIGHT) {
+                bulletX = Math.round(getX()) + getWidth();
+                movementSpeed = 1.5f;
+            } else {
+                bulletX = Math.round(getX() - 21);
+                movementSpeed = -1.5f;
+            }
 
-        //     // define where fireball will spawn on the map (y location) relative to dinosaur enemy's location
-        //     int bulletY = Math.round(getY());
+            // define where fireball will spawn on the map (y location) relative to dinosaur enemy's location
+            int bulletY = Math.round(getY());
 
-        //     // create Fireball enemy
-        //     Bullet bullet = new Bullet(new Point(bulletX, bulletY), movementSpeed, 60);
+            // create Fireball enemy
+            Bullet bullet = new Bullet(new Point(bulletX, bulletY), movementSpeed, 60);
 
-        //     // add fireball enemy to the map for it to spawn in the level
-        //     map.addEnemy(bullet);
-        // }
+            // add fireball enemy to the map for it to spawn in the level
+            map.addEnemy(bullet);
+        }
     }
 
     // player WALKING state logic
