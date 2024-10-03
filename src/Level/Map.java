@@ -416,6 +416,17 @@ public abstract class Map {
             projectile.update(player);
         }
 
+        if (player != null) {
+            float leftBound = player.getX();
+            float rightBound = player.getX2();
+    
+            if (rightBound < 0) {
+                player.setX(rightBound + getWidthPixels());
+            } else if (leftBound > getWidthPixels()) {
+                player.setX(leftBound - getWidthPixels());
+            }
+        }
+
         camera.update(player);
     }
 
