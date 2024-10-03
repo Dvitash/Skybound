@@ -250,10 +250,10 @@ public abstract class Player extends GameObject {
             dashDebounce = true;
             dashing = true;
 
-            if (Keyboard.isKeyDown(MOVE_LEFT_KEY) && Keyboard.isKeyUp(MOVE_RIGHT_KEY)) {
+            if ((Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_LEFT_KEY2)) && (Keyboard.isKeyUp(MOVE_RIGHT_KEY) || Keyboard.isKeyUp(MOVE_RIGHT_KEY2))) {
                 momentumX = -15f;
                 playerJumping(1.25f);
-            } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY) && Keyboard.isKeyUp(MOVE_LEFT_KEY)) {
+            } else if ((Keyboard.isKeyDown(MOVE_RIGHT_KEY) || Keyboard.isKeyDown(MOVE_RIGHT_KEY2)) && (Keyboard.isKeyUp(MOVE_LEFT_KEY) || Keyboard.isKeyUp(MOVE_LEFT_KEY2))) {
                 momentumX = 15f;
                 playerJumping(1.25f);
             }
