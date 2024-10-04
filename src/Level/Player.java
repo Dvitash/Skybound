@@ -292,11 +292,13 @@ public abstract class Player extends GameObject {
         if (Mouse.isMouseClicked() && !shooting) {
             shooting = true;
 
-            int bulletY = Math.round(getCalibratedYLocation() + (getHeight() / 2));
-            int bulletX = Math.round(getCalibratedXLocation() + (getWidth() / 2));
+            int bulletY = Math.round(getY() + (getHeight() / 2));
+            int bulletX = Math.round(getX() + (getWidth() / 2));
+
+            int screenY = Math.round(getCalibratedYLocation() + (getHeight() / 2));
 
             Point mousePoint = Mouse.getCursorPoint();
-            Point movementVector = new Point(mousePoint.x - bulletX, mousePoint.y - bulletY).toUnit();
+            Point movementVector = new Point(mousePoint.x - bulletX, mousePoint.y - screenY).toUnit();
 
             Bullet bullet = new Bullet(new Point(bulletX, bulletY), 1f, 7.5f, 60f,
             movementVector, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT");
