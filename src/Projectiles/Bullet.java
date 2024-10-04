@@ -19,8 +19,8 @@ public class Bullet extends Projectile {
     public void update(Player player) {
         super.update();
 
-        // move the bullet by its movement vector
-        this.moveDown(this.movementVector.y * this.projectileSpeed);
-        this.moveRight(this.movementVector.x * this.projectileSpeed);
+        // do collision check
+        this.moveYHandleCollision(this.movementVector.y * this.projectileSpeed);
+        this.moveXHandleCollision(this.movementVector.x * this.projectileSpeed);
     }
 }

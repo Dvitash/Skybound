@@ -291,21 +291,16 @@ public abstract class Player extends GameObject {
     protected void playerShoot() {
         if (Mouse.isMouseClicked() && !shooting) {
             shooting = true;
-            // define where fireball will spawn on map (x location) relative to dinosaur enemy's location
-            // and define its movement speed
 
-
-            int bulletY = Math.round((getY() + getY2()) / 2);
-            int bulletX = Math.round((getX() + getX2()) / 2);
+            int bulletY = Math.round(getCalibratedYLocation() + (getHeight() / 2));
+            int bulletX = Math.round(getCalibratedXLocation() + (getWidth() / 2));
 
             Point mousePoint = Mouse.getCursorPoint();
             Point movementVector = new Point(mousePoint.x - bulletX, mousePoint.y - bulletY).toUnit();
 
-            // create Fireball enemy
             Bullet bullet = new Bullet(new Point(bulletX, bulletY), 1f, 7.5f, 60f,
             movementVector, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT");
 
-            // add fireball enemy to the map for it to spawn in the level
             map.addProjectile(bullet);
         }
 

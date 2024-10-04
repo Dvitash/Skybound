@@ -58,6 +58,9 @@ public class Projectile extends MapEntity {
     public void onEndCollisionCheckX(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
         if (entityCollidedWith instanceof Enemy) { // damage enemy here
             map.removeProjectile(this);
+
+            Enemy enemy = (Enemy) entityCollidedWith;
+            enemy.setMapEntityStatus(MapEntityStatus.REMOVED);
         }
     }
 
@@ -65,6 +68,9 @@ public class Projectile extends MapEntity {
     public void onEndCollisionCheckY(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
         if (entityCollidedWith instanceof Enemy) { // damage enemy here
             map.removeProjectile(this);
+
+            Enemy enemy = (Enemy) entityCollidedWith;
+            enemy.setMapEntityStatus(MapEntityStatus.REMOVED);
         }
     }
 
