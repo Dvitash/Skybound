@@ -52,25 +52,14 @@ public class Projectile extends MapEntity {
     @Override
     public void update(Player player) {
         super.update();
-    }
 
-    @Override
-    public void onEndCollisionCheckX(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
-        if (entityCollidedWith instanceof Enemy) { // damage enemy here
-            map.removeProjectile(this);
+        System.out.println(map.projectiles.size());
 
-            Enemy enemy = (Enemy) entityCollidedWith;
-            enemy.setMapEntityStatus(MapEntityStatus.REMOVED);
-        }
-    }
-
-    @Override
-    public void onEndCollisionCheckY(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
-        if (entityCollidedWith instanceof Enemy) { // damage enemy here
-            map.removeProjectile(this);
-
-            Enemy enemy = (Enemy) entityCollidedWith;
-            enemy.setMapEntityStatus(MapEntityStatus.REMOVED);
+        for (Enemy enemy : map.getActiveEnemies()) {
+            if (intersects(enemy)) {
+                enemy.setMapEntityStatus(MapEntityStatus.REMOVED);
+                map.removeProjectile(this);
+            }
         }
     }
 

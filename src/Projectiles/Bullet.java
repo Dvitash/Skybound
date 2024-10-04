@@ -17,7 +17,7 @@ public class Bullet extends Projectile {
 
     @Override
     public void update(Player player) {
-        super.update();
+        super.update(player);
 
         // do collision check
         this.moveYHandleCollision(this.movementVector.y * this.projectileSpeed);

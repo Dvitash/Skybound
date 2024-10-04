@@ -337,8 +337,9 @@ public abstract class Map {
         this.projectiles.add(projectile);
     }
 
+    private ArrayList<Projectile> toRemove = new ArrayList<>();
     public void removeProjectile(Projectile projectile) {
-        this.projectiles.remove(projectile);
+        toRemove.add(projectile);
     }
 
     public void setAdjustCamera(boolean adjustCamera) {
@@ -424,6 +425,12 @@ public abstract class Map {
         // update all projectiles
         for (Projectile projectile : this.projectiles) {
             projectile.update(player);
+        }
+
+        // remove
+        for (Projectile projectile : toRemove) {
+            projectile.setMapEntityStatus(MapEntityStatus.REMOVED);
+            this.projectiles.remove(projectile);
         }
 
         camera.update(player);

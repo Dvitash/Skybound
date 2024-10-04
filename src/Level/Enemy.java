@@ -44,13 +44,12 @@ public class Enemy extends MapEntity {
     
             if (playerBottomEdge >= enemyTopEdge && player.playerState == PlayerState.JUMPING) { // check if player is falling onto the enemy
                 // force player to jump
-                player.bounce();
+                player.playerJumping(1f);
 
                 // remove the enemy from the map
                 mapEntityStatus = MapEntityStatus.REMOVED;
             } else {
                 touchedPlayer(player);
-             
             } 
             
         }
