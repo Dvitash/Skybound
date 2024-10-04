@@ -48,17 +48,17 @@ public class BugEnemy extends Enemy {
         float moveAmountX = 0;
         float moveAmountY = 0;
 
-        // add gravity (if in air, this will cause bug to fall)
-        moveAmountY += gravity;
+        // // add gravity (if in air, this will cause bug to fall)
+        // moveAmountY += gravity;
 
-        // if on ground, walk forward based on facing direction
-        if (airGroundState == AirGroundState.GROUND) {
-            if (facingDirection == Direction.RIGHT) {
-                moveAmountX += movementSpeed;
-            } else {
-                moveAmountX -= movementSpeed;
-            }
-        }
+        // // if on ground, walk forward based on facing direction
+        // if (airGroundState == AirGroundState.GROUND) {
+        //     if (facingDirection == Direction.RIGHT) {
+        //         moveAmountX += movementSpeed;
+        //     } else {
+        //         moveAmountX -= movementSpeed;
+        //     }
+        // }
 
         // move bug
         moveYHandleCollision(moveAmountY);

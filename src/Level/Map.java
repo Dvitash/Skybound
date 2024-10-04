@@ -5,6 +5,7 @@ import Engine.GraphicsHandler;
 import Engine.ScreenManager;
 import EnhancedMapTiles.Spring;
 import GameObject.Rectangle;
+import Utils.Direction;
 import Utils.Point;
 
 import java.io.File;
@@ -16,6 +17,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Scanner;
+
+import Enemies.BugEnemy;
 
 /*
     This class is for defining a map that is used for a specific level
@@ -334,8 +337,9 @@ public abstract class Map {
         this.projectiles.add(projectile);
     }
 
+    private ArrayList<Projectile> toRemove = new ArrayList<>();
     public void removeProjectile(Projectile projectile) {
-        this.projectiles.remove(projectile);
+        toRemove.add(projectile);
     }
 
     public void setAdjustCamera(boolean adjustCamera) {
@@ -400,6 +404,13 @@ public abstract class Map {
     
                             addEnhancedMapTile(spring);
                         }
+
+                        // double enemyChance = this.random.nextDouble();
+                        // if (springChance >= 0.1 && enemyChance < 0.05) { // spawn an enemy if a spring is not spawned
+                        //     BugEnemy bugEnemy = new BugEnemy(new Point(xLocation, yLocation), Direction.LEFT);
+                        //     bugEnemy.setMap(this);
+                        //     enemies.add(bugEnemy);
+                        // }
                     }
                 }
             }
@@ -414,6 +425,12 @@ public abstract class Map {
         // update all projectiles
         for (Projectile projectile : this.projectiles) {
             projectile.update(player);
+        }
+
+        // remove
+        for (Projectile projectile : toRemove) {
+            projectile.setMapEntityStatus(MapEntityStatus.REMOVED);
+            this.projectiles.remove(projectile);
         }
 
         camera.update(player);
