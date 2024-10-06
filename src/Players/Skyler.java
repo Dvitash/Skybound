@@ -40,14 +40,14 @@ public class Skyler extends Player {
     public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
         return new HashMap<String, Frame[]>() {{
             put("STAND_RIGHT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSpriteNoOffset(0, 0))
+                    new FrameBuilder(spriteSheet.getSpriteNoOffset(1, 0))
                             .withScale(3)
                             .withBounds(3, 3, 11, 12)
                             .build()
             });
 
             put("STAND_LEFT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSpriteNoOffset(0, 0))
+                    new FrameBuilder(spriteSheet.getSpriteNoOffset(1, 0))
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(3, 3, 11, 12)
@@ -55,41 +55,41 @@ public class Skyler extends Player {
             });
 
             put("WALK_RIGHT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSpriteNoOffset(0, 0), 14)
+                    new FrameBuilder(spriteSheet.getSpriteNoOffset(1, 0), 14)
                             .withScale(3)
                             .withBounds(3, 3, 11, 12)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSpriteNoOffset(0, 0), 14)
+                    new FrameBuilder(spriteSheet.getSpriteNoOffset(1, 0), 14)
                             .withScale(3)
                             .withBounds(3, 3, 11, 12)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSpriteNoOffset(0, 0), 14)
+                    new FrameBuilder(spriteSheet.getSpriteNoOffset(1, 0), 14)
                             .withScale(3)
                             .withBounds(3, 3, 11, 12)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSpriteNoOffset(0, 0), 14)
+                    new FrameBuilder(spriteSheet.getSpriteNoOffset(1, 0), 14)
                             .withScale(3)
                             .withBounds(3, 3, 11, 12)
                             .build()
             });
 
             put("WALK_LEFT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSpriteNoOffset(0, 0), 14)
+                    new FrameBuilder(spriteSheet.getSpriteNoOffset(1, 0), 14)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(3, 3, 11, 12)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSpriteNoOffset(0, 0), 14)
+                    new FrameBuilder(spriteSheet.getSpriteNoOffset(1, 0), 14)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(3, 3, 11, 12)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSpriteNoOffset(0, 0), 14)
+                    new FrameBuilder(spriteSheet.getSpriteNoOffset(1, 0), 14)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(3, 3, 11, 12)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSpriteNoOffset(0, 0), 14)
+                    new FrameBuilder(spriteSheet.getSpriteNoOffset(1, 0), 14)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(3, 3, 11, 12)
