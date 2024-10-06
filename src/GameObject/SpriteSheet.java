@@ -24,10 +24,21 @@ public class SpriteSheet {
 		return image.getSubimage((animationNumber * spriteWidth) + animationNumber, (spriteNumber * spriteHeight) + spriteNumber, spriteWidth, spriteHeight);
 	}
 
+	public BufferedImage getSpriteNoOffset(int spriteNumber, int animationNumber) {
+		return getSubImageNoOffset(spriteNumber, animationNumber);
+		// return image.getSubimage((animationNumber * spriteWidth) + animationNumber, (spriteNumber * spriteHeight) + spriteNumber, spriteWidth, spriteHeight);
+	}
+
 	// returns a subimage from the sprite sheet image based on the row and column
 	// this does the same as "getSprite", I added two methods that do the same thing for some reason
 	public BufferedImage getSubImage(int row, int column) {
+		
 		return image.getSubimage((column * spriteWidth) + column, (row * spriteHeight) + row, spriteWidth, spriteHeight);
+	}
+
+	public BufferedImage getSubImageNoOffset(int row, int column) {
+		
+		return image.getSubimage((column * spriteWidth), (row * spriteHeight), spriteWidth, spriteHeight);
 	}
 
 	public BufferedImage getImage() {
