@@ -4,8 +4,6 @@ import Engine.ImageLoader;
 import Engine.Key;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import Engine.Mouse;
 import Engine.KeyLocker;
 import Engine.Keyboard;
@@ -150,7 +148,7 @@ public abstract class Player extends GameObject {
                 speedBoostActive = false;
             }
 
-            playerJumping(jumpsHeight);
+            playerJumping(1f);
             // update player's state and current actions, which includes things like determining how much it should move each frame and if its walking or jumping
             do {
                 previousPlayerState = playerState;
@@ -239,7 +237,7 @@ public abstract class Player extends GameObject {
                 playerCrouching();
                 break;
             case JUMPING:
-                playerJumping(jumpsHeight);
+                playerJumping(1f);
                 break;
         }
     }
@@ -388,7 +386,8 @@ public abstract class Player extends GameObject {
 
             // player is set to be in air and then player is sent into the air
             airGroundState = AirGroundState.AIR;
-            jumpForce = jumpHeight * jumpAmplifier;
+            jumpForce = jumpHeight * jumpAmplifier * jumpsHeight;
+
             if (pressedBeforeLand == true) {
                 if (jumpForce > 0) {
                     moveAmountY -= jumpForce;
