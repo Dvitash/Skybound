@@ -4,11 +4,11 @@ import Engine.ImageLoader;
 import Engine.Key;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import Engine.Mouse;
 import Engine.KeyLocker;
 import Engine.Keyboard;
+import EnhancedMapTiles.JumpBoost;
+import EnhancedMapTiles.SpeedBoost;
 import EnhancedMapTiles.Spring;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
@@ -55,6 +55,18 @@ public abstract class Player extends GameObject {
     protected AirGroundState airGroundState;
     protected AirGroundState previousAirGroundState;
     protected LevelState levelState;
+
+    // Variables for jump boost
+    protected long jumpBoostEndTime = 0;
+    protected static final long jumpBoostDuration = 5000;
+    protected float jumpsHeight = 1f;
+    protected boolean jumpBoostActive;
+
+    // Variables for speed boost
+    protected long speedBoostEndTime = 0;
+    protected static final long speedBoostDuration = 5000;
+    protected float speedBoost = 4.5f;
+    protected boolean speedBoostActive;
 
     // classes that listen to player events can be added to this list
     protected ArrayList<PlayerListener> listeners = new ArrayList<>();
@@ -119,12 +131,28 @@ public abstract class Player extends GameObject {
 
         // if player is currently playing through level (has not won or lost)
         if (levelState == LevelState.RUNNING) {
-            applyGravity(false);
+            applyGravity(false); 
 
             playerShoot();
             Dash();
 
-            playerJumping(1);
+            if (jumpBoostEndTime > System.currentTimeMillis()){
+                jumpsHeight = 1.5f;
+                jumpBoostActive = true;
+            }else{
+                jumpsHeight = 1.0f;
+                jumpBoostActive = false;
+            }
+
+            if (speedBoostEndTime > System.currentTimeMillis()){
+                walkSpeed = speedBoost;
+                speedBoostActive = true;
+            }else{
+                walkSpeed = 2.5f;
+                speedBoostActive = false;
+            }
+
+            playerJumping(1f);
             // update player's state and current actions, which includes things like determining how much it should move each frame and if its walking or jumping
             do {
                 previousPlayerState = playerState;
@@ -213,7 +241,7 @@ public abstract class Player extends GameObject {
                 playerCrouching();
                 break;
             case JUMPING:
-                playerJumping(1);
+                playerJumping(1f);
                 break;
         }
     }
@@ -300,21 +328,18 @@ public abstract class Player extends GameObject {
     protected void playerShoot() {
         if (Mouse.isMouseClicked() && !shooting) {
             shooting = true;
-            // define where fireball will spawn on map (x location) relative to dinosaur enemy's location
-            // and define its movement speed
 
+            int bulletY = Math.round(getY() + (getHeight() / 2));
+            int bulletX = Math.round(getX() + (getWidth() / 2));
 
-            int bulletY = Math.round((getY() + getY2()) / 2);
-            int bulletX = Math.round((getX() + getX2()) / 2);
+            int screenY = Math.round(getCalibratedYLocation() + (getHeight() / 2));
 
             Point mousePoint = Mouse.getCursorPoint();
-            Point movementVector = new Point(mousePoint.x - bulletX, mousePoint.y - bulletY).toUnit();
+            Point movementVector = new Point(mousePoint.x - bulletX, mousePoint.y - screenY).toUnit();
 
-            // create Fireball enemy
             Bullet bullet = new Bullet(new Point(bulletX, bulletY), 1f, 7.5f, 60f,
             movementVector, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT");
 
-            // add fireball enemy to the map for it to spawn in the level
             map.addProjectile(bullet);
         }
 
@@ -374,7 +399,8 @@ public abstract class Player extends GameObject {
 
             // player is set to be in air and then player is sent into the air
             airGroundState = AirGroundState.AIR;
-            jumpForce = jumpHeight * jumpAmplifier;
+            jumpForce = jumpHeight * jumpAmplifier * jumpsHeight;
+
             if (pressedBeforeLand == true) {
                 if (jumpForce > 0) {
                     moveAmountY -= jumpForce;
@@ -528,6 +554,17 @@ public abstract class Player extends GameObject {
                         playerJumping(1.75f);
                         break;
                     }
+                    
+                    if (enhancedTile instanceof JumpBoost) {
+                        jumpBoost();
+                        break;
+                    }
+
+                    if (enhancedTile instanceof SpeedBoost) {
+                        speedBoost();
+                        break;
+                    }
+
                 }
 
             } else {
@@ -542,6 +579,32 @@ public abstract class Player extends GameObject {
                 jumpForce = 0;
             }
         }
+    }
+
+    public void jumpBoost() {
+        if (jumpBoostEndTime < System.currentTimeMillis()) {
+            jumpBoostEndTime = System.currentTimeMillis() + jumpBoostDuration;
+        } else {
+            jumpBoostEndTime = jumpBoostEndTime + jumpBoostDuration;
+        }
+
+    }
+
+    public boolean getJumpBoostActive(){
+        return this.jumpBoostActive;
+    }
+
+    public void speedBoost() {
+        if (speedBoostEndTime < System.currentTimeMillis()) {
+            speedBoostEndTime = System.currentTimeMillis() + speedBoostDuration;
+        } else {
+            speedBoostEndTime = speedBoostEndTime + speedBoostDuration;
+        }
+
+    }
+
+    public boolean getSpeedBoostActive(){
+        return this.speedBoostActive;
     }
 
     // other entities can call this method to hurt the player
