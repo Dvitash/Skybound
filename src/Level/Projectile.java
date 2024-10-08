@@ -12,35 +12,13 @@ import Utils.Point;
 public class Projectile extends MapEntity {
 
     protected float damage;
+    protected boolean isEnemy;
     protected Point movementVector;
 
-    public Projectile(float damage, float x, float y, Point movementVector, SpriteSheet spriteSheet, String startingAnimation) {
+    public Projectile(float damage, float x, float y, Point movementVector, SpriteSheet spriteSheet, String startingAnimation, boolean isEnemy) {
         super(x, y, spriteSheet, startingAnimation);
         this.movementVector = movementVector;
-        this.damage = damage;
-    }
-
-    public Projectile(float damage, float x, float y, Point movementVector, HashMap<String, Frame[]> animations, String startingAnimation) {
-        super(x, y, animations, startingAnimation);
-        this.movementVector = movementVector;
-        this.damage = damage;
-    }
-
-    public Projectile(float damage, float x, float y, Point movementVector, Frame[] frames) {
-        super(x, y, frames);
-        this.movementVector = movementVector;
-        this.damage = damage;
-    }
-
-    public Projectile(float damage, float x, float y, Point movementVector, Frame frame) {
-        super(x, y, frame);
-        this.movementVector = movementVector;
-        this.damage = damage;
-    }
-
-    public Projectile(float damage, float x, float y, Point movementVector) {
-        super(x, y);
-        this.movementVector = movementVector;
+        this.isEnemy = isEnemy;
         this.damage = damage;
     }
 
@@ -49,14 +27,19 @@ public class Projectile extends MapEntity {
         super.initialize();
     }
 
-    @Override
-    public void update(Player player) {
-        super.update();
+    public void update() {
 
-        for (Enemy enemy : map.getActiveEnemies()) {
-            if (intersects(enemy)) {
-                enemy.setMapEntityStatus(MapEntityStatus.REMOVED);
-                map.removeProjectile(this);
+        if (this.isEnemy) {
+            // if (intersects(player)) {
+            //     enemy.setMapEntityStatus(MapEntityStatus.REMOVED);
+            //     map.removeProjectile(this);
+            // }
+        } else {
+            for (Enemy enemy : map.getActiveEnemies()) {
+                if (intersects(enemy)) {
+                    enemy.setMapEntityStatus(MapEntityStatus.REMOVED);
+                    map.removeProjectile(this);
+                }
             }
         }
     }

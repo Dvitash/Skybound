@@ -2,11 +2,25 @@ package Level;
 
 import GameObject.Frame;
 import GameObject.SpriteSheet;
+import Projectiles.Bullet;
+import Utils.Point;
+
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import Engine.ImageLoader;
+import Engine.Mouse;
 
 import java.util.HashMap;
 
 // This class is a base class for all enemies in the game -- all enemies should extend from it
 public class Enemy extends MapEntity {
+
+    protected boolean doesShoot = true;
+    protected boolean shootingCooldown = false;
+
+    protected Random random = new Random();
 
     public Enemy(float x, float y, SpriteSheet spriteSheet, String startingAnimation) {
         super(x, y, spriteSheet, startingAnimation);
@@ -31,6 +45,11 @@ public class Enemy extends MapEntity {
     @Override
     public void initialize() {
         super.initialize();
+
+        double chance = random.nextDouble();
+        if (chance <= 0.5) { // 50% chance to have the enemy shooting
+            doesShoot = true;
+        }
     }
 
     public void update(Player player) {
@@ -50,8 +69,35 @@ public class Enemy extends MapEntity {
                 mapEntityStatus = MapEntityStatus.REMOVED;
             } else {
                 touchedPlayer(player);
-            } 
-            
+            }
+        }
+
+        // timer to shoot a projectile at the player
+        if (doesShoot && !shootingCooldown) {
+            shootingCooldown = true;
+
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    shootingCooldown = false;
+                }
+            }, (long) (4000 + random.nextInt(2000)));
+
+            // shoot
+            int bulletY = Math.round(getY() + (getHeight() / 2));
+            int bulletX = Math.round(getX() + (getWidth() / 2));
+
+            int screenY = Math.round(getCalibratedYLocation() + (getHeight() / 2));
+            System.out.println(screenY);
+            Point playerPosition = new Point(player.getCalibratedXLocation(), player.getCalibratedYLocation());
+
+            Point movementVector = new Point(playerPosition.x - bulletX, playerPosition.y - screenY).toUnit();
+
+            Bullet bullet = new Bullet(new Point(bulletX, bulletY), 1f, 7.5f, 60f,
+            movementVector, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT", true);
+
+            map.addProjectile(bullet);
         }
     }
 

@@ -338,7 +338,7 @@ public abstract class Player extends GameObject {
             Point movementVector = new Point(mousePoint.x - bulletX, mousePoint.y - screenY).toUnit();
 
             Bullet bullet = new Bullet(new Point(bulletX, bulletY), 1f, 7.5f, 60f,
-            movementVector, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT");
+            movementVector, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT", false);
 
             map.addProjectile(bullet);
         }

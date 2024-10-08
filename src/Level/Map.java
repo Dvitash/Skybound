@@ -445,12 +445,12 @@ public abstract class Map {
                             addEnhancedMapTile(healthBoost);
                         } */
 
-                        // double enemyChance = this.random.nextDouble();
-                        // if (springChance >= 0.1 && enemyChance < 0.05) { // spawn an enemy if a spring is not spawned
-                        //     BugEnemy bugEnemy = new BugEnemy(new Point(xLocation, yLocation), Direction.LEFT);
-                        //     bugEnemy.setMap(this);
-                        //     enemies.add(bugEnemy);
-                        // }
+                        double enemyChance = this.random.nextDouble();
+                        if (itemChance >= 0.1 && enemyChance < 0.05) { // spawn an enemy if a spring is not spawned
+                            BugEnemy bugEnemy = new BugEnemy(new Point(xLocation, yLocation), Direction.LEFT);
+                            bugEnemy.setMap(this);
+                            enemies.add(bugEnemy);
+                        }
                     }
                 }
             }
@@ -464,7 +464,7 @@ public abstract class Map {
 
         // update all projectiles
         for (Projectile projectile : this.projectiles) {
-            projectile.update(player);
+            projectile.update();
         }
 
         // remove
@@ -486,6 +486,24 @@ public abstract class Map {
             MapTile tile = iterator.next();
             if (tile.getY() > cameraY) {
                 iterator.remove();
+                deleted = true;
+            }
+        }
+        
+        Iterator<Enemy> enemyIterator = this.enemies.iterator();
+        while (enemyIterator.hasNext()) {
+            Enemy enemy = enemyIterator.next();
+            if (enemy.getY() > cameraY) {
+                enemyIterator.remove();
+                deleted = true;
+            }
+        }
+        
+        Iterator<EnhancedMapTile> enhancedTileIterator = this.enhancedMapTiles.iterator();
+        while (enhancedTileIterator.hasNext()) {
+            EnhancedMapTile tile = enhancedTileIterator.next();
+            if (tile.getY() > cameraY) {
+                enhancedTileIterator.remove();
                 deleted = true;
             }
         }
