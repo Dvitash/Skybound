@@ -464,7 +464,7 @@ public abstract class Map {
 
         // update all projectiles
         for (Projectile projectile : this.projectiles) {
-            projectile.update();
+            projectile.update(player);
         }
 
         // remove

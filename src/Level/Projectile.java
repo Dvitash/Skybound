@@ -27,13 +27,12 @@ public class Projectile extends MapEntity {
         super.initialize();
     }
 
-    public void update() {
-
+    public void update(Player player) {
         if (this.isEnemy) {
-            // if (intersects(player)) {
-            //     enemy.setMapEntityStatus(MapEntityStatus.REMOVED);
-            //     map.removeProjectile(this);
-            // }
+            if (intersects(player)) {
+                map.removeProjectile(this);
+                player.hurtPlayer(this);
+            }
         } else {
             for (Enemy enemy : map.getActiveEnemies()) {
                 if (intersects(enemy)) {

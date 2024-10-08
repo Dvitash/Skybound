@@ -601,7 +601,7 @@ public abstract class Player extends GameObject {
     public void hurtPlayer(MapEntity mapEntity) {
         if (!isInvincible) {
             // if map entity is an enemy, kill player on touch
-            if (mapEntity instanceof Enemy) {
+            if (mapEntity instanceof Enemy || mapEntity instanceof Projectile) {
                 levelState = LevelState.PLAYER_DEAD;
             }
         }
