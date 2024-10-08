@@ -554,16 +554,6 @@ public abstract class Player extends GameObject {
                         playerJumping(1.75f);
                         break;
                     }
-                    
-                    if (enhancedTile instanceof JumpBoost) {
-                        jumpBoost();
-                        break;
-                    }
-
-                    if (enhancedTile instanceof SpeedBoost) {
-                        speedBoost();
-                        break;
-                    }
 
                 }
 

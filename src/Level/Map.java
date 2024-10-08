@@ -432,6 +432,7 @@ public abstract class Map {
                             addEnhancedMapTile(speedBoost);
                         }
 
+                        /* 
                         if (itemChance > 0.14 && itemChance < 0.15) {
                             HealthBoost healthBoost = new HealthBoost(
                                 tileset.getSubImage(2, 3),
@@ -442,7 +443,7 @@ public abstract class Map {
                             );
     
                             addEnhancedMapTile(healthBoost);
-                        }
+                        } */
 
                         // double enemyChance = this.random.nextDouble();
                         // if (springChance >= 0.1 && enemyChance < 0.05) { // spawn an enemy if a spring is not spawned
