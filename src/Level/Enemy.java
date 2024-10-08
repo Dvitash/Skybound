@@ -17,7 +17,7 @@ import java.util.HashMap;
 // This class is a base class for all enemies in the game -- all enemies should extend from it
 public class Enemy extends MapEntity {
 
-    protected boolean doesShoot = true;
+    protected boolean doesShoot = false;
     protected boolean shootingCooldown = false;
 
     protected Random random = new Random();
