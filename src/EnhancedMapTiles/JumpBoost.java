@@ -31,6 +31,7 @@ public class JumpBoost extends EnhancedMapTile {
         if (intersects(player) && !isCollected) {
             // Set the flag to true to indicate that the tile has been collected
             isCollected = true;
+            player.jumpBoost();
         }
     }
 
