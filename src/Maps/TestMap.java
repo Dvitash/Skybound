@@ -28,7 +28,6 @@ public class TestMap extends Map {
         moneyText.setOutlineColor(Color.black);
         moneyText.setOutlineThickness(5);
 
-
         scoreText = new SpriteFont("SCORE: 0", 10, 10, "Montserrat", 30, new Color(255, 255, 255));
         scoreText.setOutlineColor(Color.black);
         scoreText.setOutlineThickness(5);
@@ -37,11 +36,11 @@ public class TestMap extends Map {
         highScoreText.setOutlineColor(Color.black);
         highScoreText.setOutlineThickness(4);
 
-        speedBoostText = new SpriteFont("", 550, 10, "Montserrat", 20, new Color(255, 255, 0));
+        speedBoostText = new SpriteFont("", 550, 45, "Montserrat", 20, new Color(255, 255, 0));
         speedBoostText.setOutlineColor(Color.black);
         speedBoostText.setOutlineThickness(4);
 
-        jumpBoostText = new SpriteFont("", 561, 35, "Montserrat", 20, new Color(50, 215, 100));
+        jumpBoostText = new SpriteFont("", 561, 70, "Montserrat", 20, new Color(50, 215, 100));
         jumpBoostText.setOutlineColor(Color.black);
         jumpBoostText.setOutlineThickness(4);
 
