@@ -3,8 +3,12 @@ package Level;
 import Engine.Config;
 import Engine.GraphicsHandler;
 import Engine.ScreenManager;
+import EnhancedMapTiles.HealthBoost;
+import EnhancedMapTiles.JumpBoost;
+import EnhancedMapTiles.SpeedBoost;
 import EnhancedMapTiles.Spring;
 import GameObject.Rectangle;
+import Utils.Direction;
 import Utils.Point;
 
 import java.io.File;
@@ -16,6 +20,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Scanner;
+
+import Enemies.BugEnemy;
 
 /*
     This class is for defining a map that is used for a specific level
@@ -337,8 +343,9 @@ public abstract class Map {
         this.projectiles.add(projectile);
     }
 
+    private ArrayList<Projectile> toRemove = new ArrayList<>();
     public void removeProjectile(Projectile projectile) {
-        this.projectiles.remove(projectile);
+        toRemove.add(projectile);
     }
 
     public void setAdjustCamera(boolean adjustCamera) {
@@ -395,9 +402,9 @@ public abstract class Map {
                         setMapTile(x, y, platform);
 
                         // additional random chance to spawn a spring platform
-                        double springChance = this.random.nextDouble();
+                        double itemChance = this.random.nextDouble();
 
-                        if (springChance < 0.1) {
+                        if (itemChance < 0.1) {
                             Spring spring = new Spring(
                                     tileset.getSubImage(2, 2),
                                     new Point(xLocation, yLocation),
@@ -407,6 +414,50 @@ public abstract class Map {
 
                             addEnhancedMapTile(spring);
                         }
+
+                        if (itemChance > 0.1 && itemChance < 0.11) {
+                            JumpBoost jumpBoost = new JumpBoost(
+                                tileset.getSubImage(2, 5),
+                                new Point(xLocation, yLocation),
+                                TileType.PASSABLE,
+                                tileset.getTileScale(),
+                                new Rectangle(4, 1, 8, 5)
+                            );
+    
+                            addEnhancedMapTile(jumpBoost);
+                        }
+
+                        if (itemChance > 0.12 && itemChance < 0.13) {
+                            SpeedBoost speedBoost = new SpeedBoost(
+                                tileset.getSubImage(2, 4),
+                                new Point(xLocation, yLocation),
+                                TileType.PASSABLE,
+                                tileset.getTileScale(),
+                                new Rectangle(4, 1, 8, 5)
+                            );
+    
+                            addEnhancedMapTile(speedBoost);
+                        }
+
+                        /* 
+                        if (itemChance > 0.14 && itemChance < 0.15) {
+                            HealthBoost healthBoost = new HealthBoost(
+                                tileset.getSubImage(2, 3),
+                                new Point(xLocation, yLocation),
+                                TileType.PASSABLE,
+                                tileset.getTileScale(),
+                                new Rectangle(4, 1, 8, 5)
+                            );
+    
+                            addEnhancedMapTile(healthBoost);
+                        } */
+
+                        // double enemyChance = this.random.nextDouble();
+                        // if (itemChance >= 0.1 && enemyChance < 0.05) { // spawn an enemy if a spring is not spawned
+                        //     BugEnemy bugEnemy = new BugEnemy(new Point(xLocation, yLocation), Direction.LEFT);
+                        //     bugEnemy.setMap(this);
+                        //     enemies.add(bugEnemy);
+                        // }
                     }
                 }
             }
@@ -433,6 +484,12 @@ public abstract class Map {
                 player.setX(leftBound - getWidthPixels());
             }
         }
+  
+        // remove
+        for (Projectile projectile : toRemove) {
+            projectile.setMapEntityStatus(MapEntityStatus.REMOVED);
+            this.projectiles.remove(projectile);
+        }
 
         camera.update(player);
     }
@@ -447,6 +504,24 @@ public abstract class Map {
             MapTile tile = iterator.next();
             if (tile.getY() > cameraY) {
                 iterator.remove();
+                deleted = true;
+            }
+        }
+        
+        Iterator<Enemy> enemyIterator = this.enemies.iterator();
+        while (enemyIterator.hasNext()) {
+            Enemy enemy = enemyIterator.next();
+            if (enemy.getY() > cameraY) {
+                enemyIterator.remove();
+                deleted = true;
+            }
+        }
+        
+        Iterator<EnhancedMapTile> enhancedTileIterator = this.enhancedMapTiles.iterator();
+        while (enhancedTileIterator.hasNext()) {
+            EnhancedMapTile tile = enhancedTileIterator.next();
+            if (tile.getY() > cameraY) {
+                enhancedTileIterator.remove();
                 deleted = true;
             }
         }
