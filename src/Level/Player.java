@@ -41,6 +41,9 @@ public abstract class Player extends GameObject {
 
     protected int score = 0;
 
+    protected int money = 0;
+    protected int scoreBuffer;
+
     // values used to handle player movement
     protected float jumpForce = 0;
     protected float momentumY = 0;
@@ -97,6 +100,17 @@ public abstract class Player extends GameObject {
 
     }
 
+    public int getMoney(){
+        return money;
+    }
+
+    private void updateMoney(){
+        if (score % 100 == 0 && score > scoreBuffer){
+            money += 10;
+            scoreBuffer = score + 1;
+        }
+    }
+
     private void SaveScore() {
         System.out.println("Score: " + score);
 
@@ -126,6 +140,7 @@ public abstract class Player extends GameObject {
     }
 
     public void update() {
+        updateMoney();
         moveAmountX = 0;
         moveAmountY = 0;
 

@@ -14,12 +14,20 @@ public class TestMap extends Map {
 
     SpriteFont scoreText;
     SpriteFont highScoreText;
+    SpriteFont moneyText;
+
+    private int xText = 600;
     SpriteFont speedBoostText;
     SpriteFont jumpBoostText;
 
     public TestMap() {
         super("test_map.txt", new CommonTileset());
         this.playerStartPosition = getMapTile(6, 8).getLocation();
+
+        moneyText = new SpriteFont("Money: 0", xText, 10, "Montserrat", 30, new Color(255, 255, 255));
+        moneyText.setOutlineColor(Color.black);
+        moneyText.setOutlineThickness(5);
+
 
         scoreText = new SpriteFont("SCORE: 0", 10, 10, "Montserrat", 30, new Color(255, 255, 255));
         scoreText.setOutlineColor(Color.black);
@@ -59,6 +67,18 @@ public class TestMap extends Map {
         super.update(player);
 
         this.scoreText.setText("SCORE: " + Integer.toString(player.getScore()));
+
+        int money = player.getMoney();
+        int charCount = 1;
+
+        while (money >= 10) {
+            charCount += 1;
+            money = money % 10;
+        }
+
+        
+        this.moneyText.setX(xText - (15 * charCount));
+        this.moneyText.setText("MONEY: " + player.getMoney());
     
         if (player.getJumpBoostActive() == true){
             this.jumpBoostText.setText("JUMP BOOST ACTIVE");
@@ -79,6 +99,7 @@ public class TestMap extends Map {
 
         highScoreText.draw(graphicsHandler);
         scoreText.draw(graphicsHandler);
+        moneyText.draw(graphicsHandler);
         speedBoostText.draw(graphicsHandler);
         jumpBoostText.draw(graphicsHandler);
     }
