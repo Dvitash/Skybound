@@ -9,8 +9,8 @@ public class Bullet extends Projectile {
     protected float projectileSpeed;
     protected float fireRate;
 
-    public Bullet(Point point, float damage, float projectileSpeed, float fireRate, Point movementVector, SpriteSheet spriteSheet, String startingAnimation) {
-        super(damage, point.x, point.y, movementVector, spriteSheet, startingAnimation);
+    public Bullet(Point point, float damage, float projectileSpeed, float fireRate, Point movementVector, SpriteSheet spriteSheet, String startingAnimation, boolean isEnemy) {
+        super(damage, point.x, point.y, movementVector, spriteSheet, startingAnimation, isEnemy);
         this.projectileSpeed = projectileSpeed;
         this.fireRate = fireRate;
     }

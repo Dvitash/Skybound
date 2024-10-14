@@ -17,6 +17,8 @@ public class TestMap extends Map {
     SpriteFont moneyText;
 
     private int xText = 600;
+    SpriteFont speedBoostText;
+    SpriteFont jumpBoostText;
 
     public TestMap() {
         super("test_map.txt", new CommonTileset());
@@ -34,6 +36,14 @@ public class TestMap extends Map {
         highScoreText = new SpriteFont("HIGH SCORE: 0", 10, 45, "Montserrat", 20, new Color(200, 200, 200));
         highScoreText.setOutlineColor(Color.black);
         highScoreText.setOutlineThickness(4);
+
+        speedBoostText = new SpriteFont("", 550, 10, "Montserrat", 20, new Color(255, 255, 0));
+        speedBoostText.setOutlineColor(Color.black);
+        speedBoostText.setOutlineThickness(4);
+
+        jumpBoostText = new SpriteFont("", 561, 35, "Montserrat", 20, new Color(50, 215, 100));
+        jumpBoostText.setOutlineColor(Color.black);
+        jumpBoostText.setOutlineThickness(4);
 
         // read the score file
         try {
@@ -69,6 +79,18 @@ public class TestMap extends Map {
         
         this.moneyText.setX(xText - (15 * charCount));
         this.moneyText.setText("MONEY: " + player.getMoney());
+    
+        if (player.getJumpBoostActive() == true){
+            this.jumpBoostText.setText("JUMP BOOST ACTIVE");
+        }else{
+            this.jumpBoostText.setText("");
+        }
+
+        if (player.getSpeedBoostActive() == true){
+            this.speedBoostText.setText("SPEED BOOST ACTIVE");
+        }else{
+            this.speedBoostText.setText("");
+        }
     }
 
     @Override
@@ -78,6 +100,8 @@ public class TestMap extends Map {
         highScoreText.draw(graphicsHandler);
         scoreText.draw(graphicsHandler);
         moneyText.draw(graphicsHandler);
+        speedBoostText.draw(graphicsHandler);
+        jumpBoostText.draw(graphicsHandler);
     }
 /* 
     @Override

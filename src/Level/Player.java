@@ -4,11 +4,11 @@ import Engine.ImageLoader;
 import Engine.Key;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import Engine.Mouse;
 import Engine.KeyLocker;
 import Engine.Keyboard;
+import EnhancedMapTiles.JumpBoost;
+import EnhancedMapTiles.SpeedBoost;
 import EnhancedMapTiles.Spring;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
@@ -59,15 +59,31 @@ public abstract class Player extends GameObject {
     protected AirGroundState previousAirGroundState;
     protected LevelState levelState;
 
+    // Variables for jump boost
+    protected long jumpBoostEndTime = 0;
+    protected static final long jumpBoostDuration = 5000;
+    protected float jumpsHeight = 1f;
+    protected boolean jumpBoostActive;
+
+    // Variables for speed boost
+    protected long speedBoostEndTime = 0;
+    protected static final long speedBoostDuration = 5000;
+    protected float speedBoost = 4.5f;
+    protected boolean speedBoostActive;
+
     // classes that listen to player events can be added to this list
     protected ArrayList<PlayerListener> listeners = new ArrayList<>();
 
     // define keys
     protected KeyLocker keyLocker = new KeyLocker();
     protected Key JUMP_KEY = Key.UP;
+    protected Key JUMP_KEY2 = Key.W;
     protected Key MOVE_LEFT_KEY = Key.LEFT;
+    protected Key MOVE_LEFT_KEY2 =Key.A;
     protected Key MOVE_RIGHT_KEY = Key.RIGHT;
+    protected Key MOVE_RIGHT_KEY2 = Key.D;
     protected Key CROUCH_KEY = Key.DOWN;
+    protected Key CROUCH_KEY2 = Key.S;
     protected Key SPACE = Key.SPACE;
 
     // flags
@@ -130,12 +146,28 @@ public abstract class Player extends GameObject {
 
         // if player is currently playing through level (has not won or lost)
         if (levelState == LevelState.RUNNING) {
-            applyGravity(false);
+            applyGravity(false); 
 
             playerShoot();
             Dash();
 
-            playerJumping(1);
+            if (jumpBoostEndTime > System.currentTimeMillis()){
+                jumpsHeight = 1.5f;
+                jumpBoostActive = true;
+            }else{
+                jumpsHeight = 1.0f;
+                jumpBoostActive = false;
+            }
+
+            if (speedBoostEndTime > System.currentTimeMillis()){
+                walkSpeed = speedBoost;
+                speedBoostActive = true;
+            }else{
+                walkSpeed = 2.5f;
+                speedBoostActive = false;
+            }
+
+            playerJumping(1f);
             // update player's state and current actions, which includes things like determining how much it should move each frame and if its walking or jumping
             do {
                 previousPlayerState = playerState;
@@ -224,7 +256,7 @@ public abstract class Player extends GameObject {
                 playerCrouching();
                 break;
             case JUMPING:
-                playerJumping(1);
+                playerJumping(1f);
                 break;
         }
     }
@@ -236,14 +268,19 @@ public abstract class Player extends GameObject {
             playerState = PlayerState.WALKING;
         }
 
+        else if(Keyboard.isKeyDown(MOVE_LEFT_KEY2) || Keyboard.isKeyDown(MOVE_RIGHT_KEY2)){
+            playerState = PlayerState.WALKING;
+        }
+
         // if jump key is pressed, player enters JUMPING state
-        else if (Keyboard.isKeyDown(JUMP_KEY) && !keyLocker.isKeyLocked(JUMP_KEY)) {
+        else if ((Keyboard.isKeyDown(JUMP_KEY) && !keyLocker.isKeyLocked(JUMP_KEY)) || (Keyboard.isKeyDown(JUMP_KEY2) && !keyLocker.isKeyLocked(JUMP_KEY2))) {
             keyLocker.lockKey(JUMP_KEY);
+            keyLocker.lockKey(JUMP_KEY2);
             playerState = PlayerState.JUMPING;
         }
 
         // if crouch key is pressed, player enters CROUCHING state
-        else if (Keyboard.isKeyDown(CROUCH_KEY)) {
+        else if (Keyboard.isKeyDown(CROUCH_KEY) || Keyboard.isKeyDown(CROUCH_KEY2)) {
             playerState = PlayerState.CROUCHING;
         }
     }
@@ -256,10 +293,10 @@ public abstract class Player extends GameObject {
             dashDebounce = true;
             dashing = true;
 
-            if (Keyboard.isKeyDown(MOVE_LEFT_KEY) && Keyboard.isKeyUp(MOVE_RIGHT_KEY)) {
+            if ((Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_LEFT_KEY2)) && (Keyboard.isKeyUp(MOVE_RIGHT_KEY) || Keyboard.isKeyUp(MOVE_RIGHT_KEY2))) {
                 momentumX = -15f;
                 playerJumping(1.25f);
-            } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY) && Keyboard.isKeyUp(MOVE_LEFT_KEY)) {
+            } else if ((Keyboard.isKeyDown(MOVE_RIGHT_KEY) || Keyboard.isKeyDown(MOVE_RIGHT_KEY2)) && (Keyboard.isKeyUp(MOVE_LEFT_KEY) || Keyboard.isKeyUp(MOVE_LEFT_KEY2))) {
                 momentumX = 15f;
                 playerJumping(1.25f);
             }
@@ -316,7 +353,7 @@ public abstract class Player extends GameObject {
             Point movementVector = new Point(mousePoint.x - bulletX, mousePoint.y - screenY).toUnit();
 
             Bullet bullet = new Bullet(new Point(bulletX, bulletY), 1f, 7.5f, 60f,
-            movementVector, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT");
+            movementVector, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT", false);
 
             map.addProjectile(bullet);
         }
@@ -329,26 +366,26 @@ public abstract class Player extends GameObject {
     // player WALKING state logic
     protected void playerWalking() {
         // if walk left key is pressed, move player to the left
-        if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
+        if (Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_LEFT_KEY2)) {
             moveAmountX -= walkSpeed;
             facingDirection = Direction.LEFT;
         }
 
         // if walk right key is pressed, move player to the right
-        else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
+        else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY) || Keyboard.isKeyDown(MOVE_RIGHT_KEY2)) {
             moveAmountX += walkSpeed;
             facingDirection = Direction.RIGHT;
-        } else if (Keyboard.isKeyUp(MOVE_LEFT_KEY) && Keyboard.isKeyUp(MOVE_RIGHT_KEY)) {
+        } else if ((Keyboard.isKeyUp(MOVE_LEFT_KEY) || Keyboard.isKeyUp(MOVE_LEFT_KEY2)) && (Keyboard.isKeyUp(MOVE_RIGHT_KEY) || Keyboard.isKeyUp(MOVE_RIGHT_KEY2))) {
             playerState = PlayerState.STANDING;
         }
 
         // if jump key is pressed, player enters JUMPING state
-        if (Keyboard.isKeyDown(JUMP_KEY) && !keyLocker.isKeyLocked(JUMP_KEY)) {
+        if ((Keyboard.isKeyDown(JUMP_KEY) && !keyLocker.isKeyLocked(JUMP_KEY)) || (Keyboard.isKeyDown(JUMP_KEY2) && !keyLocker.isKeyLocked(JUMP_KEY2))) {
             playerState = PlayerState.JUMPING;
         }
 
         // if crouch key is pressed,
-        else if (Keyboard.isKeyDown(CROUCH_KEY)) {
+        else if (Keyboard.isKeyDown(CROUCH_KEY) || Keyboard.isKeyDown(CROUCH_KEY2)) {
             playerState = PlayerState.CROUCHING;
         }
     }
@@ -356,7 +393,7 @@ public abstract class Player extends GameObject {
     // player CROUCHING state logic
     protected void playerCrouching() {
         // if crouch key is released, player enters STANDING state
-        if (Keyboard.isKeyUp(CROUCH_KEY)) {
+        if (Keyboard.isKeyUp(CROUCH_KEY) && Keyboard.isKeyUp(CROUCH_KEY2)) {
             playerState = PlayerState.STANDING;
         }
     }
@@ -365,15 +402,20 @@ public abstract class Player extends GameObject {
     protected void playerJumping(float jumpAmplifier) {
         // if last frame player was on ground and this frame player is still on ground, the jump needs to be setup
         if (previousAirGroundState == AirGroundState.GROUND && airGroundState == AirGroundState.GROUND
-                && Keyboard.isKeyDown(CROUCH_KEY) == false) {
+                && (Keyboard.isKeyDown(CROUCH_KEY) == false && Keyboard.isKeyDown(CROUCH_KEY2) == false)) {
 
             keyLocker.lockKey(JUMP_KEY);
             // sets animation to a JUMP animation based on which way player is facing
             currentAnimationName = facingDirection == Direction.RIGHT ? "JUMP_RIGHT" : "JUMP_LEFT";
 
+            keyLocker.lockKey(JUMP_KEY2);
+            // sets animation to a JUMP animation based on which way player is facing
+            currentAnimationName = facingDirection == Direction.RIGHT ? "JUMP_RIGHT" : "JUMP_LEFT";
+
             // player is set to be in air and then player is sent into the air
             airGroundState = AirGroundState.AIR;
-            jumpForce = jumpHeight * jumpAmplifier;
+            jumpForce = jumpHeight * jumpAmplifier * jumpsHeight;
+
             if (pressedBeforeLand == true) {
                 if (jumpForce > 0) {
                     moveAmountY -= jumpForce;
@@ -397,7 +439,8 @@ public abstract class Player extends GameObject {
         // if player is in air (currently in a jump) and has more jumpForce, continue sending player upwards
         else if (airGroundState == AirGroundState.AIR) {
             keyLocker.lockKey(JUMP_KEY);
-            if (Keyboard.isKeyDown(CROUCH_KEY)) {
+            keyLocker.lockKey(JUMP_KEY2);
+            if (Keyboard.isKeyDown(CROUCH_KEY)|| Keyboard.isKeyDown(CROUCH_KEY2)) {
                 applyGravity(true);
             }
             if (jumpForce > 0) {
@@ -409,9 +452,9 @@ public abstract class Player extends GameObject {
             }
 
             // allows you to move left and right while in the air
-            if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
+            if (Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_LEFT_KEY2)) {
                 moveAmountX -= walkSpeed;
-            } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
+            } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY) || Keyboard.isKeyDown(MOVE_RIGHT_KEY2)) {
                 moveAmountX += walkSpeed;
             }
 
@@ -423,7 +466,7 @@ public abstract class Player extends GameObject {
 
         // if player last frame was in air and this frame is now on ground, player enters STANDING state
         else if (previousAirGroundState == AirGroundState.AIR && airGroundState == AirGroundState.GROUND) {
-            if (Keyboard.isKeyDown(JUMP_KEY)) {
+            if (Keyboard.isKeyDown(JUMP_KEY) || Keyboard.isKeyDown(JUMP_KEY2)) {
                 pressedBeforeLand = true;
             }
             playerState = PlayerState.STANDING;
@@ -461,6 +504,9 @@ public abstract class Player extends GameObject {
     protected void updateLockedKeys() {
         if (Keyboard.isKeyUp(JUMP_KEY)) {
             keyLocker.unlockKey(JUMP_KEY);
+        }
+        else if(Keyboard.isKeyUp(JUMP_KEY2)){
+            keyLocker.unlockKey(JUMP_KEY2);
         }
     }
 
@@ -523,6 +569,7 @@ public abstract class Player extends GameObject {
                         playerJumping(1.75f);
                         break;
                     }
+
                 }
 
             } else {
@@ -539,11 +586,37 @@ public abstract class Player extends GameObject {
         }
     }
 
+    public void jumpBoost() {
+        if (jumpBoostEndTime < System.currentTimeMillis()) {
+            jumpBoostEndTime = System.currentTimeMillis() + jumpBoostDuration;
+        } else {
+            jumpBoostEndTime = jumpBoostEndTime + jumpBoostDuration;
+        }
+
+    }
+
+    public boolean getJumpBoostActive(){
+        return this.jumpBoostActive;
+    }
+
+    public void speedBoost() {
+        if (speedBoostEndTime < System.currentTimeMillis()) {
+            speedBoostEndTime = System.currentTimeMillis() + speedBoostDuration;
+        } else {
+            speedBoostEndTime = speedBoostEndTime + speedBoostDuration;
+        }
+
+    }
+
+    public boolean getSpeedBoostActive(){
+        return this.speedBoostActive;
+    }
+
     // other entities can call this method to hurt the player
     public void hurtPlayer(MapEntity mapEntity) {
         if (!isInvincible) {
             // if map entity is an enemy, kill player on touch
-            if (mapEntity instanceof Enemy) {
+            if (mapEntity instanceof Enemy || mapEntity instanceof Projectile) {
                 levelState = LevelState.PLAYER_DEAD;
             }
         }

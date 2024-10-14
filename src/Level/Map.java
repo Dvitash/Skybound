@@ -3,6 +3,9 @@ package Level;
 import Engine.Config;
 import Engine.GraphicsHandler;
 import Engine.ScreenManager;
+import EnhancedMapTiles.HealthBoost;
+import EnhancedMapTiles.JumpBoost;
+import EnhancedMapTiles.SpeedBoost;
 import EnhancedMapTiles.Spring;
 import GameObject.Rectangle;
 import Utils.Direction;
@@ -102,17 +105,17 @@ public abstract class Map {
         loadMapFile();
 
         this.enemies = loadEnemies();
-        for (Enemy enemy: this.enemies) {
+        for (Enemy enemy : this.enemies) {
             enemy.setMap(this);
         }
 
         this.enhancedMapTiles = loadEnhancedMapTiles();
-        for (EnhancedMapTile enhancedMapTile: this.enhancedMapTiles) {
+        for (EnhancedMapTile enhancedMapTile : this.enhancedMapTiles) {
             enhancedMapTile.setMap(this);
         }
 
         this.npcs = loadNPCs();
-        for (NPC npc: this.npcs) {
+        for (NPC npc : this.npcs) {
             npc.setMap(this);
         }
 
@@ -130,14 +133,15 @@ public abstract class Map {
         try {
             // open map file that is located in the MAP_FILES_PATH directory
             fileInput = new Scanner(new File(Config.MAP_FILES_PATH + this.mapFileName));
-        } catch(FileNotFoundException ex) {
+        } catch (FileNotFoundException ex) {
             // if map file does not exist, create a new one for this map (the map editor uses this)
-            System.out.println("Map file " + Config.MAP_FILES_PATH + this.mapFileName + " not found! Creating empty map file...");
+            System.out.println(
+                    "Map file " + Config.MAP_FILES_PATH + this.mapFileName + " not found! Creating empty map file...");
 
             try {
                 createEmptyMapFile();
                 fileInput = new Scanner(new File(Config.MAP_FILES_PATH + this.mapFileName));
-            } catch(IOException ex2) {
+            } catch (IOException ex2) {
                 ex2.printStackTrace();
                 System.out.println("Failed to create an empty map file!");
                 throw new RuntimeException();
@@ -161,7 +165,7 @@ public abstract class Map {
                 int yLocation = i * tileset.getScaledSpriteHeight();
                 MapTile tile = tileset.getTile(tileIndex).build(xLocation, yLocation);
                 setMapTile(j, i, tile);
-    
+
                 if (tile.isAnimated()) {
                     animatedMapTiles.add(tile);
                 }
@@ -241,7 +245,7 @@ public abstract class Map {
     // set specific map tile from tile map to a new map tile
     public void setMapTile(int x, int y, MapTile tile) {
         Point point = new Point(x, y);
-    
+
         MapTile oldMapTile = mapTiles.get(point);
         animatedMapTiles.remove(oldMapTile);
 
@@ -259,7 +263,7 @@ public abstract class Map {
         Point tileIndex = getTileIndexByPosition(xPosition, yPosition);
         return mapTiles.get(new Point(Math.round(tileIndex.x), Math.round(tileIndex.y)));
     }
-    
+
     public Point getTileIndexByPosition(float xPosition, float yPosition) {
         int xIndex = Math.round(xPosition / tileset.getScaledSpriteWidth());
         int yIndex = Math.round(yPosition / tileset.getScaledSpriteHeight());
@@ -288,9 +292,11 @@ public abstract class Map {
     public ArrayList<Enemy> getEnemies() {
         return enemies;
     }
+
     public ArrayList<EnhancedMapTile> getEnhancedMapTiles() {
         return enhancedMapTiles;
     }
+
     public ArrayList<NPC> getNPCs() {
         return npcs;
     }
@@ -347,20 +353,25 @@ public abstract class Map {
     }
 
     private int lowestYGenerated = Integer.MAX_VALUE;
+
     public void GeneratePlatforms(int startPosY) {
         int scaledStartPos = startPosY / tileset.getScaledSpriteHeight();
-        
+
         for (int y = scaledStartPos; y > scaledStartPos - 16; y--) {
-            if (y >= lowestYGenerated) { continue; }
+            if (y >= lowestYGenerated) {
+                continue;
+            }
             lowestYGenerated = y;
-    
+
             int yLocation = y * tileset.getScaledSpriteHeight();
-    
-            if (yLocation > startPosY) { continue; }
-    
+
+            if (yLocation > startPosY) {
+                continue;
+            }
+
             for (int x = 0; x < width; x++) {
                 int xLocation = x * tileset.getScaledSpriteWidth();
-    
+
                 MapTile tileAtPosition = getMapTile(x, y);
                 if (tileAtPosition == null || tileAtPosition.getTileIndex() == 0) {
                     // place air if not placed already
@@ -368,55 +379,91 @@ public abstract class Map {
                         MapTile airTile = tileset.getTile(0).build(xLocation, yLocation);
                         setMapTile(x, y, airTile);
                     }
-    
+
                     boolean hasNeighbor = false;
-    
+
                     // check neighbors (up, down, left, right)
                     MapTile upTile = getMapTile(x, y - 1);
                     MapTile downTile = getMapTile(x, y + 1);
                     MapTile leftTile = getMapTile(x - 1, y);
                     MapTile rightTile = getMapTile(x + 1, y);
-    
+
                     if ((upTile != null && upTile.getTileIndex() != 0) ||
-                        (downTile != null && downTile.getTileIndex() != 0) ||
-                        (leftTile != null && leftTile.getTileIndex() != 0) ||
-                        (rightTile != null && rightTile.getTileIndex() != 0)) {
+                            (downTile != null && downTile.getTileIndex() != 0) ||
+                            (leftTile != null && leftTile.getTileIndex() != 0) ||
+                            (rightTile != null && rightTile.getTileIndex() != 0)) {
 
                         hasNeighbor = true;
                     }
-    
+
                     double chance = this.random.nextDouble();
                     if (chance < 0.15 && !hasNeighbor) { // default chance of 15%
                         MapTile platform = PlatformIndexes.GetRandomPlatform().build(xLocation, yLocation);
                         setMapTile(x, y, platform);
 
                         // additional random chance to spawn a spring platform
-                        double springChance = this.random.nextDouble();
+                        double itemChance = this.random.nextDouble();
 
-                        if (springChance < 0.1) {
+                        if (itemChance < 0.1) {
                             Spring spring = new Spring(
-                                tileset.getSubImage(2, 2),
-                                new Point(xLocation, yLocation),
-                                TileType.JUMP_THROUGH_PLATFORM,
-                                tileset.getTileScale(),
-                                new Rectangle(0, 6, 16, 4)
-                            );
-    
+                                    tileset.getSubImage(2, 2),
+                                    new Point(xLocation, yLocation),
+                                    TileType.JUMP_THROUGH_PLATFORM,
+                                    tileset.getTileScale(),
+                                    new Rectangle(0, 6, 16, 4));
+
                             addEnhancedMapTile(spring);
                         }
 
-                        // double enemyChance = this.random.nextDouble();
-                        // if (springChance >= 0.1 && enemyChance < 0.05) { // spawn an enemy if a spring is not spawned
-                        //     BugEnemy bugEnemy = new BugEnemy(new Point(xLocation, yLocation), Direction.LEFT);
-                        //     bugEnemy.setMap(this);
-                        //     enemies.add(bugEnemy);
-                        // }
+                        if (itemChance > 0.1 && itemChance < 0.11) {
+                            JumpBoost jumpBoost = new JumpBoost(
+                                tileset.getSubImage(2, 5),
+                                new Point(xLocation, yLocation),
+                                TileType.PASSABLE,
+                                tileset.getTileScale(),
+                                new Rectangle(4, 1, 8, 5)
+                            );
+    
+                            addEnhancedMapTile(jumpBoost);
+                        }
+
+                        if (itemChance > 0.12 && itemChance < 0.13) {
+                            SpeedBoost speedBoost = new SpeedBoost(
+                                tileset.getSubImage(2, 4),
+                                new Point(xLocation, yLocation),
+                                TileType.PASSABLE,
+                                tileset.getTileScale(),
+                                new Rectangle(4, 1, 8, 5)
+                            );
+    
+                            addEnhancedMapTile(speedBoost);
+                        }
+
+                        /* 
+                        if (itemChance > 0.14 && itemChance < 0.15) {
+                            HealthBoost healthBoost = new HealthBoost(
+                                tileset.getSubImage(2, 3),
+                                new Point(xLocation, yLocation),
+                                TileType.PASSABLE,
+                                tileset.getTileScale(),
+                                new Rectangle(4, 1, 8, 5)
+                            );
+    
+                            addEnhancedMapTile(healthBoost);
+                        } */
+
+                        double enemyChance = this.random.nextDouble();
+                        if (itemChance >= 0.1 && enemyChance < 0.05) { // spawn an enemy if a spring is not spawned
+                            BugEnemy bugEnemy = new BugEnemy(new Point(xLocation, yLocation), Direction.LEFT);
+                            bugEnemy.setMap(this);
+                            enemies.add(bugEnemy);
+                        }
                     }
                 }
             }
         }
     }
-    
+
     public void update(Player player) {
         if (adjustCamera) {
             adjustMovementY(player);
@@ -427,6 +474,21 @@ public abstract class Map {
             projectile.update(player);
         }
 
+        if (player != null) {
+            float playerWidth = player.getWidth();
+            float mapWidth = getWidthPixels();
+        
+            float leftBound = player.getX();
+            float rightBound = leftBound + playerWidth;
+        
+            if (leftBound > mapWidth) {
+                player.setX(leftBound - mapWidth - playerWidth);
+            }
+            else if (rightBound < 0) {
+                player.setX(mapWidth + rightBound);
+            }
+        }
+  
         // remove
         for (Projectile projectile : toRemove) {
             projectile.setMapEntityStatus(MapEntityStatus.REMOVED);
@@ -439,9 +501,9 @@ public abstract class Map {
     public boolean UpdateMapTileBounds() {
         float cameraY = camera.getEndBoundY();
         boolean deleted = false;
-    
+
         Iterator<MapTile> iterator = mapTiles.values().iterator();
-    
+
         while (iterator.hasNext()) {
             MapTile tile = iterator.next();
             if (tile.getY() > cameraY) {
@@ -449,9 +511,27 @@ public abstract class Map {
                 deleted = true;
             }
         }
+        
+        Iterator<Enemy> enemyIterator = this.enemies.iterator();
+        while (enemyIterator.hasNext()) {
+            Enemy enemy = enemyIterator.next();
+            if (enemy.getY() > cameraY) {
+                enemyIterator.remove();
+                deleted = true;
+            }
+        }
+        
+        Iterator<EnhancedMapTile> enhancedTileIterator = this.enhancedMapTiles.iterator();
+        while (enhancedTileIterator.hasNext()) {
+            EnhancedMapTile tile = enhancedTileIterator.next();
+            if (tile.getY() > cameraY) {
+                enhancedTileIterator.remove();
+                deleted = true;
+            }
+        }
 
         endBoundY = Math.round(cameraY);
-    
+
         return deleted;
     }
 
@@ -459,18 +539,19 @@ public abstract class Map {
     // adjust the player's and camera's positions accordingly in order to properly create the map "scrolling" effect
     private float totalMovementY = -Integer.MAX_VALUE;
     private float previousPlayerY = -1;
+
     private void adjustMovementY(Player player) {
         float playerY = (player.getY() + (player.getHeight() / 2));
 
         yMidPoint = (int) camera.getY() + (ScreenManager.getScreenHeight() / 2);
-        GeneratePlatforms(yMidPoint + (ScreenManager.getScreenHeight() / 5)); 
+        GeneratePlatforms(yMidPoint + (ScreenManager.getScreenHeight() / 5));
 
         // // if player goes past center screen (below) and there is more map to show below, push player back to center and move camera upward
         // if (playerY > yMidPoint && camera.getEndBoundY() < endBoundY && !cameraReachedMaxHeight) {
         //     float yMidPointDifference = yMidPoint - playerY;
         //     // camera.moveY(-yMidPointDifference);  
         //     // MoveMap(yMidPointDifference);
-    
+
         //     // if camera moved past the bottom of the map as a result from the move above, move camera upwards and push player downwards
         //     if (camera.getEndBoundY() > endBoundY) {
         //         float cameraDifference = camera.getEndBoundY() - endBoundY;
@@ -479,15 +560,15 @@ public abstract class Map {
         //         // MoveMap(cameraDifference);
         //     }
         // }
-        
+
         // if player goes above center of the screen, move map downwards
         if (playerY < yMidPoint) {
             float yMidPointDifference;
-            
+
             if (previousPlayerY == -1) {
                 previousPlayerY = playerY;
             }
-    
+
             yMidPointDifference = previousPlayerY - playerY;
             previousPlayerY = playerY;
 
@@ -527,6 +608,11 @@ public abstract class Map {
         return totalMovementY;
     }
 
-    public int getEndBoundX() { return endBoundX; }
-    public int getEndBoundY() { return endBoundY; }
+    public int getEndBoundX() {
+        return endBoundX;
+    }
+
+    public int getEndBoundY() {
+        return endBoundY;
+    }
 }
