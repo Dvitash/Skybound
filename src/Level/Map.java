@@ -452,12 +452,12 @@ public abstract class Map {
                             addEnhancedMapTile(healthBoost);
                         } */
 
-                        // double enemyChance = this.random.nextDouble();
-                        // if (itemChance >= 0.1 && enemyChance < 0.05) { // spawn an enemy if a spring is not spawned
-                        //     BugEnemy bugEnemy = new BugEnemy(new Point(xLocation, yLocation), Direction.LEFT);
-                        //     bugEnemy.setMap(this);
-                        //     enemies.add(bugEnemy);
-                        // }
+                        double enemyChance = this.random.nextDouble();
+                        if (itemChance >= 0.1 && enemyChance < 0.05) { // spawn an enemy if a spring is not spawned
+                            BugEnemy bugEnemy = new BugEnemy(new Point(xLocation, yLocation), Direction.LEFT);
+                            bugEnemy.setMap(this);
+                            enemies.add(bugEnemy);
+                        }
                     }
                 }
             }
