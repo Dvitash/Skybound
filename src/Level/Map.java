@@ -475,13 +475,17 @@ public abstract class Map {
         }
 
         if (player != null) {
+            float playerWidth = player.getWidth();
+            float mapWidth = getWidthPixels();
+        
             float leftBound = player.getX();
-            float rightBound = player.getX2();
-
-            if (rightBound < 0) {
-                player.setX(rightBound + getWidthPixels());
-            } else if (leftBound > getWidthPixels()) {
-                player.setX(leftBound - getWidthPixels());
+            float rightBound = leftBound + playerWidth;
+        
+            if (leftBound > mapWidth) {
+                player.setX(leftBound - mapWidth - playerWidth);
+            }
+            else if (rightBound < 0) {
+                player.setX(mapWidth + rightBound);
             }
         }
   
