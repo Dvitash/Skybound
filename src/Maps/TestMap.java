@@ -6,8 +6,10 @@ import java.io.File;
 import java.util.Scanner;
 import Level.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 import Engine.GraphicsHandler;
+
 
 // Represents a test map to be used in a level
 public class TestMap extends Map {
@@ -16,6 +18,9 @@ public class TestMap extends Map {
     SpriteFont highScoreText;
     SpriteFont speedBoostText;
     SpriteFont jumpBoostText;
+
+    private BufferedImage heartIcon;
+    private int playerHealth;
 
     public TestMap() {
         super("test_map.txt", new CommonTileset());
@@ -36,6 +41,8 @@ public class TestMap extends Map {
         jumpBoostText = new SpriteFont("", 561, 35, "Montserrat", 20, new Color(50, 215, 100));
         jumpBoostText.setOutlineColor(Color.black);
         jumpBoostText.setOutlineThickness(4);
+
+        heartIcon = tileset.getSubImage(3,3);
 
         // read the score file
         try {
@@ -71,6 +78,9 @@ public class TestMap extends Map {
         }else{
             this.speedBoostText.setText("");
         }
+
+        playerHealth = player.getHearts();
+
     }
 
     @Override
@@ -81,50 +91,18 @@ public class TestMap extends Map {
         scoreText.draw(graphicsHandler);
         speedBoostText.draw(graphicsHandler);
         jumpBoostText.draw(graphicsHandler);
-    }
-/* 
-    @Override
-    public ArrayList<Enemy> loadEnemies() {
-        ArrayList<Enemy> enemies = new ArrayList<>();
 
-        BugEnemy bugEnemy = new BugEnemy(getMapTile(3, 10).getLocation().subtractY(25), Direction.LEFT);
-        enemies.add(bugEnemy);
+        if (heartIcon != null) {
+            int heartXStart = -5;
+            int heartY = 73;
+            int spacing = 20;
+    
+            for (int i = 0; i < playerHealth; i++) {
+                int heartX = heartXStart + i * (heartIcon.getWidth() + spacing);
+                graphicsHandler.drawImage(heartIcon, heartX, heartY, 55,55);
+            }
+        }
 
-        DinosaurEnemy dinosaurEnemy = new DinosaurEnemy(getMapTile(19, 1).getLocation().addY(2), getMapTile(22, 1).getLocation().addY(2), Direction.RIGHT);
-        enemies.add(dinosaurEnemy);
-
-        return enemies;
-    }
-
-    @Override
-    public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
-        ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
-
-        HorizontalMovingPlatform hmp = new HorizontalMovingPlatform(
-                ImageLoader.load("GreenPlatform.png"),
-                getMapTile(24, 6).getLocation(),
-                getMapTile(27, 6).getLocation(),
-                TileType.JUMP_THROUGH_PLATFORM,
-                3,
-                new Rectangle(0, 6,16,4),
-                Direction.RIGHT
-        );
-        enhancedMapTiles.add(hmp);
-
-        EndLevelBox endLevelBox = new EndLevelBox(getMapTile(32, 7).getLocation());
-        enhancedMapTiles.add(endLevelBox);
-
-        return enhancedMapTiles;
     }
 
-    @Override
-    public ArrayList<NPC> loadNPCs() {
-        ArrayList<NPC> npcs = new ArrayList<>();
-
-        Walrus walrus = new Walrus(getMapTile(30, 10).getLocation().subtractY(13));
-        npcs.add(walrus);
-
-        return npcs;
-    }
-*/
 }
