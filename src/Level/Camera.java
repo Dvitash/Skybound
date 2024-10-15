@@ -173,14 +173,14 @@ public class Camera extends Rectangle {
 
     // draws active map entities to the screen
     public void drawMapEntities(GraphicsHandler graphicsHandler) {
-        for (Enemy enemy : activeEnemies) {
-            if (containsDraw(enemy)) {
-                enemy.draw(graphicsHandler);
-            }
-        }
         for (EnhancedMapTile enhancedMapTile : activeEnhancedMapTiles) {
             if (containsDraw(enhancedMapTile)) {
                 enhancedMapTile.draw(graphicsHandler);
+            }
+        }
+        for (Enemy enemy : activeEnemies) {
+            if (containsDraw(enemy)) {
+                enemy.draw(graphicsHandler);
             }
         }
         for (NPC npc : activeNPCs) {
