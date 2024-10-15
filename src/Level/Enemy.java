@@ -34,8 +34,10 @@ public class Enemy extends MapEntity {
         super(x, y, frames);
     }
 
-    public Enemy(float x, float y, Frame frame) {
+    public Enemy(float x, float y, Frame frame, boolean doesShoot) {
         super(x, y, frame);
+
+        this.doesShoot = doesShoot;
     }
 
     public Enemy(float x, float y) {
@@ -45,15 +47,10 @@ public class Enemy extends MapEntity {
     @Override
     public void initialize() {
         super.initialize();
-
-        double chance = random.nextDouble();
-        if (chance <= 0.5) { // 50% chance to have the enemy shooting
-            doesShoot = true;
-        }
     }
 
     public void update(Player player) {
-        super.update();
+        // super.update();
         
         if (intersects(player)) {    
             float playerBottomEdge = player.getY2(); // get the bottom edge of the player
@@ -82,7 +79,7 @@ public class Enemy extends MapEntity {
                 public void run() {
                     shootingCooldown = false;
                 }
-            }, (long) (4000 + random.nextInt(2000)));
+            }, (long) (3000 + random.nextInt(3000)));
 
             // shoot
             int bulletY = Math.round(getY() + (getHeight() / 2));
@@ -94,7 +91,9 @@ public class Enemy extends MapEntity {
 
             Point movementVector = new Point(playerPosition.x - bulletX, playerPosition.y - screenY).toUnit();
 
-            Bullet bullet = new Bullet(new Point(bulletX, bulletY), 1f, 7.5f, 60f,
+            float projectileSpeed = random.nextFloat(5f, 10f);
+
+            Bullet bullet = new Bullet(new Point(bulletX, bulletY), 1f, projectileSpeed, 60f,
             movementVector, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT", true);
 
             map.addProjectile(bullet);

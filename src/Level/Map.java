@@ -20,8 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Scanner;
-
-import Enemies.BugEnemy;
+import Enemies.SpawnableEnemy;
 
 /*
     This class is for defining a map that is used for a specific level
@@ -454,7 +453,15 @@ public abstract class Map {
 
                         double enemyChance = this.random.nextDouble();
                         if (itemChance >= 0.1 && enemyChance < 0.05) { // spawn an enemy if a spring is not spawned
-                            BugEnemy bugEnemy = new BugEnemy(new Point(xLocation, yLocation), Direction.LEFT);
+
+                            double shootingChance = this.random.nextDouble();
+                            boolean isShooting = false;
+
+                            if (shootingChance >= 0.5) {
+                                isShooting = true;
+                            }
+
+                            SpawnableEnemy bugEnemy = new SpawnableEnemy(new Point(xLocation, yLocation), Direction.LEFT, isShooting);
                             bugEnemy.setMap(this);
                             enemies.add(bugEnemy);
                         }

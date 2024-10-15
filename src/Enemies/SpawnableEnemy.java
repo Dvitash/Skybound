@@ -4,6 +4,7 @@ import Builders.FrameBuilder;
 import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.ImageEffect;
+import GameObject.Rectangle;
 import GameObject.SpriteSheet;
 import Level.Enemy;
 import Level.MapEntity;
@@ -11,13 +12,14 @@ import Level.Player;
 import Utils.AirGroundState;
 import Utils.Direction;
 import Utils.Point;
-
+import java.util.Random;
+import java.io.File;
 import java.util.HashMap;
 
 // This class is for the black bug enemy
 // enemy behaves like a Mario goomba -- walks forward until it hits a solid map tile, and then turns around
 // if it ends up in the air from walking off a cliff, it will fall down until it hits the ground again, and then will continue walking
-public class BugEnemy extends Enemy {
+public class SpawnableEnemy extends Enemy {
 
     private float gravity = .5f;
     private float movementSpeed = .5f;
@@ -25,8 +27,41 @@ public class BugEnemy extends Enemy {
     private Direction facingDirection;
     private AirGroundState airGroundState;
 
-    public BugEnemy(Point location, Direction facingDirection) {
-        super(location.x, location.y, new SpriteSheet(ImageLoader.load("BugEnemy.png"), 24, 15), "WALK_LEFT");
+    public static String getRandomSprite(boolean isShooting) {
+        String folderName;
+        if (isShooting) {
+            folderName = "ShootingEnemies";
+        } else {
+            folderName = "RegularEnemies";
+        }
+
+        File folder = new File("Resources\\" + folderName);
+
+        if (folder.isDirectory()) {
+            // Get all the children (files and subdirectories)
+            File[] children = folder.listFiles();
+
+            if (children != null && children.length > 0) {
+                int numChildren = children.length;
+
+                Random random = new Random();
+                int randomIndex = random.nextInt(numChildren);
+
+                File randomChild = children[randomIndex];
+
+                return folderName + File.separator + randomChild.getName();
+            } else {
+                System.out.println("The folder is empty.");
+                return null;
+            }
+        } else {
+            System.out.println("This is not a directory.");
+            return null;
+        }
+    }
+
+    public SpawnableEnemy(Point location, Direction facingDirection, boolean isShooting) {
+        super(location.x, location.y, new Frame(ImageLoader.load(getRandomSprite(isShooting)), ImageEffect.NONE, 2.0f, new Rectangle(1, 1, 22, 14)), isShooting);
         this.startFacingDirection = facingDirection;
         this.initialize();
     }
