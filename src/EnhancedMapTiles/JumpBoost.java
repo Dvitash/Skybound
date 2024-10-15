@@ -1,45 +1,45 @@
 package EnhancedMapTiles;
 
-import Builders.FrameBuilder;
 import Engine.GraphicsHandler;
 import GameObject.Rectangle;
-import Level.EnhancedMapTile;
-import Level.MapEntityStatus;
+import Level.Pickup;
 import Level.Player;
 import Level.TileType;
 import Utils.Point;
 
 import java.awt.image.BufferedImage;
 
-public class JumpBoost extends EnhancedMapTile {
+public class JumpBoost extends Pickup {
     private boolean isCollected = false;
 
-    public JumpBoost(BufferedImage image, Point startLocation, TileType tileType, float scale, Rectangle bounds) {
-        super(startLocation.x, startLocation.y, new FrameBuilder(image).withBounds(bounds).withScale(scale).build(), tileType);
+    protected static final long jumpBoostDuration = 5000;
+    protected static final float jumpBoostModifier = 1.5f;
+
+    public JumpBoost(BufferedImage image, Point startLocation, TileType tileType, float scale, Rectangle bounds, String pickupName) {
+        super(image, startLocation, tileType, scale, bounds, pickupName);
         this.initialize();
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-    }
+    protected void execute(Player player) {
+        super.execute(player);
 
-    @Override
-    public void update(Player player) {
-        super.update(player);
+        float originalJumpHeight = player.jumpHeight;
+        player.jumpHeight = originalJumpHeight * jumpBoostModifier;
 
-        if (intersects(player) && !isCollected) {
-            // Set the flag to true to indicate that the tile has been collected
-            isCollected = true;
-            player.jumpBoost();
-        }
-    }
+        Pickup.SetActive(this);
+        JumpBoost currentInstance = this;
 
-    @Override
-    public void draw(GraphicsHandler graphicsHandler) {
-        // Only draw the tile if it hasn't been collected yet
-        if (!isCollected) {
-            super.draw(graphicsHandler);
-        }
+        // after the duration, set it back to normal
+        new java.util.Timer().schedule(
+                new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        player.jumpHeight = originalJumpHeight;
+                        Pickup.SetInactive(currentInstance);
+                    }
+                },
+                jumpBoostDuration
+        );
     }
 }

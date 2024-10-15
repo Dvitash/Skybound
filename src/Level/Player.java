@@ -31,7 +31,7 @@ public abstract class Player extends GameObject {
     // these should be set in a subclass
     protected float walkSpeed = 0;
     protected float gravity = 0;
-    protected float jumpHeight = 0;
+    public float jumpHeight = 0;
     protected float jumpDegrade = 0;
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
@@ -58,12 +58,6 @@ public abstract class Player extends GameObject {
     protected AirGroundState airGroundState;
     protected AirGroundState previousAirGroundState;
     protected LevelState levelState;
-
-    // Variables for jump boost
-    protected long jumpBoostEndTime = 0;
-    protected static final long jumpBoostDuration = 5000;
-    protected float jumpsHeight = 1f;
-    protected boolean jumpBoostActive;
 
     // Variables for speed boost
     protected long speedBoostEndTime = 0;
@@ -153,14 +147,6 @@ public abstract class Player extends GameObject {
 
             playerShoot();
             Dash();
-
-            if (jumpBoostEndTime > System.currentTimeMillis()){
-                jumpsHeight = 1.5f;
-                jumpBoostActive = true;
-            }else{
-                jumpsHeight = 1.0f;
-                jumpBoostActive = false;
-            }
 
             if (speedBoostEndTime > System.currentTimeMillis()){
                 walkSpeed = speedBoost;
@@ -417,7 +403,7 @@ public abstract class Player extends GameObject {
 
             // player is set to be in air and then player is sent into the air
             airGroundState = AirGroundState.AIR;
-            jumpForce = jumpHeight * jumpAmplifier * jumpsHeight;
+            jumpForce = jumpHeight * jumpAmplifier;
 
             if (pressedBeforeLand == true) {
                 if (jumpForce > 0) {
@@ -587,19 +573,6 @@ public abstract class Player extends GameObject {
                 jumpForce = 0;
             }
         }
-    }
-
-    public void jumpBoost() {
-        if (jumpBoostEndTime < System.currentTimeMillis()) {
-            jumpBoostEndTime = System.currentTimeMillis() + jumpBoostDuration;
-        } else {
-            jumpBoostEndTime = jumpBoostEndTime + jumpBoostDuration;
-        }
-
-    }
-
-    public boolean getJumpBoostActive(){
-        return this.jumpBoostActive;
     }
 
     public void speedBoost() {
