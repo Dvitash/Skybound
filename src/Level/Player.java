@@ -71,6 +71,9 @@ public abstract class Player extends GameObject {
     protected float speedBoost = 4.5f;
     protected boolean speedBoostActive;
 
+    // Variables for health
+    protected int hearts = 3;
+
     // classes that listen to player events can be added to this list
     protected ArrayList<PlayerListener> listeners = new ArrayList<>();
 
@@ -620,6 +623,18 @@ public abstract class Player extends GameObject {
                 levelState = LevelState.PLAYER_DEAD;
             }
         }
+    }
+
+    public void health() {
+
+        if (hearts < 5){
+            hearts++;
+        }
+
+    }
+
+    public int getHearts(){
+        return this.hearts;
     }
 
     // other entities can call this to tell the player they beat a level

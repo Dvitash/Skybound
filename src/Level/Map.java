@@ -3,6 +3,7 @@ package Level;
 import Engine.Config;
 import Engine.GraphicsHandler;
 import Engine.ScreenManager;
+import EnhancedMapTiles.Health;
 import EnhancedMapTiles.HealthBoost;
 import EnhancedMapTiles.JumpBoost;
 import EnhancedMapTiles.SpeedBoost;
@@ -438,18 +439,17 @@ public abstract class Map {
                             addEnhancedMapTile(speedBoost);
                         }
 
-                        /* 
                         if (itemChance > 0.14 && itemChance < 0.15) {
-                            HealthBoost healthBoost = new HealthBoost(
-                                tileset.getSubImage(2, 3),
+                            Health health = new Health(
+                                tileset.getSubImage(3, 3),
                                 new Point(xLocation, yLocation),
                                 TileType.PASSABLE,
                                 tileset.getTileScale(),
                                 new Rectangle(4, 1, 8, 5)
                             );
     
-                            addEnhancedMapTile(healthBoost);
-                        } */
+                            addEnhancedMapTile(health);
+                        } 
 
                         double enemyChance = this.random.nextDouble();
                         if (itemChance >= 0.1 && enemyChance < 0.05) { // spawn an enemy if a spring is not spawned
