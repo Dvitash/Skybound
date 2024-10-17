@@ -65,6 +65,9 @@ public abstract class Player extends GameObject {
 
     // Variables for health
     protected int hearts = 3;
+    private boolean isHit = false;
+    private long hitTimer = 0;
+    private static final long hitCooldown = 1000; 
 
     // classes that listen to player events can be added to this list
     protected ArrayList<PlayerListener> listeners = new ArrayList<>();
@@ -190,6 +193,13 @@ public abstract class Player extends GameObject {
         // if player has lost level
         else if (levelState == LevelState.PLAYER_DEAD) {
             updatePlayerDead();
+        }
+
+        if (isHit) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - hitTimer >= hitCooldown) {
+                isHit = false; // Reset the hit flag after cooldown
+            }
         }
     }
 
@@ -573,12 +583,15 @@ public abstract class Player extends GameObject {
         }
     }
 
-    // other entities can call this method to hurt the player
     public void hurtPlayer(MapEntity mapEntity) {
-        if (!isInvincible) {
-            // if map entity is an enemy, kill player on touch
-            if (mapEntity instanceof Enemy || mapEntity instanceof Projectile) {
+        if (!isInvincible && !isHit) {
+            if ((mapEntity instanceof Enemy || mapEntity instanceof Projectile) && hearts == 1) {
                 levelState = LevelState.PLAYER_DEAD;
+                hearts--;
+            } else {
+                hearts--;
+                isHit = true;
+                hitTimer = System.currentTimeMillis();
             }
         }
     }

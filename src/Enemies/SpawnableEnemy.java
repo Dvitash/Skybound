@@ -61,7 +61,7 @@ public class SpawnableEnemy extends Enemy {
     }
 
     public SpawnableEnemy(Point location, Direction facingDirection, boolean isShooting) {
-        super(location.x, location.y, new Frame(ImageLoader.load(getRandomSprite(isShooting)), ImageEffect.NONE, 2.0f, new Rectangle(1, 1, 22, 14)), isShooting);
+        super(location.x, location.y-5, new Frame(ImageLoader.load(getRandomSprite(isShooting)), ImageEffect.NONE, 2.0f, new Rectangle(1, 1, 22, 14)), isShooting);
         this.startFacingDirection = facingDirection;
         this.initialize();
     }
