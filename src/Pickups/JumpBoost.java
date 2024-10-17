@@ -1,4 +1,4 @@
-package EnhancedMapTiles;
+package Pickups;
 
 import Engine.GraphicsHandler;
 import GameObject.Rectangle;
@@ -15,15 +15,18 @@ public class JumpBoost extends Pickup {
     protected static final long jumpBoostDuration = 5000;
     protected static final float jumpBoostModifier = 1.5f;
 
-    public JumpBoost(BufferedImage image, Point startLocation, TileType tileType, float scale, Rectangle bounds, String pickupName) {
-        super(image, startLocation, tileType, scale, bounds, pickupName);
-        this.initialize();
+    protected double weight;
+
+    public JumpBoost(BufferedImage image, Point startLocation, TileType tileType, float scale, Rectangle bounds, String pickupName, double weight) {
+        super(image, startLocation, tileType, scale, bounds, pickupName, weight);
+
+        this.weight = weight;
+
+        super.initialize(this);
     }
 
     @Override
-    protected void execute(Player player) {
-        super.execute(player);
-
+    public void execute(Player player) {
         float originalJumpHeight = player.jumpHeight;
         player.jumpHeight = originalJumpHeight * jumpBoostModifier;
 

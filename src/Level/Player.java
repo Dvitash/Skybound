@@ -7,8 +7,6 @@ import java.awt.event.KeyEvent;
 import Engine.Mouse;
 import Engine.KeyLocker;
 import Engine.Keyboard;
-import EnhancedMapTiles.JumpBoost;
-import EnhancedMapTiles.SpeedBoost;
 import EnhancedMapTiles.Spring;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
@@ -29,9 +27,9 @@ import java.util.TimerTask;
 public abstract class Player extends GameObject {
     // values that affect player movement
     // these should be set in a subclass
-    protected float walkSpeed = 0;
+    public float walkSpeed = 0; // for speedBoost
     protected float gravity = 0;
-    public float jumpHeight = 0;
+    public float jumpHeight = 0; // for jumpHeight
     protected float jumpDegrade = 0;
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
@@ -573,19 +571,6 @@ public abstract class Player extends GameObject {
                 jumpForce = 0;
             }
         }
-    }
-
-    public void speedBoost() {
-        if (speedBoostEndTime < System.currentTimeMillis()) {
-            speedBoostEndTime = System.currentTimeMillis() + speedBoostDuration;
-        } else {
-            speedBoostEndTime = speedBoostEndTime + speedBoostDuration;
-        }
-
-    }
-
-    public boolean getSpeedBoostActive(){
-        return this.speedBoostActive;
     }
 
     // other entities can call this method to hurt the player

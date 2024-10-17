@@ -11,7 +11,6 @@ import java.awt.image.BufferedImage;
 
 import Engine.GraphicsHandler;
 
-
 // Represents a test map to be used in a level
 public class TestMap extends Map {
 
@@ -42,7 +41,7 @@ public class TestMap extends Map {
         highScoreText.setOutlineColor(Color.black);
         highScoreText.setOutlineThickness(4);
 
-        heartIcon = tileset.getSubImage(3,3);
+        heartIcon = tileset.getSubImage(3, 3);
 
         // read the score file
         try {
@@ -59,6 +58,8 @@ public class TestMap extends Map {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        PickupLoader.initialize(tileset);
 
         this.powerupTexts = new ArrayList<SpriteFont>();
     }
@@ -77,26 +78,28 @@ public class TestMap extends Map {
             money = money % 10;
         }
 
-        
         this.moneyText.setX(xText - (15 * charCount));
         this.moneyText.setText("MONEY: " + player.getMoney());
 
         ArrayList<Pickup> activePickups = Pickup.GetActivePickups();
 
-        this.powerupTexts.clear();
+        ArrayList<SpriteFont> newPowerupTexts = new ArrayList<>();
 
         if (activePickups.size() > 0) {
             int index = 0;
             for (Pickup pickup : activePickups) {
                 int height = 45 + (25 * (index - 1));
 
-                SpriteFont text = new SpriteFont(pickup.getName() + " ACTIVE", 550, height, "Montserrat", 20, new Color(255, 255, 255));
+                SpriteFont text = new SpriteFont(pickup.getName() + " ACTIVE", 550, height, "Montserrat", 20,
+                        new Color(255, 255, 255));
                 text.setOutlineColor(Color.black);
                 text.setOutlineThickness(4);
 
-                this.powerupTexts.add(text);
+                newPowerupTexts.add(text);
             }
         }
+
+        this.powerupTexts = newPowerupTexts;
 
         playerHealth = player.getHearts();
 
@@ -114,10 +117,10 @@ public class TestMap extends Map {
             int heartXStart = -5;
             int heartY = 73;
             int spacing = 20;
-    
+
             for (int i = 0; i < playerHealth; i++) {
                 int heartX = heartXStart + i * (heartIcon.getWidth() + spacing);
-                graphicsHandler.drawImage(heartIcon, heartX, heartY, 55,55);
+                graphicsHandler.drawImage(heartIcon, heartX, heartY, 55, 55);
             }
 
             for (SpriteFont text : this.powerupTexts) {
