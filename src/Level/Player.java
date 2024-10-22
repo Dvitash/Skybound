@@ -7,8 +7,6 @@ import java.awt.event.KeyEvent;
 import Engine.Mouse;
 import Engine.KeyLocker;
 import Engine.Keyboard;
-import EnhancedMapTiles.JumpBoost;
-import EnhancedMapTiles.SpeedBoost;
 import EnhancedMapTiles.Spring;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
@@ -29,9 +27,9 @@ import java.util.TimerTask;
 public abstract class Player extends GameObject {
     // values that affect player movement
     // these should be set in a subclass
-    protected float walkSpeed = 0;
+    public float walkSpeed = 0; // for speedBoost
     protected float gravity = 0;
-    protected float jumpHeight = 0;
+    public float jumpHeight = 0; // for jumpHeight
     protected float jumpDegrade = 0;
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
@@ -60,12 +58,6 @@ public abstract class Player extends GameObject {
     protected AirGroundState previousAirGroundState;
     protected LevelState levelState;
 
-    // Variables for jump boost
-    protected long jumpBoostEndTime = 0;
-    protected static final long jumpBoostDuration = 5000;
-    protected float jumpsHeight = 1f;
-    protected boolean jumpBoostActive;
-
     // Variables for speed boost
     protected long speedBoostEndTime = 0;
     protected static final long speedBoostDuration = 5000;
@@ -74,6 +66,9 @@ public abstract class Player extends GameObject {
 
     // Variables for health
     protected int hearts = 3;
+    private boolean isHit = false;
+    private long hitTimer = 0;
+    private static final long hitCooldown = 1000; 
 
     // classes that listen to player events can be added to this list
     protected ArrayList<PlayerListener> listeners = new ArrayList<>();
@@ -154,14 +149,6 @@ public abstract class Player extends GameObject {
             playerShoot();
             Dash();
 
-            if (jumpBoostEndTime > System.currentTimeMillis()){
-                jumpsHeight = 1.5f;
-                jumpBoostActive = true;
-            }else{
-                jumpsHeight = 1.0f;
-                jumpBoostActive = false;
-            }
-
             if (speedBoostEndTime > System.currentTimeMillis()){
                 walkSpeed = speedBoost;
                 speedBoostActive = true;
@@ -206,6 +193,13 @@ public abstract class Player extends GameObject {
         // if player has lost level
         else if (levelState == LevelState.PLAYER_DEAD) {
             updatePlayerDead();
+        }
+
+        if (isHit) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - hitTimer >= hitCooldown) {
+                isHit = false; // Reset the hit flag after cooldown
+            }
         }
     }
 
@@ -419,7 +413,7 @@ public abstract class Player extends GameObject {
 
             // player is set to be in air and then player is sent into the air
             airGroundState = AirGroundState.AIR;
-            jumpForce = jumpHeight * jumpAmplifier * jumpsHeight;
+            jumpForce = jumpHeight * jumpAmplifier;
 
             if (pressedBeforeLand) {
                 if (jumpForce > 0) {
@@ -611,38 +605,15 @@ public abstract class Player extends GameObject {
         }
     }
 
-    public void jumpBoost() {
-        if (jumpBoostEndTime < System.currentTimeMillis()) {
-            jumpBoostEndTime = System.currentTimeMillis() + jumpBoostDuration;
-        } else {
-            jumpBoostEndTime = jumpBoostEndTime + jumpBoostDuration;
-        }
-
-    }
-
-    public boolean getJumpBoostActive(){
-        return this.jumpBoostActive;
-    }
-
-    public void speedBoost() {
-        if (speedBoostEndTime < System.currentTimeMillis()) {
-            speedBoostEndTime = System.currentTimeMillis() + speedBoostDuration;
-        } else {
-            speedBoostEndTime = speedBoostEndTime + speedBoostDuration;
-        }
-
-    }
-
-    public boolean getSpeedBoostActive(){
-        return this.speedBoostActive;
-    }
-
-    // other entities can call this method to hurt the player
     public void hurtPlayer(MapEntity mapEntity) {
-        if (!isInvincible) {
-            // if map entity is an enemy, kill player on touch
-            if (mapEntity instanceof Enemy || mapEntity instanceof Projectile) {
+        if (!isInvincible && !isHit) {
+            if ((mapEntity instanceof Enemy || mapEntity instanceof Projectile) && hearts == 1) {
                 levelState = LevelState.PLAYER_DEAD;
+                hearts--;
+            } else {
+                hearts--;
+                isHit = true;
+                hitTimer = System.currentTimeMillis();
             }
         }
     }

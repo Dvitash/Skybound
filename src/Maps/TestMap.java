@@ -3,13 +3,13 @@ package Maps;
 import SpriteFont.SpriteFont;
 import Tilesets.CommonTileset;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Scanner;
 import Level.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import Engine.GraphicsHandler;
-
 
 // Represents a test map to be used in a level
 public class TestMap extends Map {
@@ -19,8 +19,8 @@ public class TestMap extends Map {
     SpriteFont moneyText;
 
     private int xText = 600;
-    SpriteFont speedBoostText;
-    SpriteFont jumpBoostText;
+
+    ArrayList<SpriteFont> powerupTexts;
 
     private BufferedImage heartIcon;
     private int playerHealth;
@@ -41,15 +41,7 @@ public class TestMap extends Map {
         highScoreText.setOutlineColor(Color.black);
         highScoreText.setOutlineThickness(4);
 
-        speedBoostText = new SpriteFont("", 550, 45, "Montserrat", 20, new Color(255, 255, 0));
-        speedBoostText.setOutlineColor(Color.black);
-        speedBoostText.setOutlineThickness(4);
-
-        jumpBoostText = new SpriteFont("", 561, 70, "Montserrat", 20, new Color(50, 215, 100));
-        jumpBoostText.setOutlineColor(Color.black);
-        jumpBoostText.setOutlineThickness(4);
-
-        heartIcon = tileset.getSubImage(3,3);
+        heartIcon = tileset.getSubImage(3, 3);
 
         // read the score file
         try {
@@ -66,6 +58,10 @@ public class TestMap extends Map {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        PickupLoader.initialize(tileset);
+
+        this.powerupTexts = new ArrayList<SpriteFont>();
     }
 
     @Override
@@ -82,21 +78,28 @@ public class TestMap extends Map {
             money = money % 10;
         }
 
-        
         this.moneyText.setX(xText - (15 * charCount));
         this.moneyText.setText("MONEY: " + player.getMoney());
-    
-        if (player.getJumpBoostActive() == true){
-            this.jumpBoostText.setText("JUMP BOOST ACTIVE");
-        }else{
-            this.jumpBoostText.setText("");
+
+        ArrayList<Pickup> activePickups = Pickup.GetActivePickups();
+
+        ArrayList<SpriteFont> newPowerupTexts = new ArrayList<>();
+
+        if (activePickups.size() > 0) {
+            int index = 0;
+            for (Pickup pickup : activePickups) {
+                int height = 45 + (25 * (index - 1));
+
+                SpriteFont text = new SpriteFont(pickup.getName() + " ACTIVE", 550, height, "Montserrat", 20,
+                        new Color(255, 255, 255));
+                text.setOutlineColor(Color.black);
+                text.setOutlineThickness(4);
+
+                newPowerupTexts.add(text);
+            }
         }
 
-        if (player.getSpeedBoostActive() == true){
-            this.speedBoostText.setText("SPEED BOOST ACTIVE");
-        }else{
-            this.speedBoostText.setText("");
-        }
+        this.powerupTexts = newPowerupTexts;
 
         playerHealth = player.getHearts();
 
@@ -109,17 +112,19 @@ public class TestMap extends Map {
         highScoreText.draw(graphicsHandler);
         scoreText.draw(graphicsHandler);
         moneyText.draw(graphicsHandler);
-        speedBoostText.draw(graphicsHandler);
-        jumpBoostText.draw(graphicsHandler);
 
         if (heartIcon != null) {
             int heartXStart = -5;
             int heartY = 73;
             int spacing = 20;
-    
+
             for (int i = 0; i < playerHealth; i++) {
                 int heartX = heartXStart + i * (heartIcon.getWidth() + spacing);
-                graphicsHandler.drawImage(heartIcon, heartX, heartY, 55,55);
+                graphicsHandler.drawImage(heartIcon, heartX, heartY, 55, 55);
+            }
+
+            for (SpriteFont text : this.powerupTexts) {
+                text.draw(graphicsHandler);
             }
         }
 
