@@ -69,6 +69,7 @@ public abstract class Map {
     protected ArrayList<Projectile> projectiles;
     protected ArrayList<Enemy> enemies;
     protected ArrayList<NPC> npcs;
+    protected ArrayList<Coin> coins;
 
     // if set to false, camera will not move as player moves
     protected boolean adjustCamera = true;
@@ -123,6 +124,8 @@ public abstract class Map {
         for (Projectile projectile : this.projectiles) {
             projectile.setMap(this);
         }
+
+        this.coins = new ArrayList<>();
 
         this.camera = new Camera(0, 0, tileset.getScaledSpriteWidth(), tileset.getScaledSpriteHeight(), this);
     }
@@ -481,6 +484,10 @@ public abstract class Map {
             projectile.update(player);
         }
 
+        for (Coin coin : this.coins) {
+            coin.update(player);
+        }
+
         if (player != null) {
             float playerWidth = player.getWidth();
             float mapWidth = getWidthPixels();
@@ -601,6 +608,19 @@ public abstract class Map {
 
     public void draw(GraphicsHandler graphicsHandler) {
         camera.draw(graphicsHandler);
+
+        ArrayList<Coin> coinsToRemove = new ArrayList<>();
+        for (Coin coin : this.coins) {
+            if (coin.getMapEntityStatus() == MapEntityStatus.REMOVED) {
+                coinsToRemove.add(coin);
+            } else {
+                coin.draw(graphicsHandler);
+            }
+        }
+
+        for (Coin coin : coinsToRemove) {
+            this.coins.remove(coin);
+        }
 
         for (Projectile projectile : this.projectiles) {
             projectile.draw(graphicsHandler);

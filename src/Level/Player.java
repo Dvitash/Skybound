@@ -38,6 +38,7 @@ public abstract class Player extends GameObject {
     protected float dashDegrade = 0;
     protected boolean pressedBeforeLand = false;
     protected float dashCooldown = 1f;
+    protected boolean crouch = false;
 
     protected int score = 0;
 
@@ -116,7 +117,6 @@ public abstract class Player extends GameObject {
 
     private void SaveScore() {
         System.out.println("Score: " + score);
-
         try {
             File scoreFile = new File("GameSaves\\scoresaves.txt");
             scoreFile.getParentFile().mkdirs();
@@ -237,9 +237,10 @@ public abstract class Player extends GameObject {
     }
 
     // add gravity to player, which is a downward force
-    protected void applyGravity(boolean crouch) {
-        if (crouch == true) {
+    protected void applyGravity(boolean inicrouch) {
+        if ((inicrouch == true) && crouch == true) {
             moveAmountY += (gravity + momentumY * 0.5);
+            crouch = false;
         } else {
             moveAmountY += gravity + momentumY;
         }
@@ -403,6 +404,7 @@ public abstract class Player extends GameObject {
 
     // player JUMPING state logic
     protected void playerJumping(float jumpAmplifier) {
+
         // if last frame player was on ground and this frame player is still on ground, the jump needs to be setup
         if (previousAirGroundState == AirGroundState.GROUND && airGroundState == AirGroundState.GROUND
                 && (Keyboard.isKeyDown(CROUCH_KEY) == false && Keyboard.isKeyDown(CROUCH_KEY2) == false)) {
@@ -419,7 +421,7 @@ public abstract class Player extends GameObject {
             airGroundState = AirGroundState.AIR;
             jumpForce = jumpHeight * jumpAmplifier * jumpsHeight;
 
-            if (pressedBeforeLand == true) {
+            if (pressedBeforeLand) {
                 if (jumpForce > 0) {
                     moveAmountY -= jumpForce;
                     jumpForce -= jumpDegrade - 2;
@@ -444,9 +446,12 @@ public abstract class Player extends GameObject {
             keyLocker.lockKey(JUMP_KEY);
             keyLocker.lockKey(JUMP_KEY2);
             if (Keyboard.isKeyDown(CROUCH_KEY)|| Keyboard.isKeyDown(CROUCH_KEY2)) {
+                crouch = true;
                 applyGravity(true);
+                System.out.println("confiemed");
             }
             if (jumpForce > 0) {
+                
                 moveAmountY -= jumpForce;
                 jumpForce -= jumpDegrade;
                 if (jumpForce < 0) {
@@ -474,6 +479,7 @@ public abstract class Player extends GameObject {
             }
             playerState = PlayerState.STANDING;
 
+
         }
     }
 
@@ -491,9 +497,9 @@ public abstract class Player extends GameObject {
         // currentAnimationName = facingDirection == Direction.RIGHT ? "JUMP_RIGHT" : "JUMP_LEFT";
 
         airGroundState = AirGroundState.GROUND;
-        previousAirGroundState = airGroundState;
-
-        playerJumping(1);
+        previousAirGroundState = AirGroundState.GROUND;
+        playerJumping(1f);
+        System.out.println("called");
     }
 
     // while player is in air, this is called, and will increase momentumY by a set amount until player reaches terminal velocity
@@ -553,6 +559,7 @@ public abstract class Player extends GameObject {
         // if player does not collide with a map tile below, it is in air
         if (direction == Direction.DOWN) {
             if (hasCollided) {
+                
                 momentumY = 0;
                 airGroundState = AirGroundState.GROUND;
 
@@ -562,17 +569,32 @@ public abstract class Player extends GameObject {
                 // }
 
                 // check for spring platform in the same place
-                MapTile mapTile = (MapTile) entityCollidedWith;
-                for (EnhancedMapTile enhancedTile : map.getActiveEnhancedMapTiles()) {
-                    if (enhancedTile.getX() != mapTile.getX() || enhancedTile.getY() != mapTile.getY()) {
-                        continue;
+                if (entityCollidedWith instanceof MapTile) {
+                    MapTile mapTile = (MapTile) entityCollidedWith;
+                    for (EnhancedMapTile enhancedTile : map.getActiveEnhancedMapTiles()) {
+                        if (enhancedTile.getX() != mapTile.getX() || enhancedTile.getY() != mapTile.getY()) {
+                            continue;
+                        }
+    
+                        if (enhancedTile instanceof Spring) {
+                            playerJumping(1.75f);
+                            break;
+                        }
+    
                     }
+                } else if (entityCollidedWith instanceof Enemy) {
+                    System.out.println("enemy");
 
-                    if (enhancedTile instanceof Spring) {
-                        playerJumping(1.75f);
-                        break;
+                    float bottomEdge = getY() + getHeight();
+                    float enemyTopEdge = entityCollidedWith.getY();
+
+                    System.out.println(bottomEdge + " " + enemyTopEdge);
+
+                    if (Math.abs(bottomEdge - enemyTopEdge) <= 25) {
+                        playerJumping(1f);
+                        new Coin(entityCollidedWith.getLocation(), 10, map);
+                        entityCollidedWith.setMapEntityStatus(MapEntityStatus.REMOVED);
                     }
-
                 }
 
             } else {

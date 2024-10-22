@@ -38,6 +38,8 @@ public class Projectile extends MapEntity {
                 if (intersects(enemy)) {
                     enemy.setMapEntityStatus(MapEntityStatus.REMOVED);
                     map.removeProjectile(this);
+
+                    new Coin(enemy.getLocation(), 10, map);
                 }
             }
         }
