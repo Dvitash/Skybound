@@ -81,7 +81,7 @@ public class MenuScreen extends Screen {
 
 
     public void update() {
-        File soundFile = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/coin.WAV");
+        File soundFile = new File("Sound\\coin.WAV");
         // File music = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/music.WAV");
         // update background map (to play tile animations)
         background.update(null);
