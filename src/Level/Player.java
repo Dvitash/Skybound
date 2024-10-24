@@ -14,6 +14,13 @@ import Projectiles.Bullet;
 import Utils.AirGroundState;
 import Utils.Direction;
 import Utils.Point;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
+
 
 import java.io.File;
 import java.io.FileWriter;
@@ -84,6 +91,8 @@ public abstract class Player extends GameObject {
     protected Key CROUCH_KEY = Key.DOWN;
     protected Key CROUCH_KEY2 = Key.S;
     protected Key SPACE = Key.SPACE;
+    
+
 
     // flags
     protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
@@ -109,6 +118,7 @@ public abstract class Player extends GameObject {
             scoreBuffer = score + 1;
         }
     }
+    
 
     private void SaveScore() {
         System.out.println("Score: " + score);
@@ -290,6 +300,7 @@ public abstract class Player extends GameObject {
         if (Keyboard.isKeyDown(SPACE) && !dashing && !dashDebounce) {
             dashDebounce = true;
             dashing = true;
+            File soundFile = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/dash.WAV");
 
             if ((Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_LEFT_KEY2)) && (Keyboard.isKeyUp(MOVE_RIGHT_KEY) || Keyboard.isKeyUp(MOVE_RIGHT_KEY2))) {
                 momentumX = -15f;
@@ -298,6 +309,7 @@ public abstract class Player extends GameObject {
                 momentumX = 15f;
                 playerJumping(1.25f);
             }
+            playWav(soundFile);
         }
 
         if (Keyboard.isKeyUp(SPACE)) {
@@ -354,6 +366,8 @@ public abstract class Player extends GameObject {
             movementVector, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT", false);
 
             map.addProjectile(bullet);
+            File soundFile = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/shoot.WAV");
+            playWav(soundFile); 
         }
 
         if (!Mouse.isMouseClicked()) {
@@ -396,6 +410,30 @@ public abstract class Player extends GameObject {
         }
     }
 
+
+    // plays the audio file
+    public static void playWav(File soundAudio) {
+        try {
+            // Use the File object directly without concatenation
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundAudio);
+    
+            Clip clip = AudioSystem.getClip();
+    
+            clip.open(audioStream);
+            clip.start();
+    
+            System.out.println("Playing audio...");
+
+    
+        } catch (UnsupportedAudioFileException e) {
+            System.out.println("The specified audio file format is not supported.");
+        } catch (IOException e) {
+            System.out.println("Error playing the audio file.");
+        } catch (LineUnavailableException e) {
+            System.out.println("Audio line is unavailable.");
+        }
+    }
+
     // player JUMPING state logic
     protected void playerJumping(float jumpAmplifier) {
 
@@ -433,6 +471,8 @@ public abstract class Player extends GameObject {
                     }
                 }
             }
+            File soundFile = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/jump.WAV");
+            playWav(soundFile); 
         }
 
         // if player is in air (currently in a jump) and has more jumpForce, continue sending player upwards
@@ -586,8 +626,8 @@ public abstract class Player extends GameObject {
 
                     if (Math.abs(bottomEdge - enemyTopEdge) <= 25) {
                         playerJumping(1f);
-                        new Coin(entityCollidedWith.getLocation(), 10, map);
                         entityCollidedWith.setMapEntityStatus(MapEntityStatus.REMOVED);
+                        new Coin(entityCollidedWith.getLocation(), 10, map);
                     }
                 }
 
@@ -606,6 +646,7 @@ public abstract class Player extends GameObject {
     }
 
     public void hurtPlayer(MapEntity mapEntity) {
+        System.out.println("called");
         if (!isInvincible && !isHit) {
             if ((mapEntity instanceof Enemy || mapEntity instanceof Projectile) && hearts == 1) {
                 levelState = LevelState.PLAYER_DEAD;

@@ -5,6 +5,7 @@ import Pickups.JumpBoost;
 import Pickups.SpeedBoost;
 import Utils.Point;
 
+
 public class PickupLoader {
     public static void initialize(Tileset tileset) {
         SpeedBoost speedBoost = new SpeedBoost(

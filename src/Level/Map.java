@@ -92,6 +92,8 @@ public abstract class Map {
         this.playerStartPosition = new Point(0, 0);
         this.random = new Random();
 
+        this.coins = new ArrayList<>();
+
         this.minY = height * tileset.getScaledSpriteHeight();
     }
 

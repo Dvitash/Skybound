@@ -8,6 +8,14 @@ import Level.TileType;
 import Utils.Point;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class SpeedBoost extends Pickup {
     protected static final long Duration = 5000;
@@ -23,8 +31,33 @@ public class SpeedBoost extends Pickup {
         super.initialize(this);
     }
 
+    // plays the audio file
+    public static void playWav(File soundAudio) {
+        try {
+            // Use the File object directly without concatenation
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundAudio);
+    
+            Clip clip = AudioSystem.getClip();
+    
+            clip.open(audioStream);
+            clip.start();
+    
+            System.out.println("Playing audio...");
+
+    
+        } catch (UnsupportedAudioFileException e) {
+            System.out.println("The specified audio file format is not supported.");
+        } catch (IOException e) {
+            System.out.println("Error playing the audio file.");
+        } catch (LineUnavailableException e) {
+            System.out.println("Audio line is unavailable.");
+        }
+    }
+
     @Override
     public void execute(Player player) {
+        File soundFile = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/powerUp.WAV");
+        playWav(soundFile);
         float originalWalkSpeed = player.walkSpeed;
         player.walkSpeed = originalWalkSpeed * Modifier;
 

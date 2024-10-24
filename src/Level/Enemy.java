@@ -70,6 +70,7 @@ public class Enemy extends MapEntity {
                 
             } else {
                 touchedPlayer(player);
+                
             }
         }
 

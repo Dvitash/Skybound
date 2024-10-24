@@ -6,6 +6,14 @@ import Game.ScreenCoordinator;
 import Level.Map;
 import Maps.TitleScreenMap;
 import SpriteFont.SpriteFont;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import java.awt.*;
 
@@ -47,7 +55,34 @@ public class MenuScreen extends Screen {
         keyLocker.lockKey(Key.SPACE);
     }
 
+
+    // plays the audio file
+    public static void playWav(File soundAudio) {
+        try {
+            // Use the File object directly without concatenation
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundAudio);
+    
+            Clip clip = AudioSystem.getClip();
+    
+            clip.open(audioStream);
+            clip.start();
+    
+            System.out.println("Playing audio...");
+
+    
+        } catch (UnsupportedAudioFileException e) {
+            System.out.println("The specified audio file format is not supported.");
+        } catch (IOException e) {
+            System.out.println("Error playing the audio file.");
+        } catch (LineUnavailableException e) {
+            System.out.println("Audio line is unavailable.");
+        }
+    }
+
+
     public void update() {
+        File soundFile = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/coin.WAV");
+        // File music = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/music.WAV");
         // update background map (to play tile animations)
         background.update(null);
 
@@ -55,9 +90,11 @@ public class MenuScreen extends Screen {
         if (Keyboard.isKeyDown(Key.DOWN) &&  keyPressTimer == 0) {
             keyPressTimer = 14;
             currentMenuItemHovered++;
+            playWav(soundFile);
         } else if (Keyboard.isKeyDown(Key.UP) &&  keyPressTimer == 0) {
             keyPressTimer = 14;
             currentMenuItemHovered--;
+            playWav(soundFile);
         } else {
             if (keyPressTimer > 0) {
                 keyPressTimer--;
@@ -100,10 +137,14 @@ public class MenuScreen extends Screen {
             menuItemSelected = currentMenuItemHovered;
             if (menuItemSelected == 0) {
                 screenCoordinator.setGameState(GameState.LEVEL);
+                playWav(soundFile);
+                // playWav(music);
             } else if (menuItemSelected == 1) {
                 screenCoordinator.setGameState(GameState.TUTORIAL);
+                playWav(soundFile);
             } else if (menuItemSelected == 2) {
                 screenCoordinator.setGameState(GameState.CREDITS);
+                playWav(soundFile);
             }
         }
     }
