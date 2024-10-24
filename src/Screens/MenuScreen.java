@@ -6,7 +6,7 @@ import Game.ScreenCoordinator;
 import Level.Map;
 import Maps.TitleScreenMap;
 import SpriteFont.SpriteFont;
-
+import java.awt.image.BufferedImage;
 import java.awt.*;
 
 // This is the class for the main menu screen
@@ -17,7 +17,7 @@ public class MenuScreen extends Screen {
     protected SpriteFont playGame;
     protected SpriteFont credits;
     protected SpriteFont tutorial;
-    protected Map background;
+    protected BufferedImage background;
     protected int keyPressTimer;
     protected int pointerLocationX, pointerLocationY;
     protected KeyLocker keyLocker = new KeyLocker();
@@ -39,9 +39,7 @@ public class MenuScreen extends Screen {
         credits = new SpriteFont("CREDITS", 200, 323, "Arial", 30, new Color(49, 207, 240));
         credits.setOutlineColor(Color.black);
         credits.setOutlineThickness(3);
-
-        background = new TitleScreenMap();
-        background.setAdjustCamera(false);
+        background = ImageLoader.load("Skybound_Title.jpg");
         keyPressTimer = 0;
         menuItemSelected = -1;
         keyLocker.lockKey(Key.SPACE);
@@ -49,7 +47,7 @@ public class MenuScreen extends Screen {
 
     public void update() {
         // update background map (to play tile animations)
-        background.update(null);
+        //background.update(null);
 
         // if down or up is pressed, change menu item "hovered" over (blue square in front of text will move along with currentMenuItemHovered changing)
         if (Keyboard.isKeyDown(Key.DOWN) &&  keyPressTimer == 0) {
@@ -109,7 +107,8 @@ public class MenuScreen extends Screen {
     }
 
     public void draw(GraphicsHandler graphicsHandler) {
-        background.draw(graphicsHandler);
+        //background.draw(graphicsHandler);
+        graphicsHandler.drawImage(background, 0, 0, 800, 700);
         playGame.draw(graphicsHandler);
         tutorial.draw(graphicsHandler);
         credits.draw(graphicsHandler);

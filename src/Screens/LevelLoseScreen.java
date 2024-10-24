@@ -1,12 +1,17 @@
 package Screens;
 
+import java.io.File;
+import java.util.Scanner;
 import Engine.*;
 import SpriteFont.SpriteFont;
-
+import java.awt.image.BufferedImage;
 import java.awt.*;
 
 // This is the class for the level lose screen
 public class LevelLoseScreen extends Screen {
+    protected BufferedImage background;
+    protected SpriteFont score;
+    protected SpriteFont highScoreText;
     protected SpriteFont loseMessage;
     protected SpriteFont instructions;
     protected KeyLocker keyLocker = new KeyLocker();
@@ -19,19 +24,38 @@ public class LevelLoseScreen extends Screen {
 
     @Override
     public void initialize() {
-        loseMessage = new SpriteFont("You lose!", 350, 239, "Arial", 30, Color.white);
-        instructions = new SpriteFont("Press Space to try again or Escape to go back to the main menu", 120, 279,"Arial", 20, Color.white);
+        loseMessage = new SpriteFont("You lose!", 340, 219, "Arial", 30, Color.white);
+        score = new SpriteFont("Score: ", 350, 259, "Arial", 30,Color.white);
+        highScoreText = new SpriteFont("HighScore: ", 310, 299, "Arial", 30, Color.white);
+        instructions = new SpriteFont("Press Space to try again or Escape to go back to the main menu", 110, 329,"Arial", 20, Color.white);
         keyLocker.lockKey(Key.SPACE);
         keyLocker.lockKey(Key.ESC);
+        background = ImageLoader.load("LoseScreen.jpg");
     }
 
-    @Override
-    public void update() {
+    public void update(int playerScore) {
         if (Keyboard.isKeyUp(Key.SPACE)) {
             keyLocker.unlockKey(Key.SPACE);
         }
         if (Keyboard.isKeyUp(Key.ESC)) {
             keyLocker.unlockKey(Key.ESC);
+        }
+
+        score.setText("Score: " + playerScore);
+
+        try {
+            // check if the file exists first
+            File file = new File("GameSaves\\scoresaves.txt");
+            if (file.exists()) {
+                Scanner scan = new Scanner(file);
+                int highScore = scan.nextInt();
+                highScoreText.setText("Highscore: " + highScore);
+                scan.close();
+            } else {
+                highScoreText.setText("Highscore: 0");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         // if space is pressed, reset level. if escape is pressed, go back to main menu
@@ -43,8 +67,15 @@ public class LevelLoseScreen extends Screen {
     }
 
     public void draw(GraphicsHandler graphicsHandler) {
-        graphicsHandler.drawFilledRectangle(0, 0, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(), Color.black);
+        graphicsHandler.drawImage(background, 0, -25, 800, 755);
+        //graphicsHandler.drawFilledRectangle(0, 0, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(), Color.black);
         loseMessage.draw(graphicsHandler);
+        score.draw(graphicsHandler);
+        highScoreText.draw(graphicsHandler);
         instructions.draw(graphicsHandler);
+    }
+
+    @Override
+    public void update() {
     }
 }
