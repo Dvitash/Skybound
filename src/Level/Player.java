@@ -300,7 +300,7 @@ public abstract class Player extends GameObject {
         if (Keyboard.isKeyDown(SPACE) && !dashing && !dashDebounce) {
             dashDebounce = true;
             dashing = true;
-            File soundFile = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/dash.WAV");
+            File soundFile = new File("Sound\\dash.WAV");
 
             if ((Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_LEFT_KEY2)) && (Keyboard.isKeyUp(MOVE_RIGHT_KEY) || Keyboard.isKeyUp(MOVE_RIGHT_KEY2))) {
                 momentumX = -15f;
@@ -366,7 +366,7 @@ public abstract class Player extends GameObject {
             movementVector, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT", false);
 
             map.addProjectile(bullet);
-            File soundFile = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/shoot.WAV");
+            File soundFile = new File("Sound\\shoot.WAV");
             playWav(soundFile); 
         }
 
@@ -471,7 +471,7 @@ public abstract class Player extends GameObject {
                     }
                 }
             }
-            File soundFile = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/jump.WAV");
+            File soundFile = new File("Sound\\jump.WAV");
             playWav(soundFile); 
         }
 

@@ -35,7 +35,7 @@ public class SpawnableEnemy extends Enemy {
             folderName = "RegularEnemies";
         }
 
-        File folder = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Resources/" + folderName);
+        File folder = new File("Resources/" + folderName);
 
         if (folder.isDirectory()) {
             // Get all the children (files and subdirectories)
