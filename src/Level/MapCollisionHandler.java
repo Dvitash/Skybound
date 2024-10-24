@@ -139,6 +139,10 @@ public class MapCollisionHandler {
             }
         }
 
+        
+        
+
+
         // no collision occurred
         return new MapCollisionCheckResult(null, null);
     }

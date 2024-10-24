@@ -7,8 +7,6 @@ import java.awt.event.KeyEvent;
 import Engine.Mouse;
 import Engine.KeyLocker;
 import Engine.Keyboard;
-import EnhancedMapTiles.JumpBoost;
-import EnhancedMapTiles.SpeedBoost;
 import EnhancedMapTiles.Spring;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
@@ -16,6 +14,13 @@ import Projectiles.Bullet;
 import Utils.AirGroundState;
 import Utils.Direction;
 import Utils.Point;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
+
 
 import java.io.File;
 import java.io.FileWriter;
@@ -29,15 +34,16 @@ import java.util.TimerTask;
 public abstract class Player extends GameObject {
     // values that affect player movement
     // these should be set in a subclass
-    protected float walkSpeed = 0;
+    public float walkSpeed = 0; // for speedBoost
     protected float gravity = 0;
-    protected float jumpHeight = 0;
+    public float jumpHeight = 0; // for jumpHeight
     protected float jumpDegrade = 0;
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
     protected float dashDegrade = 0;
     protected boolean pressedBeforeLand = false;
     protected float dashCooldown = 1f;
+    protected boolean crouch = false;
 
     protected int score = 0;
 
@@ -59,17 +65,17 @@ public abstract class Player extends GameObject {
     protected AirGroundState previousAirGroundState;
     protected LevelState levelState;
 
-    // Variables for jump boost
-    protected long jumpBoostEndTime = 0;
-    protected static final long jumpBoostDuration = 5000;
-    protected float jumpsHeight = 1f;
-    protected boolean jumpBoostActive;
-
     // Variables for speed boost
     protected long speedBoostEndTime = 0;
     protected static final long speedBoostDuration = 5000;
     protected float speedBoost = 4.5f;
     protected boolean speedBoostActive;
+
+    // Variables for health
+    protected int hearts = 3;
+    private boolean isHit = false;
+    private long hitTimer = 0;
+    private static final long hitCooldown = 1000; 
 
     // classes that listen to player events can be added to this list
     protected ArrayList<PlayerListener> listeners = new ArrayList<>();
@@ -85,6 +91,8 @@ public abstract class Player extends GameObject {
     protected Key CROUCH_KEY = Key.DOWN;
     protected Key CROUCH_KEY2 = Key.S;
     protected Key SPACE = Key.SPACE;
+    
+
 
     // flags
     protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
@@ -110,10 +118,10 @@ public abstract class Player extends GameObject {
             scoreBuffer = score + 1;
         }
     }
+    
 
     private void SaveScore() {
         System.out.println("Score: " + score);
-
         try {
             File scoreFile = new File("GameSaves\\scoresaves.txt");
             scoreFile.getParentFile().mkdirs();
@@ -150,14 +158,6 @@ public abstract class Player extends GameObject {
 
             playerShoot();
             Dash();
-
-            if (jumpBoostEndTime > System.currentTimeMillis()){
-                jumpsHeight = 1.5f;
-                jumpBoostActive = true;
-            }else{
-                jumpsHeight = 1.0f;
-                jumpBoostActive = false;
-            }
 
             if (speedBoostEndTime > System.currentTimeMillis()){
                 walkSpeed = speedBoost;
@@ -204,6 +204,13 @@ public abstract class Player extends GameObject {
         else if (levelState == LevelState.PLAYER_DEAD) {
             updatePlayerDead();
         }
+
+        if (isHit) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - hitTimer >= hitCooldown) {
+                isHit = false; // Reset the hit flag after cooldown
+            }
+        }
     }
 
     private static boolean dashing = false;
@@ -234,9 +241,10 @@ public abstract class Player extends GameObject {
     }
 
     // add gravity to player, which is a downward force
-    protected void applyGravity(boolean crouch) {
-        if (crouch == true) {
+    protected void applyGravity(boolean inicrouch) {
+        if ((inicrouch == true) && crouch == true) {
             moveAmountY += (gravity + momentumY * 0.5);
+            crouch = false;
         } else {
             moveAmountY += gravity + momentumY;
         }
@@ -292,6 +300,7 @@ public abstract class Player extends GameObject {
         if (Keyboard.isKeyDown(SPACE) && !dashing && !dashDebounce) {
             dashDebounce = true;
             dashing = true;
+            File soundFile = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/dash.WAV");
 
             if ((Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_LEFT_KEY2)) && (Keyboard.isKeyUp(MOVE_RIGHT_KEY) || Keyboard.isKeyUp(MOVE_RIGHT_KEY2))) {
                 momentumX = -15f;
@@ -300,6 +309,7 @@ public abstract class Player extends GameObject {
                 momentumX = 15f;
                 playerJumping(1.25f);
             }
+            playWav(soundFile);
         }
 
         if (Keyboard.isKeyUp(SPACE)) {
@@ -356,6 +366,8 @@ public abstract class Player extends GameObject {
             movementVector, new SpriteSheet(ImageLoader.load("Bullet.png"), 7, 7), "DEFAULT", false);
 
             map.addProjectile(bullet);
+            File soundFile = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/shoot.WAV");
+            playWav(soundFile); 
         }
 
         if (!Mouse.isMouseClicked()) {
@@ -398,8 +410,33 @@ public abstract class Player extends GameObject {
         }
     }
 
+
+    // plays the audio file
+    public static void playWav(File soundAudio) {
+        try {
+            // Use the File object directly without concatenation
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundAudio);
+    
+            Clip clip = AudioSystem.getClip();
+    
+            clip.open(audioStream);
+            clip.start();
+    
+            System.out.println("Playing audio...");
+
+    
+        } catch (UnsupportedAudioFileException e) {
+            System.out.println("The specified audio file format is not supported.");
+        } catch (IOException e) {
+            System.out.println("Error playing the audio file.");
+        } catch (LineUnavailableException e) {
+            System.out.println("Audio line is unavailable.");
+        }
+    }
+
     // player JUMPING state logic
     protected void playerJumping(float jumpAmplifier) {
+
         // if last frame player was on ground and this frame player is still on ground, the jump needs to be setup
         if (previousAirGroundState == AirGroundState.GROUND && airGroundState == AirGroundState.GROUND
                 && (Keyboard.isKeyDown(CROUCH_KEY) == false && Keyboard.isKeyDown(CROUCH_KEY2) == false)) {
@@ -414,9 +451,9 @@ public abstract class Player extends GameObject {
 
             // player is set to be in air and then player is sent into the air
             airGroundState = AirGroundState.AIR;
-            jumpForce = jumpHeight * jumpAmplifier * jumpsHeight;
+            jumpForce = jumpHeight * jumpAmplifier;
 
-            if (pressedBeforeLand == true) {
+            if (pressedBeforeLand) {
                 if (jumpForce > 0) {
                     moveAmountY -= jumpForce;
                     jumpForce -= jumpDegrade - 2;
@@ -434,6 +471,8 @@ public abstract class Player extends GameObject {
                     }
                 }
             }
+            File soundFile = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/jump.WAV");
+            playWav(soundFile); 
         }
 
         // if player is in air (currently in a jump) and has more jumpForce, continue sending player upwards
@@ -441,9 +480,12 @@ public abstract class Player extends GameObject {
             keyLocker.lockKey(JUMP_KEY);
             keyLocker.lockKey(JUMP_KEY2);
             if (Keyboard.isKeyDown(CROUCH_KEY)|| Keyboard.isKeyDown(CROUCH_KEY2)) {
+                crouch = true;
                 applyGravity(true);
+                System.out.println("confiemed");
             }
             if (jumpForce > 0) {
+                
                 moveAmountY -= jumpForce;
                 jumpForce -= jumpDegrade;
                 if (jumpForce < 0) {
@@ -471,6 +513,7 @@ public abstract class Player extends GameObject {
             }
             playerState = PlayerState.STANDING;
 
+
         }
     }
 
@@ -488,9 +531,9 @@ public abstract class Player extends GameObject {
         // currentAnimationName = facingDirection == Direction.RIGHT ? "JUMP_RIGHT" : "JUMP_LEFT";
 
         airGroundState = AirGroundState.GROUND;
-        previousAirGroundState = airGroundState;
-
-        playerJumping(1);
+        previousAirGroundState = AirGroundState.GROUND;
+        playerJumping(1f);
+        System.out.println("called");
     }
 
     // while player is in air, this is called, and will increase momentumY by a set amount until player reaches terminal velocity
@@ -550,6 +593,7 @@ public abstract class Player extends GameObject {
         // if player does not collide with a map tile below, it is in air
         if (direction == Direction.DOWN) {
             if (hasCollided) {
+                
                 momentumY = 0;
                 airGroundState = AirGroundState.GROUND;
 
@@ -559,17 +603,32 @@ public abstract class Player extends GameObject {
                 // }
 
                 // check for spring platform in the same place
-                MapTile mapTile = (MapTile) entityCollidedWith;
-                for (EnhancedMapTile enhancedTile : map.getActiveEnhancedMapTiles()) {
-                    if (enhancedTile.getX() != mapTile.getX() || enhancedTile.getY() != mapTile.getY()) {
-                        continue;
+                if (entityCollidedWith instanceof MapTile) {
+                    MapTile mapTile = (MapTile) entityCollidedWith;
+                    for (EnhancedMapTile enhancedTile : map.getActiveEnhancedMapTiles()) {
+                        if (enhancedTile.getX() != mapTile.getX() || enhancedTile.getY() != mapTile.getY()) {
+                            continue;
+                        }
+    
+                        if (enhancedTile instanceof Spring) {
+                            playerJumping(1.75f);
+                            break;
+                        }
+    
                     }
+                } else if (entityCollidedWith instanceof Enemy) {
+                    System.out.println("enemy");
 
-                    if (enhancedTile instanceof Spring) {
-                        playerJumping(1.75f);
-                        break;
+                    float bottomEdge = getY() + getHeight();
+                    float enemyTopEdge = entityCollidedWith.getY();
+
+                    System.out.println(bottomEdge + " " + enemyTopEdge);
+
+                    if (Math.abs(bottomEdge - enemyTopEdge) <= 25) {
+                        playerJumping(1f);
+                        entityCollidedWith.setMapEntityStatus(MapEntityStatus.REMOVED);
+                        new Coin(entityCollidedWith.getLocation(), 10, map);
                     }
-
                 }
 
             } else {
@@ -586,40 +645,30 @@ public abstract class Player extends GameObject {
         }
     }
 
-    public void jumpBoost() {
-        if (jumpBoostEndTime < System.currentTimeMillis()) {
-            jumpBoostEndTime = System.currentTimeMillis() + jumpBoostDuration;
-        } else {
-            jumpBoostEndTime = jumpBoostEndTime + jumpBoostDuration;
-        }
-
-    }
-
-    public boolean getJumpBoostActive(){
-        return this.jumpBoostActive;
-    }
-
-    public void speedBoost() {
-        if (speedBoostEndTime < System.currentTimeMillis()) {
-            speedBoostEndTime = System.currentTimeMillis() + speedBoostDuration;
-        } else {
-            speedBoostEndTime = speedBoostEndTime + speedBoostDuration;
-        }
-
-    }
-
-    public boolean getSpeedBoostActive(){
-        return this.speedBoostActive;
-    }
-
-    // other entities can call this method to hurt the player
     public void hurtPlayer(MapEntity mapEntity) {
-        if (!isInvincible) {
-            // if map entity is an enemy, kill player on touch
-            if (mapEntity instanceof Enemy || mapEntity instanceof Projectile) {
+        System.out.println("called");
+        if (!isInvincible && !isHit) {
+            if ((mapEntity instanceof Enemy || mapEntity instanceof Projectile) && hearts == 1) {
                 levelState = LevelState.PLAYER_DEAD;
+                hearts--;
+            } else {
+                hearts--;
+                isHit = true;
+                hitTimer = System.currentTimeMillis();
             }
         }
+    }
+
+    public void health() {
+
+        if (hearts < 5){
+            hearts++;
+        }
+
+    }
+
+    public int getHearts(){
+        return this.hearts;
     }
 
     // other entities can call this to tell the player they beat a level

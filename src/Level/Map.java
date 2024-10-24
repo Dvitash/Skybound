@@ -3,9 +3,7 @@ package Level;
 import Engine.Config;
 import Engine.GraphicsHandler;
 import Engine.ScreenManager;
-import EnhancedMapTiles.HealthBoost;
-import EnhancedMapTiles.JumpBoost;
-import EnhancedMapTiles.SpeedBoost;
+import EnhancedMapTiles.Health;
 import EnhancedMapTiles.Spring;
 import GameObject.Rectangle;
 import Utils.Direction;
@@ -66,8 +64,10 @@ public abstract class Map {
     // lists to hold map entities that are a part of the map
     protected ArrayList<EnhancedMapTile> enhancedMapTiles;
     protected ArrayList<Projectile> projectiles;
+    protected ArrayList<Pickup> pickups;
     protected ArrayList<Enemy> enemies;
     protected ArrayList<NPC> npcs;
+    protected ArrayList<Coin> coins;
 
     // if set to false, camera will not move as player moves
     protected boolean adjustCamera = true;
@@ -91,6 +91,8 @@ public abstract class Map {
         this.yMidPoint = (ScreenManager.getScreenHeight() / 2);
         this.playerStartPosition = new Point(0, 0);
         this.random = new Random();
+
+        this.coins = new ArrayList<>();
 
         this.minY = height * tileset.getScaledSpriteHeight();
     }
@@ -122,6 +124,9 @@ public abstract class Map {
         for (Projectile projectile : this.projectiles) {
             projectile.setMap(this);
         }
+
+        this.pickups = new ArrayList<>();
+
 
         this.camera = new Camera(0, 0, tileset.getScaledSpriteWidth(), tileset.getScaledSpriteHeight(), this);
     }
@@ -347,6 +352,11 @@ public abstract class Map {
         toRemove.add(projectile);
     }
 
+    private ArrayList<Pickup> pickupsToRemove = new ArrayList<>();
+    private void removePickup(Pickup pickup) {
+        pickupsToRemove.add(pickup);
+    }
+
     public void setAdjustCamera(boolean adjustCamera) {
         this.adjustCamera = adjustCamera;
     }
@@ -414,42 +424,26 @@ public abstract class Map {
                             addEnhancedMapTile(spring);
                         }
 
-                        if (itemChance > 0.1 && itemChance < 0.11) {
-                            JumpBoost jumpBoost = new JumpBoost(
-                                tileset.getSubImage(2, 5),
-                                new Point(xLocation, yLocation),
-                                TileType.PASSABLE,
-                                tileset.getTileScale(),
-                                new Rectangle(4, 1, 8, 5)
-                            );
-    
-                            addEnhancedMapTile(jumpBoost);
+                        if (itemChance < 0.04) { // 4% chance per platform to spawn a pickup
+                            Pickup pickup = Pickup.getRandomPickup(new Point(xLocation, yLocation));
+                            if (pickup != null) {
+                                pickup.setMap(this);
+                                // addEnhancedMapTile(pickup);
+                                pickups.add(pickup);
+                            }
                         }
 
-                        if (itemChance > 0.12 && itemChance < 0.13) {
-                            SpeedBoost speedBoost = new SpeedBoost(
-                                tileset.getSubImage(2, 4),
-                                new Point(xLocation, yLocation),
-                                TileType.PASSABLE,
-                                tileset.getTileScale(),
-                                new Rectangle(4, 1, 8, 5)
-                            );
-    
-                            addEnhancedMapTile(speedBoost);
-                        }
-
-                        /* 
                         if (itemChance > 0.14 && itemChance < 0.15) {
-                            HealthBoost healthBoost = new HealthBoost(
-                                tileset.getSubImage(2, 3),
+                            Health health = new Health(
+                                tileset.getSubImage(3, 3),
                                 new Point(xLocation, yLocation),
                                 TileType.PASSABLE,
                                 tileset.getTileScale(),
                                 new Rectangle(4, 1, 8, 5)
                             );
     
-                            addEnhancedMapTile(healthBoost);
-                        } */
+                            addEnhancedMapTile(health);
+                        } 
 
                         double enemyChance = this.random.nextDouble();
                         if (itemChance >= 0.1 && enemyChance < 0.05) { // spawn an enemy if a spring is not spawned
@@ -481,6 +475,18 @@ public abstract class Map {
             projectile.update(player);
         }
 
+        for (Coin coin : this.coins) {
+            coin.update(player);
+        }
+        
+        for (Pickup pickup : this.pickups) {
+            if (pickup.intersects(player)) {
+                pickup.execute(player);
+                pickup.setMapEntityStatus(MapEntityStatus.REMOVED);
+                removePickup(pickup);
+            }
+        }
+
         if (player != null) {
             float playerWidth = player.getWidth();
             float mapWidth = getWidthPixels();
@@ -500,6 +506,11 @@ public abstract class Map {
         for (Projectile projectile : toRemove) {
             projectile.setMapEntityStatus(MapEntityStatus.REMOVED);
             this.projectiles.remove(projectile);
+        }
+
+        for (Pickup pickup : pickupsToRemove) {
+            pickup.setMapEntityStatus(MapEntityStatus.REMOVED);
+            this.pickups.remove(pickup);
         }
 
         camera.update(player);
@@ -533,6 +544,15 @@ public abstract class Map {
             EnhancedMapTile tile = enhancedTileIterator.next();
             if (tile.getY() > cameraY) {
                 enhancedTileIterator.remove();
+                deleted = true;
+            }
+        }
+
+        Iterator<Pickup> pickupIterator = this.pickups.iterator();
+        while (pickupIterator.hasNext()) {
+            EnhancedMapTile tile = pickupIterator.next();
+            if (tile.getY() > cameraY) {
+                pickupIterator.remove();
                 deleted = true;
             }
         }
@@ -602,8 +622,25 @@ public abstract class Map {
     public void draw(GraphicsHandler graphicsHandler) {
         camera.draw(graphicsHandler);
 
+        ArrayList<Coin> coinsToRemove = new ArrayList<>();
+        for (Coin coin : this.coins) {
+            if (coin.getMapEntityStatus() == MapEntityStatus.REMOVED) {
+                coinsToRemove.add(coin);
+            } else {
+                coin.draw(graphicsHandler);
+            }
+        }
+
+        for (Coin coin : coinsToRemove) {
+            this.coins.remove(coin);
+        }
+
         for (Projectile projectile : this.projectiles) {
             projectile.draw(graphicsHandler);
+        }
+
+        for (Pickup pickup : this.pickups) {
+            pickup.draw(graphicsHandler);
         }
     }
 

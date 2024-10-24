@@ -55,17 +55,22 @@ public class Enemy extends MapEntity {
         if (intersects(player)) {    
             float playerBottomEdge = player.getY2(); // get the bottom edge of the player
             float enemyTopEdge = y; // get the top edge of the enemy
-
-            System.out.println("Player bottom edge: " + playerBottomEdge + " Enemy top edge: " + enemyTopEdge + " Difference: " + Math.abs(playerBottomEdge - enemyTopEdge));
     
             if (playerBottomEdge >= enemyTopEdge && player.playerState == PlayerState.JUMPING) { // check if player is falling onto the enemy
                 // force player to jump
-                player.playerJumping(1f);
+                player.bounce();
+
+                
+
+                touchedEnemy(null);
 
                 // remove the enemy from the map
                 mapEntityStatus = MapEntityStatus.REMOVED;
+
+                
             } else {
                 touchedPlayer(player);
+                
             }
         }
 
@@ -107,6 +112,7 @@ public class Enemy extends MapEntity {
 
     public void touchedEnemy(Enemy enemy){
         mapEntityStatus = MapEntityStatus.REMOVED;
+        
     }
     
 }
