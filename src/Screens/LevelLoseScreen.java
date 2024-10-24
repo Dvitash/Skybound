@@ -24,10 +24,10 @@ public class LevelLoseScreen extends Screen {
 
     @Override
     public void initialize() {
-        loseMessage = new SpriteFont("You lose!", 340, 219, "Arial", 30, Color.white);
-        score = new SpriteFont("Score: ", 350, 259, "Arial", 30,Color.white);
-        highScoreText = new SpriteFont("HighScore: ", 310, 299, "Arial", 30, Color.white);
-        instructions = new SpriteFont("Press Space to try again or Escape to go back to the main menu", 110, 329,"Arial", 20, Color.white);
+        loseMessage = new SpriteFont("You lose!", 340, 219, "Arial", 30, Color.black);
+        score = new SpriteFont("Score: ", 350, 259, "Arial", 30,Color.black);
+        highScoreText = new SpriteFont("HighScore: ", 310, 299, "Arial", 30, Color.black);
+        instructions = new SpriteFont("Press Space to try again or Escape to go back to the main menu", 110, 329,"Arial", 20, Color.black);
         keyLocker.lockKey(Key.SPACE);
         keyLocker.lockKey(Key.ESC);
         background = ImageLoader.load("LoseScreen.jpg");
