@@ -43,7 +43,7 @@ public class Pickup extends EnhancedMapTile {
         this.scale = scale;
         this.bounds = bounds;
 
-        this.initialize();
+        this.initialize(this);
     }
 
     public Pickup clone(Point newLocation) {

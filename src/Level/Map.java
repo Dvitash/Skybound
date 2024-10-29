@@ -412,6 +412,8 @@ public abstract class Map {
 
                         // additional random chance to spawn a spring platform
                         double itemChance = this.random.nextDouble();
+                        double pickupChance = this.random.nextDouble();
+                        double heartChance = this.random.nextDouble();
 
                         if (itemChance < 0.1) {
                             Spring spring = new Spring(
@@ -424,16 +426,15 @@ public abstract class Map {
                             addEnhancedMapTile(spring);
                         }
 
-                        if (itemChance < 0.04) { // 4% chance per platform to spawn a pickup
+                        if (pickupChance < 0.1) { // 2% chance per platform to spawn a pickup
                             Pickup pickup = Pickup.getRandomPickup(new Point(xLocation, yLocation));
                             if (pickup != null) {
                                 pickup.setMap(this);
-                                // addEnhancedMapTile(pickup);
                                 pickups.add(pickup);
                             }
                         }
 
-                        if (itemChance > 0.14 && itemChance < 0.15) {
+                        if (heartChance < 0.03) {
                             Health health = new Health(
                                 tileset.getSubImage(3, 3),
                                 new Point(xLocation, yLocation),

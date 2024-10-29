@@ -46,6 +46,10 @@ public class Point {
         return new Point((float) (x / magnitude), (float) (y / magnitude));
     }
 
+    public double magnitude() {
+        return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
