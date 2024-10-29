@@ -50,6 +50,8 @@ public abstract class Player extends GameObject {
     protected int money = 0;
     protected int scoreBuffer;
 
+    public boolean magnetActive = false;
+
     // values used to handle player movement
     protected float jumpForce = 0;
     protected float momentumY = 0;
@@ -191,6 +193,19 @@ public abstract class Player extends GameObject {
                 SaveScore();
             }
 
+            if (magnetActive) {
+                Point playerPos = new Point((getX() + getX2()) / 2, (getY() + getY2()) / 2);
+                for (Coin coin : map.coins) {
+                    Point differenceVector = new Point(playerPos.x - ((coin.getX() + coin.getX2()) / 2), playerPos.y - ((coin.getY() + coin.getY2()) / 2));
+                    Point unitVector = differenceVector.toUnit();
+
+                    if (differenceVector.magnitude() > 500) { continue; }
+
+                    coin.moveDown(unitVector.y * 3);
+                    coin.moveRight(unitVector.x * 3);
+                }
+            }
+
             // update player's animation
             super.update();
         }
@@ -304,10 +319,10 @@ public abstract class Player extends GameObject {
 
             if ((Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_LEFT_KEY2)) && (Keyboard.isKeyUp(MOVE_RIGHT_KEY) || Keyboard.isKeyUp(MOVE_RIGHT_KEY2))) {
                 momentumX = -15f;
-                playerJumping(1.25f);
+                playerJumping(3f);
             } else if ((Keyboard.isKeyDown(MOVE_RIGHT_KEY) || Keyboard.isKeyDown(MOVE_RIGHT_KEY2)) && (Keyboard.isKeyUp(MOVE_LEFT_KEY) || Keyboard.isKeyUp(MOVE_LEFT_KEY2))) {
                 momentumX = 15f;
-                playerJumping(1.25f);
+                playerJumping(3f);
             }
             playWav(soundFile);
         }
