@@ -57,7 +57,7 @@ public class Magnet extends Pickup {
 
     @Override
     public void execute(Player player) {
-        File soundFile = new File("Sound\\powerUp.WAV");
+        File soundFile = new File("Sound/powerUp.WAV");
         playWav(soundFile);
 
         Pickup.SetActive(this);

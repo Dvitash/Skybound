@@ -58,7 +58,7 @@ public class JumpBoost extends Pickup {
 
     @Override
     public void execute(Player player) {
-        File soundFile = new File("Sound\\powerUp.WAV");
+        File soundFile = new File("Sound/powerUp.WAV");
         playWav(soundFile);
         float originalJumpHeight = player.jumpHeight;
         player.jumpHeight = originalJumpHeight * jumpBoostModifier;
