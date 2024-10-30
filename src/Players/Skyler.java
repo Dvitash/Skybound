@@ -7,15 +7,15 @@ import GameObject.Frame;
 import GameObject.ImageEffect;
 import GameObject.SpriteSheet;
 import Level.Player;
+import Screens.SkinsScreen;
 
 import java.util.HashMap;
 
 // This is the class for the Cat player character
 // basically just sets some values for physics and then defines animations
 public class Skyler extends Player {
-
     public Skyler(float x, float y) {
-        super(new SpriteSheet(ImageLoader.load("Skyler.png"), 16, 16), x, y, "STAND_RIGHT");
+        super(new SpriteSheet(ImageLoader.load("Skyler_" + SkinsScreen.getColor() + ".png"), 16, 16), x, y, "STAND_RIGHT");
         gravity = .5f;
         terminalVelocityY = 6f;
         jumpHeight = 14.5f;

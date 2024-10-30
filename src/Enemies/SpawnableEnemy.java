@@ -1,6 +1,7 @@
 package Enemies;
 
 import Builders.FrameBuilder;
+import Engine.Config;
 import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.ImageEffect;
@@ -35,7 +36,7 @@ public class SpawnableEnemy extends Enemy {
             folderName = "RegularEnemies";
         }
 
-        File folder = new File("Resources/" + folderName);
+        File folder = new File(Config.RESOURCES_PATH + folderName);
 
         if (folder.isDirectory()) {
             // Get all the children (files and subdirectories)

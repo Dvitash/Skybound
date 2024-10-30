@@ -56,7 +56,7 @@ public class SpeedBoost extends Pickup {
 
     @Override
     public void execute(Player player) {
-        File soundFile = new File("Sound\\powerUp.WAV");
+        File soundFile = new File("C:\\Users\\zakar\\OneDrive\\Desktop\\SER225\\Skybound\\Sound\\powerUp.WAV");
         playWav(soundFile);
         float originalWalkSpeed = player.walkSpeed;
         player.walkSpeed = originalWalkSpeed * Modifier;

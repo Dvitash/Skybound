@@ -16,7 +16,7 @@ public class TitleScreenMap extends Map {
     public TitleScreenMap() {
         super("title_screen_map.txt", new CommonTileset());
         Point skylerLocation = getMapTile(6, 10).getLocation().addY(4);
-        skyler = new Sprite(ImageLoader.loadSubImage("Skyler.png", Colors.MAGENTA, 0, 0, 16, 16));
+        skyler = new Sprite(ImageLoader.loadSubImage("Skyler_Red.png", Colors.MAGENTA, 0, 0, 16, 16));
         skyler.setScale(3);
         skyler.setLocation(skylerLocation.x, skylerLocation.y);
     }
