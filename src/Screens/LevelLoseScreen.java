@@ -14,6 +14,7 @@ public class LevelLoseScreen extends Screen {
     protected SpriteFont highScoreText;
     protected SpriteFont loseMessage;
     protected SpriteFont instructions;
+    protected SpriteFont instructions2;
     protected KeyLocker keyLocker = new KeyLocker();
     protected PlayLevelScreen playLevelScreen;
 
@@ -27,7 +28,8 @@ public class LevelLoseScreen extends Screen {
         loseMessage = new SpriteFont("You lose!", 340, 219, "Arial", 30, Color.black);
         score = new SpriteFont("Score: ", 350, 259, "Arial", 30,Color.black);
         highScoreText = new SpriteFont("HighScore: ", 310, 299, "Arial", 30, Color.black);
-        instructions = new SpriteFont("Press Space to try again or Escape to go back to the main menu", 110, 329,"Arial", 20, Color.black);
+        instructions = new SpriteFont("Press Space to try again", 310, 329,"Arial", 20, Color.black);
+        instructions2 = new SpriteFont("Escape to go back to the main menu", 240, 359, "Arial", 20, Color.black);
         keyLocker.lockKey(Key.SPACE);
         keyLocker.lockKey(Key.ESC);
         background = ImageLoader.load("LoseScreen.jpg");
@@ -45,7 +47,7 @@ public class LevelLoseScreen extends Screen {
 
         try {
             // check if the file exists first
-            File file = new File("GameSaves\\scoresaves.txt");
+            File file = new File("GameSaves/scoresaves.txt");
             if (file.exists()) {
                 Scanner scan = new Scanner(file);
                 int highScore = scan.nextInt();
@@ -73,6 +75,7 @@ public class LevelLoseScreen extends Screen {
         score.draw(graphicsHandler);
         highScoreText.draw(graphicsHandler);
         instructions.draw(graphicsHandler);
+        instructions2.draw(graphicsHandler);
     }
 
     @Override
