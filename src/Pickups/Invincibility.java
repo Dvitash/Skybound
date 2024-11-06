@@ -17,15 +17,14 @@ import java.io.IOException;
 
 import java.awt.image.BufferedImage;
 
-public class JumpBoost extends Pickup {
+public class Invincibility extends Pickup {
     private boolean isCollected = false;
 
-    protected static final long jumpBoostDuration = 5000;
-    protected static final float jumpBoostModifier = 1.5f;
+    protected static final long invincibilityDuration = 5000;
 
     protected double weight;
 
-    public JumpBoost(BufferedImage image, Point startLocation, TileType tileType, float scale, Rectangle bounds, String pickupName, double weight) {
+    public Invincibility(BufferedImage image, Point startLocation, TileType tileType, float scale, Rectangle bounds, String pickupName, double weight) {
         super(image, startLocation, tileType, scale, bounds, pickupName, weight);
 
         this.weight = weight;
@@ -60,22 +59,21 @@ public class JumpBoost extends Pickup {
     public void execute(Player player) {
         File soundFile = new File("Sound/powerUp.WAV");
         playWav(soundFile);
-        float originalJumpHeight = player.jumpHeight;
-        player.jumpHeight = originalJumpHeight * jumpBoostModifier;
+        player.isInvincible = true;
 
         Pickup.SetActive(this);
-        JumpBoost currentInstance = this;
+        Invincibility currentInstance = this;
 
         // after the duration, set it back to normal
         new java.util.Timer().schedule(
                 new java.util.TimerTask() {
                     @Override
                     public void run() {
-                        player.jumpHeight = originalJumpHeight;
+                        player.isInvincible = false;
                         Pickup.SetInactive(currentInstance);
                     }
                 },
-                jumpBoostDuration
+                invincibilityDuration
         );
         
     }

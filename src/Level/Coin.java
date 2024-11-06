@@ -66,7 +66,7 @@ public class Coin extends MapEntity {
 
             player.money += this.coinAmount;
             setMapEntityStatus(MapEntityStatus.REMOVED);
-            File soundFile = new File("C:\\Users\\zakar\\OneDrive\\Desktop\\SER225\\Skybound\\Sound\\coin.wav");
+            File soundFile = new File("Sound/coin.wav");
             playWav(soundFile);
         }
     }
