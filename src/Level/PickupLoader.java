@@ -40,6 +40,6 @@ public class PickupLoader {
                 TileType.PASSABLE,
                 tileset.getTileScale(),
                 new Rectangle(4, 1, 8, 5),
-                "Invincibility", 9);
+                "Invincibility", 2);
     }
 }
