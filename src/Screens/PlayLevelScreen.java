@@ -114,6 +114,11 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
         }
     }
 
+    @Override
+    public Player getPlayer(){
+        return player;
+    }
+
     public void resetLevel() {
         initialize();
     }

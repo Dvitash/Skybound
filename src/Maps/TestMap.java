@@ -46,7 +46,7 @@ public class TestMap extends Map {
         // read the score file
         try {
             // check if the file exists first
-            File file = new File("GameSaves\\scoresaves.txt");
+            File file = new File("GameSaves/scoresaves.txt");
             if (file.exists()) {
                 Scanner scan = new Scanner(file);
                 int highScore = scan.nextInt();

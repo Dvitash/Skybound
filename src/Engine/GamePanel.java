@@ -29,6 +29,7 @@ public class GamePanel extends JPanel{
 	private boolean showFPS = false;
 	private int currentFPS;
 	private boolean doPaint;
+	private static Color currentBackground = Colors.START;
 
 	// The JPanel and various important class instances are setup here
 	public GamePanel() {
@@ -65,7 +66,7 @@ public class GamePanel extends JPanel{
 	// this is called later after instantiation, and will initialize screenManager
 	// this had to be done outside of the constructor because it needed to know the JPanel's width and height, which aren't available in the constructor
 	public void setupGame() {
-		setBackground(Colors.CORNFLOWER_BLUE);
+		setBackground(Colors.START);
 		screenManager.initialize(new Rectangle(getX(), getY(), getWidth(), getHeight()));
 	}
 
@@ -89,6 +90,8 @@ public class GamePanel extends JPanel{
 	public void update() {
 		updatePauseState();
 		updateShowFPSState();
+
+		setBackground(currentBackground);
 
 		if (!isGamePaused) {
 			screenManager.update();
@@ -117,6 +120,10 @@ public class GamePanel extends JPanel{
 		}
 
 		fpsDisplayLabel.setText("FPS: " + currentFPS);
+	}
+
+	public static void changeCurrentBackground(Color color){
+		currentBackground = color;
 	}
 
 	public void draw() {

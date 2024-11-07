@@ -90,6 +90,7 @@ public class MenuScreen extends Screen {
     public void update() {
         File soundFile = new File("Sound/select.WAV");
         // File music = new File("Sound/music.WAV");
+
         // update background map (to play tile animations)
         //background.update(null);
 
