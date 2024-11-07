@@ -34,6 +34,7 @@ import java.util.TimerTask;
 public abstract class Player extends GameObject {
     // values that affect player movement
     // these should be set in a subclass
+    public boolean isInvincible = false; // for invincibility
     public float walkSpeed = 0; // for speedBoost
     protected float gravity = 0;
     public float jumpHeight = 0; // for jumpHeight
@@ -96,8 +97,7 @@ public abstract class Player extends GameObject {
     
 
 
-    // flags
-    protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
+     
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);

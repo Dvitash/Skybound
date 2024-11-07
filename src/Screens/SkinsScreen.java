@@ -119,7 +119,7 @@ public class SkinsScreen extends Screen {
 
     public void update() {
         File soundFile = new File("Sound/select.WAV");
-        // File music = new File("C:/Users/zakar/OneDrive/Desktop/SER225/Skybound/Sound/music.WAV");
+        // File music = new File("Sound/music.WAV");
         // update background map (to play tile animations)
         //background.update(null);
 

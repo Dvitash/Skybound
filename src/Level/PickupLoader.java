@@ -1,6 +1,7 @@
 package Level;
 
 import GameObject.Rectangle;
+import Pickups.Invincibility;
 import Pickups.JumpBoost;
 import Pickups.Magnet;
 import Pickups.SpeedBoost;
@@ -32,5 +33,13 @@ public class PickupLoader {
                 tileset.getTileScale(),
                 new Rectangle(4, 1, 8, 5),
                 "Magnet", 3);
+
+        Invincibility invincibility = new Invincibility(
+                tileset.getSubImage(3, 5),
+                new Point(0, 0),
+                TileType.PASSABLE,
+                tileset.getTileScale(),
+                new Rectangle(4, 1, 8, 5),
+                "Invincibility", 2);
     }
 }
