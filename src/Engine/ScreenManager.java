@@ -2,6 +2,7 @@ package Engine;
 
 
 import GameObject.Rectangle;
+import Screens.PlayLevelScreen;
 
 /*
  * The game engine uses this class to start off the cascading Screen updating/drawing
@@ -24,7 +25,13 @@ public class ScreenManager {
     }
 
     public void update() {
-        currentScreen.update();
+        if (currentScreen != null) {
+            currentScreen.update();
+        }
+    }
+
+    public Screen getCurrentScreen() {
+        return currentScreen;
     }
 
     public void draw(GraphicsHandler graphicsHandler) {

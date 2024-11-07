@@ -1,11 +1,13 @@
 package Level;
 
 import Engine.Config;
+import Engine.GamePanel;
 import Engine.GraphicsHandler;
 import Engine.ScreenManager;
 import EnhancedMapTiles.Health;
 import EnhancedMapTiles.Spring;
 import GameObject.Rectangle;
+import Utils.Colors;
 import Utils.Direction;
 import Utils.Point;
 
@@ -385,8 +387,8 @@ public abstract class Map {
                 if (tileAtPosition == null || tileAtPosition.getTileIndex() == 0) {
                     // place air if not placed already
                     if (tileAtPosition == null) {
-                        MapTile airTile = tileset.getTile(0).build(xLocation, yLocation);
-                        setMapTile(x, y, airTile);
+                        //MapTile airTile = tileset.getTile(0).build(xLocation, yLocation);
+                        //setMapTile(x, y, airTile);
                     }
 
                     boolean hasNeighbor = false;
@@ -466,6 +468,28 @@ public abstract class Map {
         }
     }
 
+    public void changeBackground(Player player){
+        if (player.getScore() <= 250){
+            GamePanel.changeCurrentBackground(Colors.START);
+        }else if (player.getScore() <= 500){
+            GamePanel.changeCurrentBackground(Colors.STEP2); 
+        }else if (player.getScore() <= 750){
+            GamePanel.changeCurrentBackground(Colors.STEP2);
+        }else if (player.getScore() <= 1000){
+            GamePanel.changeCurrentBackground(Colors.STEP3);
+        }else if (player.getScore() <= 1250){
+            GamePanel.changeCurrentBackground(Colors.MID);
+        }else if (player.getScore() <= 1500){
+            GamePanel.changeCurrentBackground(Colors.STEP4);
+        }else if (player.getScore() <= 1750){
+            GamePanel.changeCurrentBackground(Colors.STEP5);
+        }else if (player.getScore() <= 2000){
+            GamePanel.changeCurrentBackground(Colors.STEP6);
+        }else{
+            GamePanel.changeCurrentBackground(Colors.END);
+        }
+    }
+
     public void update(Player player) {
         if (adjustCamera) {
             adjustMovementY(player);
@@ -512,6 +536,9 @@ public abstract class Map {
         for (Pickup pickup : pickupsToRemove) {
             pickup.setMapEntityStatus(MapEntityStatus.REMOVED);
             this.pickups.remove(pickup);
+        }
+        if (player != null){
+            changeBackground(player);
         }
 
         camera.update(player);

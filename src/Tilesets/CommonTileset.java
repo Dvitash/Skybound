@@ -160,6 +160,34 @@ public class CommonTileset extends Tileset {
 
         PlatformIndexes.addPlatform(middleMetalPlatformTile, 20);
         mapTiles.add(middleMetalPlatformTile);
+
+        // mid sky
+        Frame midSkyFrame = new FrameBuilder(getSubImage(4, 2))
+        .withScale(tileScale)
+        .build();
+
+        MapTileBuilder midSkyTile = new MapTileBuilder(midSkyFrame);
+
+        mapTiles.add(midSkyTile);
+
+        // space sky one
+        Frame spaceFrameOne = new FrameBuilder(getSubImage(4, 1))
+        .withScale(tileScale)
+        .build();
+        
+        MapTileBuilder spaceTileOne = new MapTileBuilder(spaceFrameOne);
+        
+        mapTiles.add(spaceTileOne);
+
+        // space sky one
+        Frame spaceFrameTwo = new FrameBuilder(getSubImage(4, 0))
+        .withScale(tileScale)
+        .build();
+                
+        MapTileBuilder spaceTileTwo = new MapTileBuilder(spaceFrameTwo);
+                
+        mapTiles.add(spaceTileTwo);
+
         return mapTiles;
     }
 }
