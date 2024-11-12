@@ -52,6 +52,11 @@ public abstract class Player extends GameObject {
     protected int scoreBuffer;
 
     public boolean magnetActive = false;
+    public boolean jetpackActive = false;
+
+    protected float jetpackMax = 75;
+    protected float jetpackMomentum = 0;
+    protected float jetpackMomentumIncrease = 1.5f;
 
     // values used to handle player movement
     protected float jumpForce = 0;
@@ -179,8 +184,23 @@ public abstract class Player extends GameObject {
             previousAirGroundState = airGroundState;
 
             // move player with respect to map collisions based on how much player needs to move this frame
-            lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
-            lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
+            if (!jetpackActive) {
+                lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
+                lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
+
+                if (jetpackMomentum > 0) {
+                    jetpackMomentum = Math.max(jetpackMomentum - (jetpackMomentumIncrease * 2), 0);
+                    moveUp(jetpackMomentum);
+                }
+            } else {
+                lastAmountMovedX = 0;
+                lastAmountMovedY = 0;
+
+                jetpackMomentum = Math.min(jetpackMomentum + jetpackMomentumIncrease, jetpackMax);
+                
+                moveRight(moveAmountX);
+                moveUp(jetpackMomentum);
+            }
 
             handlePlayerAnimation();
 
