@@ -99,10 +99,6 @@ public abstract class Player extends GameObject {
     protected Key CROUCH_KEY = Key.DOWN;
     protected Key CROUCH_KEY2 = Key.S;
     protected Key SPACE = Key.SPACE;
-    
-
-
-     
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);
@@ -112,7 +108,6 @@ public abstract class Player extends GameObject {
         playerState = PlayerState.STANDING;
         previousPlayerState = playerState;
         levelState = LevelState.RUNNING;
-
     }
 
     public int getMoney(){
@@ -128,7 +123,9 @@ public abstract class Player extends GameObject {
     
 
     private void SaveScore() {
-        System.out.println("Score: " + score);
+        System.out.println("Score: " + score + " Coins: " + money);
+        score += (money * 2);
+        
         try {
             File scoreFile = new File("GameSaves/scoresaves.txt");
             scoreFile.getParentFile().mkdirs();

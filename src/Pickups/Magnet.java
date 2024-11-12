@@ -20,7 +20,7 @@ import java.awt.image.BufferedImage;
 public class Magnet extends Pickup {
     private boolean isCollected = false;
 
-    protected static final long duration = 10000;
+    protected static final long duration = 25000;
 
     protected double weight;
 
