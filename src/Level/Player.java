@@ -245,7 +245,8 @@ public abstract class Player extends GameObject {
         }
     }
 
-    private static boolean dashing = false;
+
+
     private static final KeyListener keyListener = new KeyListener() {
         @Override
         public void keyTyped(KeyEvent e) {
@@ -325,14 +326,21 @@ public abstract class Player extends GameObject {
         }
     }
 
-    private boolean debounceStarted = false;
+
+    private static boolean dashing = false;
+
+    public static boolean getDash(){
+        return debounceStarted;
+    }
+
+    private static boolean debounceStarted = false;
     private boolean dashDebounce = false;
 
     protected void Dash() {
         if (Keyboard.isKeyDown(SPACE) && !dashing && !dashDebounce) {
             dashDebounce = true;
             dashing = true;
-            File soundFile = new File("Sound/dash.WAV");
+            File soundFile = new File("Sound\\dash.WAV");
 
             if ((Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_LEFT_KEY2)) && (Keyboard.isKeyUp(MOVE_RIGHT_KEY) || Keyboard.isKeyUp(MOVE_RIGHT_KEY2))) {
                 momentumX = -15f;
@@ -355,6 +363,7 @@ public abstract class Player extends GameObject {
                         dashDebounce = false;
                     }
                 }, (long) (dashCooldown * 1000));
+                System.out.println(dashCooldown);
             }
 
             dashing = false;
@@ -503,7 +512,7 @@ public abstract class Player extends GameObject {
                     }
                 }
             }
-            File soundFile = new File("Sound/jump.WAV");
+            File soundFile = new File("Sound\\jump.WAV");
             playWav(soundFile); 
         }
 
@@ -514,7 +523,6 @@ public abstract class Player extends GameObject {
             if (Keyboard.isKeyDown(CROUCH_KEY)|| Keyboard.isKeyDown(CROUCH_KEY2)) {
                 crouch = true;
                 applyGravity(true);
-                System.out.println("confiemed");
             }
             if (jumpForce > 0) {
                 

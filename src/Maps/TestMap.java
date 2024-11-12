@@ -17,6 +17,8 @@ public class TestMap extends Map {
     SpriteFont scoreText;
     SpriteFont highScoreText;
     SpriteFont moneyText;
+    SpriteFont dashVisual; 
+
 
     private int xText = 600;
 
@@ -32,6 +34,11 @@ public class TestMap extends Map {
         moneyText = new SpriteFont("Money: 0", xText, 10, "Montserrat", 30, new Color(255, 255, 255));
         moneyText.setOutlineColor(Color.black);
         moneyText.setOutlineThickness(5);
+
+        dashVisual = new SpriteFont("Dash", xText / 2 + 40, 10, "Montserrat", 30, new Color(255, 255, 255));
+        dashVisual.setOutlineColor(Color.black);
+        dashVisual.setOutlineThickness(5);
+
 
         scoreText = new SpriteFont("SCORE: 0", 10, 10, "Montserrat", 30, new Color(255, 255, 255));
         scoreText.setOutlineColor(Color.black);
@@ -81,6 +88,13 @@ public class TestMap extends Map {
         this.moneyText.setX(xText - (15 * charCount));
         this.moneyText.setText("MONEY: " + player.getMoney());
 
+        if (Player.getDash() == false){
+            dashVisual.setColor(Color.white);
+        } else {
+            dashVisual.setColor(Color.black);
+        }
+
+
         ArrayList<Pickup> activePickups = Pickup.GetActivePickups();
 
         ArrayList<SpriteFont> newPowerupTexts = new ArrayList<>();
@@ -112,6 +126,7 @@ public class TestMap extends Map {
         highScoreText.draw(graphicsHandler);
         scoreText.draw(graphicsHandler);
         moneyText.draw(graphicsHandler);
+        dashVisual.draw(graphicsHandler);
 
         if (heartIcon != null) {
             int heartXStart = -5;
