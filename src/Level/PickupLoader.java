@@ -54,12 +54,12 @@ public class PickupLoader {
                 new Rectangle(4, 1, 8, 5),
                 "Jetpack", 2);
 
-AutoPlatform autoPlatform = new AutoPlatform(tileset.getSubImage(3, 5),
+AutoPlatform autoPlatform = new AutoPlatform(tileset.getSubImage(4, 5),
         new Point(0, 0),
         TileType.PASSABLE,
         tileset.getTileScale(),
         new Rectangle(4, 1, 8, 5),
-        "AutoPlatform", 6);
+        "AutoPlatform", 4);
 
      MultiHeart multiHeart = new MultiHeart(
                 tileset.getSubImage(4, 3),
