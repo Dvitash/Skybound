@@ -74,7 +74,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                 break;
             // wait on level lose screen to make a decision (either resets level or sends player back to main menu)
             case LEVEL_LOSE:
-                levelLoseScreen.update(player.getScore());
+                levelLoseScreen.update(player.getScore(), player.getMoney());
                 break;
         }
     }

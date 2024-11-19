@@ -19,7 +19,7 @@ public class PickupLoader {
                 TileType.PASSABLE,
                 tileset.getTileScale(),
                 new Rectangle(4, 1, 8, 5),
-                "Speed Boost", 8);
+                "Speed Boost", 7);
 
         JumpBoost jumpBoost = new JumpBoost(
                 tileset.getSubImage(2, 5),
@@ -35,7 +35,7 @@ public class PickupLoader {
                 TileType.PASSABLE,
                 tileset.getTileScale(),
                 new Rectangle(4, 1, 8, 5),
-                "Magnet", 4);
+                "Magnet", 5);
 
         Invincibility invincibility = new Invincibility(
                 tileset.getSubImage(3, 5),

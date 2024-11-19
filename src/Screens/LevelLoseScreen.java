@@ -12,6 +12,7 @@ public class LevelLoseScreen extends Screen {
     protected BufferedImage background;
     protected SpriteFont score;
     protected SpriteFont highScoreText;
+    protected SpriteFont bonusText;
     protected SpriteFont loseMessage;
     protected SpriteFont instructions;
     protected SpriteFont instructions2;
@@ -27,15 +28,16 @@ public class LevelLoseScreen extends Screen {
     public void initialize() {
         loseMessage = new SpriteFont("You lose!", 340, 219, "Arial", 30, Color.black);
         score = new SpriteFont("Score: ", 350, 259, "Arial", 30,Color.black);
-        highScoreText = new SpriteFont("HighScore: ", 310, 299, "Arial", 30, Color.black);
-        instructions = new SpriteFont("Press Space to try again", 310, 329,"Arial", 20, Color.black);
-        instructions2 = new SpriteFont("Escape to go back to the main menu", 240, 359, "Arial", 20, Color.black);
+        bonusText = new SpriteFont("Bonus: ", 348, 295, "Arial", 30,Color.black);
+        highScoreText = new SpriteFont("HighScore: ", 310, 350, "Arial", 30, Color.black);
+        instructions = new SpriteFont("Press Space to try again", 310, 390,"Arial", 20, Color.black);
+        instructions2 = new SpriteFont("Escape to go back to the main menu", 240, 415, "Arial", 20, Color.black);
         keyLocker.lockKey(Key.SPACE);
         keyLocker.lockKey(Key.ESC);
         background = ImageLoader.load("LoseScreen.jpg");
     }
 
-    public void update(int playerScore) {
+    public void update(int playerScore, int playerMoney) {
         if (Keyboard.isKeyUp(Key.SPACE)) {
             keyLocker.unlockKey(Key.SPACE);
         }
@@ -44,6 +46,7 @@ public class LevelLoseScreen extends Screen {
         }
 
         score.setText("Score: " + playerScore);
+        bonusText.setText("Bonus: +" + (playerMoney * 2));
 
         try {
             // check if the file exists first
@@ -73,6 +76,7 @@ public class LevelLoseScreen extends Screen {
         //graphicsHandler.drawFilledRectangle(0, 0, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(), Color.black);
         loseMessage.draw(graphicsHandler);
         score.draw(graphicsHandler);
+        bonusText.draw(graphicsHandler);
         highScoreText.draw(graphicsHandler);
         instructions.draw(graphicsHandler);
         instructions2.draw(graphicsHandler);
