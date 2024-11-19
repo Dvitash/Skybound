@@ -1,11 +1,13 @@
 package Level;
 
 import GameObject.Rectangle;
+import Pickups.Heart;
 import Pickups.Invincibility;
 import Pickups.Jetpack;
 import Pickups.JumpBoost;
 import Pickups.Magnet;
 import Pickups.SpeedBoost;
+import Pickups.MultiHeart;
 import Utils.Point;
 
 
@@ -50,5 +52,21 @@ public class PickupLoader {
                 tileset.getTileScale(),
                 new Rectangle(4, 1, 8, 5),
                 "Jetpack", 2);
+
+        MultiHeart multiHeart = new MultiHeart(
+                tileset.getSubImage(4, 3),
+                new Point(0, 0),
+                TileType.PASSABLE,
+                tileset.getTileScale(),
+                new Rectangle(4, 1, 8, 5),
+                "MultiHeart", 3);
+
+        Heart heart = new Heart(        
+                tileset.getSubImage(3, 3),
+                new Point(0, 0),
+                TileType.PASSABLE,
+                tileset.getTileScale(),
+                new Rectangle(4, 1, 8, 5),
+                "MultiHeart", 6);
     }
 }

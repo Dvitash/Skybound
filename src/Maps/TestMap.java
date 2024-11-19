@@ -74,8 +74,8 @@ public class TestMap extends Map {
         int charCount = 1;
 
         while (money >= 10) {
-            charCount += 1;
-            money = money % 10;
+        charCount += 1;
+        money = money % 10;
         }
 
         this.moneyText.setX(xText - (15 * charCount));
@@ -87,22 +87,31 @@ public class TestMap extends Map {
 
         if (activePickups.size() > 0) {
             int index = 0;
-            for (Pickup pickup : activePickups) {
-                int height = 45 + (25 * (index - 1));
+            int startX = 550;
+            int startY = 45;
+            int spacing = 25;
 
-                SpriteFont text = new SpriteFont(pickup.getName() + " ACTIVE", 550, height, "Montserrat", 20,
-                        new Color(255, 255, 255));
+            for (Pickup pickup : activePickups) {
+                int yPosition = startY + (spacing * index);
+
+                SpriteFont text = new SpriteFont(
+                    pickup.getName() + " ACTIVE",
+                    startX,
+                    yPosition,
+                    "Montserrat",
+                    20,
+                    new Color(255, 255, 255)
+                );
                 text.setOutlineColor(Color.black);
                 text.setOutlineThickness(4);
 
                 newPowerupTexts.add(text);
+                index++;
             }
         }
 
         this.powerupTexts = newPowerupTexts;
-
         playerHealth = player.getHearts();
-
     }
 
     @Override
@@ -122,12 +131,10 @@ public class TestMap extends Map {
                 int heartX = heartXStart + i * (heartIcon.getWidth() + spacing);
                 graphicsHandler.drawImage(heartIcon, heartX, heartY, 55, 55);
             }
-
-            for (SpriteFont text : this.powerupTexts) {
-                text.draw(graphicsHandler);
-            }
         }
 
+        for (SpriteFont text : this.powerupTexts) {
+            text.draw(graphicsHandler);
+        }
     }
-
 }
