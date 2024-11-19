@@ -38,6 +38,10 @@ public abstract class Map {
 
     protected HashMap<Point, MapTile> mapTiles;
 
+    // accessible x and y loction for AutoPlatform pickup
+    public int xLocation;
+    public int yLocation;
+
     // width and height of the map in terms of the number of tiles width-wise and   height-wise
     protected int width;
     protected int height;
@@ -374,14 +378,14 @@ public abstract class Map {
             }
             lowestYGenerated = y;
 
-            int yLocation = y * tileset.getScaledSpriteHeight();
+            yLocation = y * tileset.getScaledSpriteHeight();
 
             if (yLocation > startPosY) {
                 continue;
             }
 
             for (int x = 0; x < width; x++) {
-                int xLocation = x * tileset.getScaledSpriteWidth();
+                xLocation = x * tileset.getScaledSpriteWidth();
 
                 MapTile tileAtPosition = getMapTile(x, y);
                 if (tileAtPosition == null || tileAtPosition.getTileIndex() == 0) {

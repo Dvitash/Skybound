@@ -35,6 +35,7 @@ public abstract class Player extends GameObject {
     // values that affect player movement
     // these should be set in a subclass
     public boolean isInvincible = false; // for invincibility
+    public boolean AutoPlatform = false; // for auto platform pickup
     public float walkSpeed = 0; // for speedBoost
     protected float gravity = 0;
     public float jumpHeight = 0; // for jumpHeight
@@ -154,10 +155,25 @@ public abstract class Player extends GameObject {
         }
     }
 
+    public float yDelta = 0f;
+    protected float lastY = 0f;
+    boolean canMakePlatform = false;
+
     public void update() {
         updateMoney();
         moveAmountX = 0;
         moveAmountY = 0;
+
+        if (yDelta >= 0 && (lastY - getY()) < 0) {
+            canMakePlatform = true;
+        }
+
+        yDelta = (lastY - getY());
+        lastY = getY();
+
+        if (yDelta > 0) {
+            canMakePlatform = false;
+        }
 
         // if player is currently playing through level (has not won or lost)
         if (levelState == LevelState.RUNNING) {
@@ -200,6 +216,18 @@ public abstract class Player extends GameObject {
                 
                 moveRight(moveAmountX);
                 moveUp(jetpackMomentum);
+            }
+
+            if(AutoPlatform == true && yDelta < 0 && canMakePlatform) {
+                canMakePlatform = false;
+                int x = Math.round(getLocation().x / map.getTileset().getScaledSpriteWidth());
+                int y = Math.round((getLocation().y + getHeight()) / map.getTileset().getScaledSpriteHeight());
+
+                int xLocation = x * map.getTileset().getScaledSpriteWidth();
+                int yLocation = y * map.getTileset().getScaledSpriteHeight();
+                
+                MapTile platform = PlatformIndexes.GetRandomPlatform().build(xLocation, yLocation);
+                map.setMapTile(x, y, platform);
             }
 
             handlePlayerAnimation();

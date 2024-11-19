@@ -1,6 +1,7 @@
 package Level;
 
 import GameObject.Rectangle;
+import Pickups.AutoPlatform;
 import Pickups.Invincibility;
 import Pickups.Jetpack;
 import Pickups.JumpBoost;
@@ -35,13 +36,13 @@ public class PickupLoader {
                 new Rectangle(4, 1, 8, 5),
                 "Magnet", 4);
 
-        Invincibility invincibility = new Invincibility(
-                tileset.getSubImage(3, 5),
-                new Point(0, 0),
-                TileType.PASSABLE,
-                tileset.getTileScale(),
-                new Rectangle(4, 1, 8, 5),
-                "Invincibility", 3);
+        // Invincibility invincibility = new Invincibility(
+        //         tileset.getSubImage(3, 5),
+        //         new Point(0, 0),
+        //         TileType.PASSABLE,
+        //         tileset.getTileScale(),
+        //         new Rectangle(4, 1, 8, 5),
+        //         "Invincibility", 3);
 
         Jetpack jetpack = new Jetpack(
                 tileset.getSubImage(4, 4),
@@ -50,5 +51,12 @@ public class PickupLoader {
                 tileset.getTileScale(),
                 new Rectangle(4, 1, 8, 5),
                 "Jetpack", 2);
+
+        AutoPlatform autoPlatform = new AutoPlatform(tileset.getSubImage(3, 5),
+        new Point(0, 0),
+        TileType.PASSABLE,
+        tileset.getTileScale(),
+        new Rectangle(4, 1, 8, 5),
+        "AutoPlatform", 9);
     }
 }
