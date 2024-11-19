@@ -17,6 +17,8 @@ public class TestMap extends Map {
     SpriteFont scoreText;
     SpriteFont highScoreText;
     SpriteFont moneyText;
+    SpriteFont dashVisual; 
+
 
     private int xText = 600;
 
@@ -32,6 +34,11 @@ public class TestMap extends Map {
         moneyText = new SpriteFont("Money: 0", xText, 10, "Montserrat", 30, new Color(255, 255, 255));
         moneyText.setOutlineColor(Color.black);
         moneyText.setOutlineThickness(5);
+
+        dashVisual = new SpriteFont("Dash", xText / 2 + 40, 10, "Montserrat", 30, new Color(255, 255, 255));
+        dashVisual.setOutlineColor(Color.black);
+        dashVisual.setOutlineThickness(5);
+
 
         scoreText = new SpriteFont("SCORE: 0", 10, 10, "Montserrat", 30, new Color(255, 255, 255));
         scoreText.setOutlineColor(Color.black);
@@ -74,12 +81,19 @@ public class TestMap extends Map {
         int charCount = 1;
 
         while (money >= 10) {
-            charCount += 1;
-            money = money % 10;
+        charCount += 1;
+        money = money % 10;
         }
 
         this.moneyText.setX(xText - (15 * charCount));
         this.moneyText.setText("MONEY: " + player.getMoney());
+
+        if (Player.getDash() == false){
+            dashVisual.setColor(Color.white);
+        } else {
+            dashVisual.setColor(Color.black);
+        }
+
 
         ArrayList<Pickup> activePickups = Pickup.GetActivePickups();
 
@@ -87,22 +101,31 @@ public class TestMap extends Map {
 
         if (activePickups.size() > 0) {
             int index = 0;
-            for (Pickup pickup : activePickups) {
-                int height = 45 + (25 * (index - 1));
+            int startX = 550;
+            int startY = 45;
+            int spacing = 25;
 
-                SpriteFont text = new SpriteFont(pickup.getName() + " ACTIVE", 550, height, "Montserrat", 20,
-                        new Color(255, 255, 255));
+            for (Pickup pickup : activePickups) {
+                int yPosition = startY + (spacing * index);
+
+                SpriteFont text = new SpriteFont(
+                    pickup.getName() + " ACTIVE",
+                    startX,
+                    yPosition,
+                    "Montserrat",
+                    20,
+                    new Color(255, 255, 255)
+                );
                 text.setOutlineColor(Color.black);
                 text.setOutlineThickness(4);
 
                 newPowerupTexts.add(text);
+                index++;
             }
         }
 
         this.powerupTexts = newPowerupTexts;
-
         playerHealth = player.getHearts();
-
     }
 
     @Override
@@ -112,6 +135,7 @@ public class TestMap extends Map {
         highScoreText.draw(graphicsHandler);
         scoreText.draw(graphicsHandler);
         moneyText.draw(graphicsHandler);
+        dashVisual.draw(graphicsHandler);
 
         if (heartIcon != null) {
             int heartXStart = -5;
@@ -122,12 +146,10 @@ public class TestMap extends Map {
                 int heartX = heartXStart + i * (heartIcon.getWidth() + spacing);
                 graphicsHandler.drawImage(heartIcon, heartX, heartY, 55, 55);
             }
-
-            for (SpriteFont text : this.powerupTexts) {
-                text.draw(graphicsHandler);
-            }
         }
 
+        for (SpriteFont text : this.powerupTexts) {
+            text.draw(graphicsHandler);
+        }
     }
-
 }

@@ -389,11 +389,6 @@ public abstract class Map {
 
                 MapTile tileAtPosition = getMapTile(x, y);
                 if (tileAtPosition == null || tileAtPosition.getTileIndex() == 0) {
-                    // place air if not placed already
-                    if (tileAtPosition == null) {
-                        //MapTile airTile = tileset.getTile(0).build(xLocation, yLocation);
-                        //setMapTile(x, y, airTile);
-                    }
 
                     boolean hasNeighbor = false;
 
@@ -419,7 +414,6 @@ public abstract class Map {
                         // additional random chance to spawn a spring platform
                         double itemChance = this.random.nextDouble();
                         double pickupChance = this.random.nextDouble();
-                        double heartChance = this.random.nextDouble();
 
                         if (itemChance < 0.1) {
                             Spring spring = new Spring(
@@ -439,18 +433,6 @@ public abstract class Map {
                                 pickups.add(pickup);
                             }
                         }
-
-                        if (heartChance < 0.03) {
-                            Health health = new Health(
-                                tileset.getSubImage(3, 3),
-                                new Point(xLocation, yLocation),
-                                TileType.PASSABLE,
-                                tileset.getTileScale(),
-                                new Rectangle(4, 1, 8, 5)
-                            );
-    
-                            addEnhancedMapTile(health);
-                        } 
 
                         double enemyChance = this.random.nextDouble();
                         if (itemChance >= 0.1 && enemyChance < 0.05) { // spawn an enemy if a spring is not spawned

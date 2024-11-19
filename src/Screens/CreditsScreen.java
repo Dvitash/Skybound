@@ -6,6 +6,7 @@ import Game.ScreenCoordinator;
 import Level.Map;
 import Maps.TitleScreenMap;
 import SpriteFont.SpriteFont;
+import Utils.Colors;
 
 import java.awt.*;
 
@@ -27,9 +28,9 @@ public class CreditsScreen extends Screen {
         // setup graphics on screen (background map, spritefont text)
         background = new TitleScreenMap();
         background.setAdjustCamera(false);
-        creditsLabel = new SpriteFont("Credits", 15, 7, "Times New Roman", 30, Color.white);
-        createdByLabel = new SpriteFont("Created by Alex Thimineur", 130, 121, "Times New Roman", 20, Color.white);
-        returnInstructionsLabel = new SpriteFont("Press Space to return to the menu", 20, 532, "Times New Roman", 30, Color.white);
+        creditsLabel = new SpriteFont("Credits", 15, 7, "Montserrat", 30, Colors.START);
+        createdByLabel = new SpriteFont("Created by Ethan Kulawiak, Zakaria Merzougui, Joshua Molin, Alex Thimineur, Daniel Vitashkevich", 35, 121, "Montserrat", 15, Colors.START);
+        returnInstructionsLabel = new SpriteFont("Press Space to return to the menu", 20, 532, "Montserrat", 30, Color.white);
         keyLocker.lockKey(Key.SPACE);
     }
 

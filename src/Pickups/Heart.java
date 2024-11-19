@@ -17,14 +17,14 @@ import java.io.IOException;
 
 import java.awt.image.BufferedImage;
 
-public class Magnet extends Pickup {
+public class Heart extends Pickup {
     private boolean isCollected = false;
 
-    protected static final long duration = 25000;
+    protected static final long duration = 2500;
 
     protected double weight;
 
-    public Magnet(BufferedImage image, Point startLocation, TileType tileType, float scale, Rectangle bounds, String pickupName, double weight) {
+    public Heart(BufferedImage image, Point startLocation, TileType tileType, float scale, Rectangle bounds, String pickupName, double weight) {
         super(image, startLocation, tileType, scale, bounds, pickupName, weight);
 
         this.weight = weight;
@@ -60,21 +60,7 @@ public class Magnet extends Pickup {
         File soundFile = new File("Sound/powerUp.WAV");
         playWav(soundFile);
 
-        Pickup.SetActive(this);
-        Magnet currentInstance = this;
-        player.magnetActive = true;
-
-        // after the duration, set it back to normal
-        new java.util.Timer().schedule(
-                new java.util.TimerTask() {
-                    @Override
-                    public void run() {
-                        Pickup.SetInactive(currentInstance);
-                        player.magnetActive = false;
-                    }
-                },
-                duration
-        );
+        player.health();
         
     }
 }
