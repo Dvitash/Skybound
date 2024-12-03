@@ -59,7 +59,7 @@ AutoPlatform autoPlatform = new AutoPlatform(tileset.getSubImage(4, 5),
         TileType.PASSABLE,
         tileset.getTileScale(),
         new Rectangle(4, 1, 8, 5),
-        "AutoPlatform", 4);
+        "AutoPlatform",5 );
 
      MultiHeart multiHeart = new MultiHeart(
                 tileset.getSubImage(4, 3),
